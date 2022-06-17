@@ -12,6 +12,7 @@ const LoginPage = () => {
     const { signup } = useContext(UserProvider);
     console.log({ signup });
     const [error, setError] = useState("");
+    const [log, setLog] = useState("");
     const [loading, setLoading] = useState(false);
 
     async function handleSubmit(e) {
@@ -21,11 +22,14 @@ const LoginPage = () => {
         }
         try {
             setError("");
+            setLog("");
             setLoading(true);
             await signup(emailRef.current.value, passwordRef.current.value);
+            await setLog("User created successfully");
+            setLoading(false);
         } catch (err) {
-            setError("failed to create an account");
-            console.log(err);
+            setError("");
+            setError(String(err)); //if email already in database
         }
         setLoading(false);
     }
@@ -39,6 +43,7 @@ const LoginPage = () => {
                         <Card.Body>
                             <h2>Sign up</h2>
                             {error && <Alert variant="danger">{error}</Alert>}
+                            {log && <Alert variant="success">{log}</Alert>}
                             <Form onSubmit={handleSubmit}>
                                 <Form.Group id="email">
                                     <Form.Label>Email</Form.Label>
