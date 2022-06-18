@@ -25,3 +25,24 @@
     text-align: center;
     font-size: 40px;
 }
+.form {
+    width: 50vw;
+}
+.tweet {
+    border: 1px solid black;
+    height: 100px;
+    display: flex;
+    gap: 10px;
+}
+.img_place > img {
+    height: 90px;
+    display: flex;
+    border-radius: 80px;
+    width: 80px;
+}
+.body {
+    font-size: 26px;
+}
+.footer {
+    font-size: 0.8rem;
+}
