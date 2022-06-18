@@ -3,8 +3,8 @@ import React, { useState, useContext, useEffect } from "react";
 import { Button, Card, DropdownButton } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { UserProvider } from "../App";
-import { database } from "../firebase";
 import { auth } from "../firebase";
+import GenerateNav from "./GenerateNav";
 
 const Dashboard = () => {
     const [error, setError] = useState("");
@@ -29,6 +29,7 @@ const Dashboard = () => {
         <>
             {userData ? (
                 <>
+                    <GenerateNav />
                     <Card>
                         <Card.Body>
                             <img src={userData.profile_picture} style={{ width: "300px", height: "200px" }} />
@@ -56,7 +57,9 @@ const Dashboard = () => {
                     </div>
                 </>
             ) : (
-                "yikes"
+                <Button variant="link" onClick={handleLogOut}>
+                    Log out
+                </Button>
             )}
         </>
     );

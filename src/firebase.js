@@ -1,7 +1,7 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, get, child } from "firebase/database";
+import { getDatabase, ref, set, onValue } from "firebase/database";
 
 const app = firebase.initializeApp({
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -28,4 +28,20 @@ export function writeUserData(username, email, firstname, lastname, imageUrl) {
     });
 }
 
-// writeUserData("123", "ziomek", "ziomek@gmail.com", "jakislink");
+const count = ref(database, "postcount/count");
+var data;
+onValue(count, (snapshot) => {
+    data = snapshot.val();
+});
+
+export function writePostData(id, username, body) {
+    set(ref(database, "/postcount"), {
+        count: data + 1,
+    });
+
+    set(ref(database, `posts/post${data}`), {
+        id: data,
+        posted_by: username,
+        body: body,
+    });
+}

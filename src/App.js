@@ -49,9 +49,7 @@ function App() {
         });
         return unsubscribe;
     }, []);
-
-    console.log(userData);
-
+    console.log(currentUser);
     const value = {
         currentUser,
         userData,
@@ -64,7 +62,7 @@ function App() {
         loading,
         setLoading,
     };
-    console.log(userData);
+
     return (
         <UserProvider.Provider value={value}>
             <Router>

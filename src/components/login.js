@@ -34,7 +34,7 @@ const ActualLogin = () => {
             setLog("");
             setLoading(true);
             await login(emailRef.current.value, passwordRef.current.value);
-            history("/profile");
+            history("/home");
             await setLog("Logged in successfully");
         } catch (err) {
             setError("");
