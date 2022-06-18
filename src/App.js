@@ -32,8 +32,6 @@ function App() {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             console.log(user);
             setcurrentUser(user);
-            localStorage.setItem("user", { user });
-            console.log(localStorage);
             // setcurrentUser(JSON.parse(localStorage.getItem("user")));
             setLoading(false);
         });

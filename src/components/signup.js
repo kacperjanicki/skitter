@@ -37,7 +37,7 @@ const LoginPage = () => {
                 lnameRef.current.value,
                 "https://cdn.pixabay.com/photo/2020/07/08/04/07/sea-5382487_960_720.jpg"
             );
-            setUsername(usernameRef.current.value);
+
             history("/");
             await setLog("User created successfully");
         } catch (err) {

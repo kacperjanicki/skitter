@@ -1,5 +1,5 @@
 import { ref } from "firebase/database";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Button, Card, DropdownButton } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { UserProvider } from "../App";
@@ -9,7 +9,6 @@ import { auth } from "../firebase";
 const Dashboard = () => {
     const [error, setError] = useState("");
     const { setcurrentUser, currentUser, logout, email } = useContext(UserProvider);
-    const { username } = useContext(UserProvider);
     const navigate = useNavigate();
     const handleLogOut = async () => {
         setError("");
@@ -26,8 +25,31 @@ const Dashboard = () => {
         }
     });
 
+    const url = "https://skitter-9e5e3-default-rtdb.europe-west1.firebasedatabase.app/users.json";
+
+    const [userData, setuserData] = useState();
+    useEffect(() => {
+        fetch(url)
+            .then((response) => response.json())
+            .then((data) => {
+                const currentObj = Object.values(data).find((obj) => obj.email === currentUser.email);
+                if (currentObj) {
+                    setuserData(currentObj);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
+    console.log(userData);
+
     return (
         <>
+            <Card>
+                <Card.Body>
+                    <span className="text-center">{/* <strong>Name: {userData.full_name}</strong> */}</span>
+                </Card.Body>
+            </Card>
             <Card>
                 <Card.Body>
                     <span className="text-center">
@@ -35,6 +57,7 @@ const Dashboard = () => {
                     </span>
                 </Card.Body>
             </Card>
+
             <div>
                 <Button variant="link" onClick={handleLogOut}>
                     Log out
