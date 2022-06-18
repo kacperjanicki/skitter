@@ -24,7 +24,7 @@ const ActualLogin = () => {
     const history = useNavigate();
 
     if (currentUser) {
-        history("/");
+        history("/profile");
     }
 
     async function handleSubmit(e) {
@@ -34,7 +34,7 @@ const ActualLogin = () => {
             setLog("");
             setLoading(true);
             await login(emailRef.current.value, passwordRef.current.value);
-            history("/");
+            history("/profile");
             await setLog("Logged in successfully");
         } catch (err) {
             setError("");

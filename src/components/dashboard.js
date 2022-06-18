@@ -8,7 +8,7 @@ import { auth } from "../firebase";
 
 const Dashboard = () => {
     const [error, setError] = useState("");
-    const { setcurrentUser, currentUser, logout, email } = useContext(UserProvider);
+    const { setcurrentUser, currentUser, logout, email, userData, setuserData } = useContext(UserProvider);
     const navigate = useNavigate();
     const handleLogOut = async () => {
         setError("");
@@ -27,7 +27,6 @@ const Dashboard = () => {
 
     const url = "https://skitter-9e5e3-default-rtdb.europe-west1.firebasedatabase.app/users.json";
 
-    const [userData, setuserData] = useState();
     useEffect(() => {
         fetch(url)
             .then((response) => response.json())
@@ -41,28 +40,40 @@ const Dashboard = () => {
                 console.log(err);
             });
     }, []);
-    console.log(userData);
 
     return (
         <>
-            <Card>
-                <Card.Body>
-                    <span className="text-center">{/* <strong>Name: {userData.full_name}</strong> */}</span>
-                </Card.Body>
-            </Card>
-            <Card>
-                <Card.Body>
-                    <span className="text-center">
-                        <strong>Email: {currentUser.email}</strong>
-                    </span>
-                </Card.Body>
-            </Card>
+            {userData ? (
+                <>
+                    <Card>
+                        <Card.Body>
+                            <img src={userData.profile_picture} style={{ width: "300px", height: "200px" }} />
+                        </Card.Body>
+                    </Card>
+                    <Card>
+                        <Card.Body>
+                            <span className="text-center">
+                                <strong>Name: {userData.full_name}</strong>
+                            </span>
+                        </Card.Body>
+                    </Card>
+                    <Card>
+                        <Card.Body>
+                            <span className="text-center">
+                                <strong>Email: {currentUser.email}</strong>
+                            </span>
+                        </Card.Body>
+                    </Card>
 
-            <div>
-                <Button variant="link" onClick={handleLogOut}>
-                    Log out
-                </Button>
-            </div>
+                    <div>
+                        <Button variant="link" onClick={handleLogOut}>
+                            Log out
+                        </Button>
+                    </div>
+                </>
+            ) : (
+                "yikes"
+            )}
         </>
     );
 };
