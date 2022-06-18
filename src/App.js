@@ -6,15 +6,11 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Dashboard from "./components/dashboard";
 import ActualLogin from "./components/login";
 import PrivateRoute from "./components/PrivateRoute";
-
+import Forgot from "./components/Forgot";
 export const UserProvider = React.createContext();
 
-// export function useAuth() {
-//     return useContext(UserProvider);
-// }
-
 function App() {
-    const [currentUser, setcurrentUser] = useState();
+    const [currentUser, setcurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     const signup = (email, password) => {
@@ -24,6 +20,9 @@ function App() {
     const login = (email, password) => {
         return auth.signInWithEmailAndPassword(email, password);
     };
+    const resetpass = (email) => {
+        return auth.sendPasswordResetEmail(email);
+    };
 
     const logout = () => {
         return auth.signOut();
@@ -31,7 +30,11 @@ function App() {
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
+            console.log(user);
             setcurrentUser(user);
+            localStorage.setItem("user", { user });
+            console.log(localStorage);
+            // setcurrentUser(JSON.parse(localStorage.getItem("user")));
             setLoading(false);
         });
         return unsubscribe;
@@ -39,13 +42,14 @@ function App() {
 
     const value = {
         currentUser,
+        setcurrentUser,
+        resetpass,
         signup,
         login,
         logout,
         loading,
         setLoading,
     };
-    console.log(loading);
 
     return (
         <UserProvider.Provider value={value}>
@@ -56,6 +60,7 @@ function App() {
                     </Route>
                     <Route path="/signup" exact element={<LoginPage />}></Route>
                     <Route path="/login" exact element={<ActualLogin />}></Route>
+                    <Route path="/forgot-password" exact element={<Forgot />}></Route>
                 </Routes>
             </Router>
         </UserProvider.Provider>

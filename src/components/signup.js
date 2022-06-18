@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState, useEffect } from "react";
-import { auth } from "../firebase";
+import { auth, writeUserData } from "../firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import "./loginpage.css";
@@ -10,11 +10,13 @@ const LoginPage = () => {
     const emailRef = useRef();
     const passwordRef = useRef();
     const passwordConfirmRef = useRef();
+    const usernameRef = useRef(); //
+    const fnameRef = useRef(); //   they go to user database
+    const lnameRef = useRef(); //
     const { signup } = useContext(UserProvider);
-    const { currentUser } = useContext(UserProvider);
-    console.log({ signup });
     const [error, setError] = useState("");
     const [log, setLog] = useState("");
+    const { setUsername } = useContext(UserProvider);
     const history = useNavigate();
     const { loading, setLoading } = useContext(UserProvider);
 
@@ -28,6 +30,14 @@ const LoginPage = () => {
             setLog("");
             setLoading(true);
             await signup(emailRef.current.value, passwordRef.current.value);
+            await writeUserData(
+                usernameRef.current.value,
+                emailRef.current.value,
+                fnameRef.current.value,
+                lnameRef.current.value,
+                "https://cdn.pixabay.com/photo/2020/07/08/04/07/sea-5382487_960_720.jpg"
+            );
+            setUsername(usernameRef.current.value);
             history("/");
             await setLog("User created successfully");
         } catch (err) {
@@ -49,18 +59,43 @@ const LoginPage = () => {
                                 {error && <Alert variant="danger">{error}</Alert>}
                                 {log && <Alert variant="success">{log}</Alert>}
                                 <Form onSubmit={handleSubmit}>
+                                    <Form.Group id="username">
+                                        <Form.Label>Username</Form.Label>
+                                        <Form.Control type="text" ref={usernameRef} required></Form.Control>
+                                    </Form.Group>
                                     <Form.Group id="email">
                                         <Form.Label>Email</Form.Label>
                                         <Form.Control type="email" ref={emailRef} required></Form.Control>
                                     </Form.Group>
                                     <Form.Group id="password">
                                         <Form.Label>Password</Form.Label>
-                                        <Form.Control type="password" ref={passwordRef} required></Form.Control>
+                                        <Form.Control
+                                            type="password"
+                                            ref={passwordRef}
+                                            required
+                                        ></Form.Control>
                                     </Form.Group>
                                     <Form.Group id="password-confirm">
                                         <Form.Label>Confirm Password</Form.Label>
-                                        <Form.Control type="password" ref={passwordConfirmRef} required></Form.Control>
+                                        <Form.Control
+                                            type="password"
+                                            ref={passwordConfirmRef}
+                                            required
+                                        ></Form.Control>
                                     </Form.Group>
+                                    <div className="row">
+                                        <div className="col">
+                                            <Form.Label>First name</Form.Label>
+                                            <Form.Control type="text" required ref={fnameRef}></Form.Control>
+                                        </div>
+                                        <div className="col">
+                                            <Form.Label>Last name</Form.Label>
+                                            <Form.Control type="text" required ref={lnameRef}></Form.Control>
+                                        </div>
+                                    </div>
+
+                                    {/* DATE OF BIRTH */}
+
                                     <Button className="w-100" type="submit" disabled={loading}>
                                         Sign up
                                     </Button>
@@ -70,7 +105,10 @@ const LoginPage = () => {
 
                         <div className="w-100 text-center mt-2 text-light">
                             Already have an account?
-                            <Link to={"/login"} style={{ color: "white", textDecoration: "none", fontWeight: 500 }}>
+                            <Link
+                                to={"/login"}
+                                style={{ color: "white", textDecoration: "none", fontWeight: 500 }}
+                            >
                                 <span> Log in</span>
                             </Link>
                         </div>

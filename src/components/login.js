@@ -1,20 +1,31 @@
 import React, { useContext, useRef, useState, useEffect } from "react";
 import { auth } from "../firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Form, Button, Card, Alert } from "react-bootstrap";
+import { Form, Button, Card, Alert, OverlayTrigger, Popover } from "react-bootstrap";
 import "./loginpage.css";
 import { UserProvider } from "../App";
 import { Link, useNavigate } from "react-router-dom";
+
+const popover = (
+    <Popover>
+        <Popover.Header>Popover</Popover.Header>
+        <Popover.Body>Test</Popover.Body>
+    </Popover>
+);
 
 const ActualLogin = () => {
     const emailRef = useRef();
     const passwordRef = useRef();
     const { login } = useContext(UserProvider);
-    const { currentUser } = useContext(UserProvider);
+    const { currentUser, setcurrentUser } = useContext(UserProvider);
     const [error, setError] = useState("");
     const [log, setLog] = useState("");
     const { loading, setLoading } = useContext(UserProvider);
     const history = useNavigate();
+
+    if (currentUser) {
+        history("/");
+    }
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -48,9 +59,16 @@ const ActualLogin = () => {
                                         <Form.Label>Email</Form.Label>
                                         <Form.Control type="email" ref={emailRef} required></Form.Control>
                                     </Form.Group>
+                                    <div className="w-100" style={{ position: "absolute", left: "37%" }}>
+                                        {/*   */}
+                                    </div>
                                     <Form.Group id="password">
                                         <Form.Label>Password</Form.Label>
-                                        <Form.Control type="password" ref={passwordRef} required></Form.Control>
+                                        <Form.Control
+                                            type="password"
+                                            ref={passwordRef}
+                                            required
+                                        ></Form.Control>
                                     </Form.Group>
                                     <Button className="w-100" type="submit" disabled={loading}>
                                         Log In
@@ -58,8 +76,20 @@ const ActualLogin = () => {
                                 </Form>
                             </Card.Body>
                         </Card>
+                        <div className="w-100 text-center mt-3 text-white">
+                            Forgot password?<span> </span>
+                            <Link
+                                to="/forgot-password"
+                                style={{ color: "white", textDecoration: "none", fontWeight: 500 }}
+                            >
+                                Click here
+                            </Link>
+                        </div>
                         <div className="w-100 text-center mt-2 text-white text-decoration-none">
-                            <Link to={"/signup"} style={{ color: "white", textDecoration: "none", fontWeight: 500 }}>
+                            <Link
+                                to={"/signup"}
+                                style={{ color: "white", textDecoration: "none", fontWeight: 500 }}
+                            >
                                 <span>Create an account</span>
                             </Link>
                         </div>
