@@ -25,22 +25,6 @@ const Dashboard = () => {
         }
     });
 
-    const url = "https://skitter-9e5e3-default-rtdb.europe-west1.firebasedatabase.app/users.json";
-
-    useEffect(() => {
-        fetch(url)
-            .then((response) => response.json())
-            .then((data) => {
-                const currentObj = Object.values(data).find((obj) => obj.email === currentUser.email);
-                if (currentObj) {
-                    setuserData(currentObj);
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, []);
-
     return (
         <>
             {userData ? (
