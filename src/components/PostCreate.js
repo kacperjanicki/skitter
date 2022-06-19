@@ -31,8 +31,16 @@ const PostCreate = () => {
             <form onSubmit={formSubmit}>
                 <FloatingLabel controlId="floatingTextarea2" label="Start typing...">
                     <Form.Control as="input" ref={text} style={{ height: "100px", width: "450px" }} />
-                    {error && <Alert variant="danger">{error}</Alert>}
-                    {log && <Alert variant="success">{log}</Alert>}
+                    {error && (
+                        <Alert variant="danger" style={{ width: "450px" }}>
+                            {error}
+                        </Alert>
+                    )}
+                    {log && (
+                        <Alert variant="success" style={{ width: "450px" }}>
+                            {log}
+                        </Alert>
+                    )}
                     <Button>Publish</Button>
                 </FloatingLabel>
             </form>

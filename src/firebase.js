@@ -45,6 +45,7 @@ export function writePostData(username, body, pic) {
     set(ref(database, `posts/post${data}`), {
         id: data,
         published_on: date2.toLocaleString("sv"),
+        date_in_ms: date,
         posted_by: username,
         body: body,
         profile_pic: pic,

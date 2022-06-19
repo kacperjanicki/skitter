@@ -9,6 +9,19 @@ const SignlePost = (body) => {
     var element = body.body;
     const { userData } = useContext(UserProvider);
     const history = useNavigate();
+    console.log(element);
+
+    function calculateDiff() {
+        const start = element.date_in_ms;
+        const end = new Date().getTime();
+        const diff = end - start;
+        var diff_as_date = new Date(diff);
+        if (diff_as_date.getHours() - 1 >= 1) {
+            return `${diff_as_date.getHours()} hr ago`;
+        } else if (diff_as_date.getHours() - 1 < 1) {
+            return `${diff_as_date.getMinutes()} minutes ago`;
+        }
+    }
 
     return (
         <div className="tweet">
@@ -34,7 +47,7 @@ const SignlePost = (body) => {
                 <div className="footer">
                     Posted by: {element.posted_by}
                     <br />
-                    Published on: {element.published_on}
+                    {calculateDiff()}
                 </div>
             </div>
         </div>
