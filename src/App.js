@@ -74,7 +74,7 @@ function App() {
                         <Route exact path="/profile" element={<Dashboard />} />
                     </Route>
                     <Route exact path="/" element={<BasicPage />}></Route>
-                    <Route path="/user/:username" render={(props) => <ProfilePage {...props} />}></Route>
+                    <Route path="/user/:username" element={<ProfilePage />}></Route>
                     <Route exact path="/home" element={<MainPage />} />
 
                     <Route path="/signup" element={<LoginPage />}></Route>

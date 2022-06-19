@@ -13,7 +13,7 @@ const MainPage = () => {
     return (
         <>
             <GenerateNav />
-            <div className="cont home">
+            <div className="cont home main">
                 <div>
                     <PostCreate />
                     <ShowPosts />

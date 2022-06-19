@@ -3,19 +3,30 @@ import { getDatabase, ref, set, onValue } from "firebase/database";
 import { database } from "../firebase";
 import { Card, Container } from "react-bootstrap";
 import { UserProvider } from "../App";
+import { useNavigate } from "react-router-dom";
 
 const SignlePost = (body) => {
     var element = body.body;
     const { userData } = useContext(UserProvider);
-    console.log(element);
+    const history = useNavigate();
 
     return (
         <div className="tweet">
             <div className="img_place">
                 {element.profile_pic ? (
-                    <img src={element.profile_pic} />
+                    <img
+                        src={element.profile_pic}
+                        onClick={() => {
+                            history(`/user/${element.posted_by}`);
+                        }}
+                    />
                 ) : (
-                    <img src={require("./placeholder.jpg")} />
+                    <img
+                        src={require("./placeholder.jpg")}
+                        onClick={() => {
+                            history(`/user/${element.posted_by}`);
+                        }}
+                    />
                 )}
             </div>
             <div className="body">
@@ -50,11 +61,11 @@ const ShowPosts = () => {
     }
 
     return (
-        <>
+        <div className="tweets">
             {single_posts.map((element) => {
                 return <SignlePost body={element} key={element.id} />;
             })}
-        </>
+        </div>
     );
 };
 

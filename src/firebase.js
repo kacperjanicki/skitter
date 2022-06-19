@@ -35,24 +35,11 @@ onValue(count, (snapshot) => {
     data = snapshot.val();
 });
 
-const src = ref(database, `users/newadmin`);
-
-const profpic = get(child(ref(database), `users/sampleuser/profile_picture`)).then((response) => {
-    return response.val();
-});
-
-var data2;
-profpic.then((res) => {
-    data2 = res;
-});
-
-export function writePostData(username, body) {
+export function writePostData(username, body, pic) {
     set(ref(database, "/postcount"), {
         count: data + 1,
     });
-    profpic.then((res) => {
-        return res;
-    });
+    // var pic = profile(username);
     var date = new Date().getTime();
     const date2 = new Date(date);
     set(ref(database, `posts/post${data}`), {
@@ -60,6 +47,6 @@ export function writePostData(username, body) {
         published_on: date2.toLocaleString("sv"),
         posted_by: username,
         body: body,
-        profile_pic: data2,
+        profile_pic: pic,
     });
 }

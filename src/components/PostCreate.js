@@ -16,7 +16,8 @@ const PostCreate = () => {
             setError(`You have to log in`);
         } else if (userData) {
             try {
-                writePostData(userData.username, text.current.value);
+                console.log(userData);
+                writePostData(userData.username, text.current.value, userData.profile_picture);
                 e.target.reset();
                 setLog("Post sent!");
             } catch (err) {
