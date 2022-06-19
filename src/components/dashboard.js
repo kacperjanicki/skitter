@@ -10,11 +10,12 @@ const Dashboard = () => {
     const [error, setError] = useState("");
     const { setcurrentUser, currentUser, logout, email, userData, setuserData } = useContext(UserProvider);
     const navigate = useNavigate();
+    console.log(userData);
     const handleLogOut = async () => {
         setError("");
         try {
             await logout();
-            navigate("/login");
+            navigate("/home");
         } catch (err) {
             setError(err);
         }
@@ -28,41 +29,44 @@ const Dashboard = () => {
     return (
         <>
             {userData ? (
-                <>
+                <div style={{ position: "absolute", top: "50px" }}>
                     <GenerateNav />
-                    <div className="cont home">
-                        <div>
-                            <Card>
-                                <Card.Body>
-                                    <img
-                                        src={userData.profile_picture}
-                                        style={{ width: "300px", height: "200px" }}
-                                    />
-                                </Card.Body>
-                            </Card>
-                            <Card>
-                                <Card.Body>
-                                    <span className="text-center">
-                                        <strong>Name: {userData.full_name}</strong>
+                    <div className="profile">
+                        <div id="left"></div>
+                        <div id="middle wrap">
+                            <div id="middle">
+                                <img
+                                    src={userData.profile_picture}
+                                    style={{ width: "200px", height: "200px", borderRadius: "200px" }}
+                                />
+                                <div style={{ display: "flex", flexDirection: "column" }}>
+                                    <span className="text-left">
+                                        <strong id="txt">{userData.full_name}</strong>
+                                        <span>@{userData.username}</span>
                                     </span>
-                                </Card.Body>
-                            </Card>
-                            <Card>
-                                <Card.Body>
-                                    <span className="text-center">
-                                        <strong>Email: {currentUser.email}</strong>
+                                    <span className="text-left">
+                                        <div style={{ display: "flex", justifyContent: "space-around" }}>
+                                            <div>
+                                                <strong>0</strong> followers<br></br>
+                                                <strong>0</strong> following
+                                            </div>
+                                            <div>
+                                                <Button variant="secondary" size="sm">
+                                                    Edit profile
+                                                </Button>
+                                            </div>
+                                        </div>
                                     </span>
-                                </Card.Body>
-                            </Card>
-
+                                    <span>Add a bio</span>
+                                </div>
+                            </div>
                             <div>
-                                <Button variant="link" onClick={handleLogOut}>
-                                    Log out
-                                </Button>
+                                <h1>{userData.first_name}'s posts</h1>
                             </div>
                         </div>
+                        <div id="right"></div>
                     </div>
-                </>
+                </div>
             ) : (
                 <Button variant="link" onClick={handleLogOut}>
                     Log out

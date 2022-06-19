@@ -27,7 +27,10 @@ const GenerateNav = () => {
             ) : (
                 <Navbar.Collapse className="justify-content-end">
                     <Navbar.Text style={{ margin: "10px" }}>
-                        You are not logged in: <a href="/login">Log In</a>
+                        You are not logged in:{" "}
+                        <a href="/login" style={{ color: "red" }}>
+                            Log In
+                        </a>
                     </Navbar.Text>
                 </Navbar.Collapse>
             )}

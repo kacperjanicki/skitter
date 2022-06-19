@@ -62,6 +62,39 @@
     background-color: white;
     margin-top: 40px;
 }
-.main {
-    margin-top: 5px;
+
+.profile {
+    display: flex;
+    align-content: center;
+}
+#txt {
+    font-size: 40px;
+}
+
+#middle {
+    width: 60vw;
+    background-color: #5c84a8;
+    flex-shrink: 0;
+    display: flex;
+    gap: 20px;
+}
+#left {
+    width: 25vw;
+    /* background-color: red; */
+}
+#right {
+    /* background-color: green; */
+    width: 25vw;
+}
+@media screen and (max-width: 824px) {
+    #left,
+    #right {
+        display: none;
+    }
+    #middle {
+        width: 100vw;
+    }
+}
+.wrap {
+    flex-direction: column;
 }
