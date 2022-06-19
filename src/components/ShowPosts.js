@@ -5,6 +5,7 @@ import { Card, Container } from "react-bootstrap";
 
 const SignlePost = (body) => {
     var element = body.body;
+    console.log(element);
     return (
         <div className="tweet">
             <div className="img_place">
@@ -12,7 +13,11 @@ const SignlePost = (body) => {
             </div>
             <div className="body">
                 <div className="text">{element.body}</div>
-                <div className="footer">Posted by: {element.posted_by}</div>
+                <div className="footer">
+                    Posted by: {element.posted_by}
+                    <br />
+                    Published on: {element.published_on}
+                </div>
             </div>
         </div>
     );

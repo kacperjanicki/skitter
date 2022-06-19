@@ -10,13 +10,14 @@ const LoginPage = () => {
     const emailRef = useRef();
     const passwordRef = useRef();
     const passwordConfirmRef = useRef();
+    const dateRef = useRef();
+    const avatarRef = useRef();
     const usernameRef = useRef(); //
     const fnameRef = useRef(); //   they go to user database
     const lnameRef = useRef(); //
     const { signup } = useContext(UserProvider);
     const [error, setError] = useState("");
     const [log, setLog] = useState("");
-    const { setUsername } = useContext(UserProvider);
     const history = useNavigate();
     const { loading, setLoading } = useContext(UserProvider);
 
@@ -35,10 +36,11 @@ const LoginPage = () => {
                 emailRef.current.value,
                 fnameRef.current.value,
                 lnameRef.current.value,
-                "https://cdn.pixabay.com/photo/2020/07/08/04/07/sea-5382487_960_720.jpg"
+                avatarRef.current.value,
+                dateRef.current.value
             );
 
-            history("/");
+            history("/home");
             await setLog("User created successfully");
         } catch (err) {
             setError("");
@@ -83,6 +85,15 @@ const LoginPage = () => {
                                             required
                                         ></Form.Control>
                                     </Form.Group>
+                                    <Form.Group id="password-confirm">
+                                        <Form.Label>Date of Birth</Form.Label>
+                                        <Form.Control type="date" ref={dateRef} required></Form.Control>
+                                    </Form.Group>
+                                    <Form.Group id="password-confirm">
+                                        <Form.Label>Avatar (url)</Form.Label>
+                                        <Form.Control type="url" ref={avatarRef} required></Form.Control>
+                                    </Form.Group>
+
                                     <div className="row">
                                         <div className="col">
                                             <Form.Label>First name</Form.Label>
