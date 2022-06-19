@@ -1,15 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getDatabase, ref, set, onValue } from "firebase/database";
 import { database } from "../firebase";
 import { Card, Container } from "react-bootstrap";
+import { UserProvider } from "../App";
 
 const SignlePost = (body) => {
     var element = body.body;
+    const { userData } = useContext(UserProvider);
     console.log(element);
+
     return (
         <div className="tweet">
             <div className="img_place">
-                <img src={require("./placeholder.jpg")}></img>
+                {element.profile_pic ? (
+                    <img src={element.profile_pic} />
+                ) : (
+                    <img src={require("./placeholder.jpg")} />
+                )}
             </div>
             <div className="body">
                 <div className="text">{element.body}</div>
@@ -41,12 +48,11 @@ const ShowPosts = () => {
     for (let i = 0; i < keys.length; i++) {
         single_posts.push(destination[keys[i]]);
     }
-    console.log(single_posts);
 
     return (
         <>
             {single_posts.map((element) => {
-                return <SignlePost body={element} />;
+                return <SignlePost body={element} key={element.id} />;
             })}
         </>
     );

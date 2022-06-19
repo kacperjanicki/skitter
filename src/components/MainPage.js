@@ -13,8 +13,12 @@ const MainPage = () => {
     return (
         <>
             <GenerateNav />
-            <PostCreate />
-            <ShowPosts />
+            <div className="cont home">
+                <div>
+                    <PostCreate />
+                    <ShowPosts />
+                </div>
+            </div>
         </>
     );
 };

@@ -1,8 +1,11 @@
 import "./components/loginpage.css";
 import LoginPage from "./components/signup";
+import BasicPage from "./components/BasicPage";
+import ProfilePage from "./components/ProfilePage";
 import React, { useState, useEffect } from "react";
 import { auth } from "./firebase";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Dashboard from "./components/dashboard";
 import ActualLogin from "./components/login";
 import PrivateRoute from "./components/PrivateRoute";
@@ -49,7 +52,7 @@ function App() {
         });
         return unsubscribe;
     }, []);
-    console.log(currentUser);
+
     const value = {
         currentUser,
         userData,
@@ -70,10 +73,11 @@ function App() {
                     <Route exact path="/profile" element={<PrivateRoute />}>
                         <Route exact path="/profile" element={<Dashboard />} />
                     </Route>
-
+                    <Route exact path="/" element={<BasicPage />}></Route>
+                    <Route path="/user/:username" render={(props) => <ProfilePage {...props} />}></Route>
                     <Route exact path="/home" element={<MainPage />} />
 
-                    <Route path="/signup" exact element={<LoginPage />}></Route>
+                    <Route path="/signup" element={<LoginPage />}></Route>
                     <Route path="/login" exact element={<ActualLogin />}></Route>
                     <Route path="/forgot-password" exact element={<Forgot />}></Route>
                 </Routes>

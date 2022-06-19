@@ -30,30 +30,37 @@ const Dashboard = () => {
             {userData ? (
                 <>
                     <GenerateNav />
-                    <Card>
-                        <Card.Body>
-                            <img src={userData.profile_picture} style={{ width: "300px", height: "200px" }} />
-                        </Card.Body>
-                    </Card>
-                    <Card>
-                        <Card.Body>
-                            <span className="text-center">
-                                <strong>Name: {userData.full_name}</strong>
-                            </span>
-                        </Card.Body>
-                    </Card>
-                    <Card>
-                        <Card.Body>
-                            <span className="text-center">
-                                <strong>Email: {currentUser.email}</strong>
-                            </span>
-                        </Card.Body>
-                    </Card>
+                    <div className="cont home">
+                        <div>
+                            <Card>
+                                <Card.Body>
+                                    <img
+                                        src={userData.profile_picture}
+                                        style={{ width: "300px", height: "200px" }}
+                                    />
+                                </Card.Body>
+                            </Card>
+                            <Card>
+                                <Card.Body>
+                                    <span className="text-center">
+                                        <strong>Name: {userData.full_name}</strong>
+                                    </span>
+                                </Card.Body>
+                            </Card>
+                            <Card>
+                                <Card.Body>
+                                    <span className="text-center">
+                                        <strong>Email: {currentUser.email}</strong>
+                                    </span>
+                                </Card.Body>
+                            </Card>
 
-                    <div>
-                        <Button variant="link" onClick={handleLogOut}>
-                            Log out
-                        </Button>
+                            <div>
+                                <Button variant="link" onClick={handleLogOut}>
+                                    Log out
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 </>
             ) : (

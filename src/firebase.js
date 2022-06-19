@@ -1,7 +1,7 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, onValue, serverTimestamp } from "firebase/database";
+import { getDatabase, ref, child, set, onValue, serverTimestamp, get } from "firebase/database";
 
 const app = firebase.initializeApp({
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -35,11 +35,24 @@ onValue(count, (snapshot) => {
     data = snapshot.val();
 });
 
+const src = ref(database, `users/newadmin`);
+
+const profpic = get(child(ref(database), `users/sampleuser/profile_picture`)).then((response) => {
+    return response.val();
+});
+
+var data2;
+profpic.then((res) => {
+    data2 = res;
+});
+
 export function writePostData(username, body) {
     set(ref(database, "/postcount"), {
         count: data + 1,
     });
-
+    profpic.then((res) => {
+        return res;
+    });
     var date = new Date().getTime();
     const date2 = new Date(date);
     set(ref(database, `posts/post${data}`), {
@@ -47,5 +60,6 @@ export function writePostData(username, body) {
         published_on: date2.toLocaleString("sv"),
         posted_by: username,
         body: body,
+        profile_pic: data2,
     });
 }

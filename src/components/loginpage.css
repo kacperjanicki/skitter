@@ -27,6 +27,7 @@
 }
 .form {
     width: 50vw;
+    padding-top: 50px;
 }
 .tweet {
     border: 1px solid black;
@@ -45,4 +46,8 @@
 }
 .footer {
     font-size: 0.8rem;
+}
+
+.home {
+    background-color: white;
 }

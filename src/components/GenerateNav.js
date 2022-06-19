@@ -5,7 +5,12 @@ import { UserProvider } from "../App";
 const GenerateNav = () => {
     const { userData } = useContext(UserProvider);
     return (
-        <Navbar bg="primary" variant="dark" style={{ height: "50px" }}>
+        <Navbar
+            fixed="top"
+            bg="primary"
+            variant="dark"
+            style={{ height: "50px", display: "flex", justifyContent: "center" }}
+        >
             <Container>
                 <Navbar.Brand href="/home">Skitter</Navbar.Brand>
                 <Nav className="me-auto">

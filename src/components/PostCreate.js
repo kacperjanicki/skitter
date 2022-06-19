@@ -16,7 +16,7 @@ const PostCreate = () => {
             setError(`You have to log in`);
         } else if (userData) {
             try {
-                writePostData(userData.full_name, text.current.value);
+                writePostData(userData.username, text.current.value);
                 e.target.reset();
                 setLog("Post sent!");
             } catch (err) {
@@ -27,13 +27,13 @@ const PostCreate = () => {
     };
     return (
         <div className="form">
-            {error && <Alert variant="danger">{error}</Alert>}
-            {log && <Alert variant="success">{log}</Alert>}
             <form onSubmit={formSubmit}>
                 <FloatingLabel controlId="floatingTextarea2" label="Start typing...">
                     <Form.Control as="input" ref={text} style={{ height: "100px", width: "450px" }} />
+                    {error && <Alert variant="danger">{error}</Alert>}
+                    {log && <Alert variant="success">{log}</Alert>}
+                    <Button>Publish</Button>
                 </FloatingLabel>
-                <Button>Publish</Button>
             </form>
         </div>
     );
