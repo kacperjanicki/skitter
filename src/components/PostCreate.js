@@ -4,9 +4,11 @@ import { UserProvider } from "../App";
 import GenerateNav from "./GenerateNav";
 import { writePostData } from "../firebase";
 import "./loginpage.css";
+import { postReducer } from "../reducers";
 
 const PostCreate = () => {
     const { userData } = useContext(UserProvider);
+    const { setSortMethod } = useContext(UserProvider);
     const [error, setError] = useState();
     const [log, setLog] = useState();
     const text = useRef();
@@ -26,11 +28,16 @@ const PostCreate = () => {
             }
         }
     };
+    const handleSort = (e) => {
+        // console.log(e.target.value);
+        setSortMethod(e.target.value);
+    };
+
     return (
         <div className="form">
             <form onSubmit={formSubmit}>
                 <FloatingLabel controlId="floatingTextarea2" label="Start typing...">
-                    <Form.Control as="input" ref={text} style={{ height: "100px", width: "450px" }} />
+                    <Form.Control as="input" ref={text} style={{ height: "100px", width: "500px" }} />
                     {error && (
                         <Alert variant="danger" style={{ width: "450px" }}>
                             {error}
@@ -41,7 +48,15 @@ const PostCreate = () => {
                             {log}
                         </Alert>
                     )}
-                    <Button>Publish</Button>
+                    <div className="publish_container">
+                        <Button>Publish</Button>
+                        <Form.Select onChange={handleSort} aria-label="Sort by:" style={{ width: "150px" }}>
+                            <option>Sort by:</option>
+                            <option value="NEWEST-LATEST">Most recent</option>
+                            <option value="LATEST-NEWEST">Least recent</option>
+                            <option value="BY_LIKES">Highest likes</option>
+                        </Form.Select>
+                    </div>
                 </FloatingLabel>
             </form>
         </div>

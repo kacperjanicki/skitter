@@ -59,6 +59,9 @@ const Dashboard = () => {
                                     </span>
                                     <span>Add a bio</span>
                                 </div>
+                                <Button variant="link" onClick={handleLogOut}>
+                                    Log out
+                                </Button>
                             </div>
                             <div>
                                 <h1>{userData.first_name}'s posts</h1>

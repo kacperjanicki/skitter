@@ -98,3 +98,9 @@
 .wrap {
     flex-direction: column;
 }
+.publish_container {
+    display: flex;
+    width: 500px;
+    /* border: 1px solid red; */
+    justify-content: space-between;
+}

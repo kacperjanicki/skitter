@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 import Dashboard from "./components/dashboard";
 import ActualLogin from "./components/login";
 import PrivateRoute from "./components/PrivateRoute";
+import { getDatabase, ref, set, onValue } from "firebase/database";
+import { database } from "./firebase";
 import Forgot from "./components/Forgot";
 import MainPage from "./components/MainPage";
 export const UserProvider = React.createContext();
@@ -52,15 +54,37 @@ function App() {
         });
         return unsubscribe;
     }, []);
+    //all posts as list of objects
+    const postlist = ref(database, "posts/");
+    const [posts, setPosts] = useState();
+    useEffect(() => {
+        onValue(postlist, (snapshot) => {
+            setPosts(snapshot.val());
+        });
+    }, []);
+    var destination = {};
+    var single_posts = [];
+    Object.assign(destination, posts);
+    var keys = Object.keys(destination);
+    for (let i = 0; i < keys.length; i++) {
+        single_posts.push(destination[keys[i]]);
+    }
+    const [sorted_arr, setSorted_arr] = useState();
+    const [sortMethod, setSortMethod] = useState();
 
     const value = {
         currentUser,
+        sortMethod,
+        setSortMethod,
         userData,
         setuserData,
         setcurrentUser,
         resetpass,
         signup,
         login,
+        single_posts,
+        sorted_arr,
+        setSorted_arr,
         logout,
         loading,
         setLoading,

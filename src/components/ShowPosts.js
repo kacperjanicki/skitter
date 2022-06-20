@@ -1,6 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import { getDatabase, ref, set, onValue } from "firebase/database";
-import { database } from "../firebase";
 import { Card, Container } from "react-bootstrap";
 import { UserProvider } from "../App";
 import { useNavigate } from "react-router-dom";
@@ -9,7 +7,7 @@ const SignlePost = (body) => {
     var element = body.body;
     const { userData } = useContext(UserProvider);
     const history = useNavigate();
-    console.log(element);
+    // console.log(element);
 
     function calculateDiff() {
         const start = element.date_in_ms;
@@ -55,27 +53,22 @@ const SignlePost = (body) => {
 };
 
 const ShowPosts = () => {
-    const postlist = ref(database, "posts/");
-    const [posts, setPosts] = useState();
-
-    useEffect(() => {
-        onValue(postlist, (snapshot) => {
-            setPosts(snapshot.val());
-        });
-    }, []);
-
-    var destination = {};
-    var single_posts = [];
-    Object.assign(destination, posts);
-
-    var keys = Object.keys(destination);
-    for (let i = 0; i < keys.length; i++) {
-        single_posts.push(destination[keys[i]]);
+    const { single_posts, sortMethod } = useContext(UserProvider);
+    // console.log(single_posts);
+    // let gowno = single_posts.sort((a, b) => b.date_in_ms - a.date_in_ms); //od najnowszych
+    // console.log(sortMethod);
+    var gowno;
+    if (!sortMethod) {
+        gowno = single_posts;
+    } else if (sortMethod == "NEWEST-LATEST") {
+        gowno = single_posts.sort((a, b) => b.date_in_ms - a.date_in_ms);
+    } else if (sortMethod == "LATEST-NEWEST") {
+        gowno = single_posts.sort((a, b) => a.date_in_ms - b.date_in_ms);
     }
 
     return (
         <div className="tweets">
-            {single_posts.map((element) => {
+            {gowno.map((element) => {
                 return <SignlePost body={element} key={element.id} />;
             })}
         </div>

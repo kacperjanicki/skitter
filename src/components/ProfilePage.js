@@ -46,7 +46,7 @@ const ProfilePage = () => {
                         <div id="middle wrap">
                             <div id="middle">
                                 <img
-                                    src={require("./placeholder.jpg")}
+                                    src={userobj.profile_picture}
                                     style={{ width: "200px", height: "200px", borderRadius: "200px" }}
                                 />
                                 <div style={{ display: "flex", flexDirection: "column" }}>
