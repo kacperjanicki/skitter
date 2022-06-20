@@ -8,11 +8,13 @@ import { checkuser } from "../firebase";
 import { database } from "../firebase";
 import { ref } from "firebase/database";
 import { onValue, get, child } from "firebase/database";
+import ShowPosts from "./ShowPosts";
 
 const ProfilePage = () => {
-    const { userData } = useContext(UserProvider);
+    const { userData, setSortMethod } = useContext(UserProvider);
     let { username } = useParams();
     const history = useNavigate();
+    setSortMethod("BY_LIKES");
 
     if (userData) {
         console.log(userData.username);
@@ -35,7 +37,7 @@ const ProfilePage = () => {
         fetchdata();
     }, []);
 
-    console.log(userobj);
+    // console.log(userobj);
     return (
         <>
             {userobj ? (
@@ -72,6 +74,7 @@ const ProfilePage = () => {
                             </div>
                             <div>
                                 <h1>{userobj.first_name}s' posts</h1>
+                                <ShowPosts person={userobj.username} />
                             </div>
                         </div>
                         <div id="right"></div>

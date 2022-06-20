@@ -22,6 +22,8 @@ const PostCreate = () => {
                 writePostData(userData.username, text.current.value, userData.profile_picture);
                 e.target.reset();
                 setLog("Post sent!");
+                setSortMethod("NEWEST-LATEST");
+                document.getElementById("checked").selected = true;
             } catch (err) {
                 setError("");
                 setError(String(err));
@@ -39,12 +41,12 @@ const PostCreate = () => {
                 <FloatingLabel controlId="floatingTextarea2" label="Start typing...">
                     <Form.Control as="input" ref={text} style={{ height: "100px", width: "500px" }} />
                     {error && (
-                        <Alert variant="danger" style={{ width: "450px" }}>
+                        <Alert variant="danger" style={{ width: "500px" }}>
                             {error}
                         </Alert>
                     )}
                     {log && (
-                        <Alert variant="success" style={{ width: "450px" }}>
+                        <Alert variant="success" style={{ width: "500px" }}>
                             {log}
                         </Alert>
                     )}
@@ -52,7 +54,9 @@ const PostCreate = () => {
                         <Button>Publish</Button>
                         <Form.Select onChange={handleSort} aria-label="Sort by:" style={{ width: "150px" }}>
                             <option>Sort by:</option>
-                            <option value="NEWEST-LATEST">Most recent</option>
+                            <option value="NEWEST-LATEST" id="checked" selected={false}>
+                                Most recent
+                            </option>
                             <option value="LATEST-NEWEST">Least recent</option>
                             <option value="BY_LIKES">Highest likes</option>
                         </Form.Select>

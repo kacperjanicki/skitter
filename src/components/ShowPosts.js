@@ -25,12 +25,19 @@ const SignlePost = (body) => {
         <div className="tweet">
             <div className="img_place">
                 {element.profile_pic ? (
-                    <img
-                        src={element.profile_pic}
-                        onClick={() => {
-                            history(`/user/${element.posted_by}`);
-                        }}
-                    />
+                    <>
+                        <img
+                            src={element.profile_pic}
+                            onClick={() => {
+                                history(`/user/${element.posted_by}`);
+                            }}
+                        />
+                        <div className="footer">
+                            Posted by: {element.posted_by}
+                            <br />
+                            {calculateDiff()}
+                        </div>
+                    </>
                 ) : (
                     <img
                         src={require("./placeholder.jpg")}
@@ -42,21 +49,17 @@ const SignlePost = (body) => {
             </div>
             <div className="body">
                 <div className="text">{element.body}</div>
-                <div className="footer">
-                    Posted by: {element.posted_by}
-                    <br />
-                    {calculateDiff()}
-                </div>
             </div>
         </div>
     );
 };
 
-const ShowPosts = () => {
+const ShowPosts = (person) => {
     const { single_posts, sortMethod } = useContext(UserProvider);
     // console.log(single_posts);
     // let gowno = single_posts.sort((a, b) => b.date_in_ms - a.date_in_ms); //od najnowszych
     // console.log(sortMethod);
+    console.log(person);
     var gowno;
     if (!sortMethod) {
         gowno = single_posts;
@@ -64,7 +67,12 @@ const ShowPosts = () => {
         gowno = single_posts.sort((a, b) => b.date_in_ms - a.date_in_ms);
     } else if (sortMethod == "LATEST-NEWEST") {
         gowno = single_posts.sort((a, b) => a.date_in_ms - b.date_in_ms);
+    } else if (sortMethod == "BY_LIKES") {
+        gowno = single_posts.filter((e) => e.posted_by == person.person);
     }
+    // else if(sortMethod == 'BY_USR_NAME'){
+    //     gowno = single_posts.filter((person)=>person.posted_by)
+    // }
 
     return (
         <div className="tweets">
