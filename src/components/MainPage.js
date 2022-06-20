@@ -8,7 +8,8 @@ import PostCreate from "./PostCreate";
 import ShowPosts from "./ShowPosts";
 
 const MainPage = () => {
-    const { userData } = useContext(UserProvider);
+    const { userData, setSortMethod } = useContext(UserProvider);
+    setSortMethod("NEWEST-LATEST");
 
     return (
         <>

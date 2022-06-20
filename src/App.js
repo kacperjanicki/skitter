@@ -5,7 +5,7 @@ import ProfilePage from "./components/ProfilePage";
 import React, { useState, useEffect } from "react";
 import { auth } from "./firebase";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import Edit from "./components/Edit";
 import Dashboard from "./components/dashboard";
 import ActualLogin from "./components/login";
 import PrivateRoute from "./components/PrivateRoute";
@@ -96,6 +96,7 @@ function App() {
                 <Routes>
                     <Route exact path="/profile" element={<PrivateRoute />}>
                         <Route exact path="/profile" element={<Dashboard />} />
+                        <Route exact path="/profile/edit" element={<Edit />} />
                     </Route>
                     <Route exact path="/" element={<BasicPage />}></Route>
                     <Route path="/user/:username" element={<ProfilePage />}></Route>

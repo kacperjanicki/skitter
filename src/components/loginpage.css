@@ -1,3 +1,9 @@
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 .cont {
     width: 100vw !important;
     height: 100vh !important;
@@ -40,7 +46,7 @@
 }
 .tweet {
     border: 1px solid black;
-    width: 500px;
+    width: 600px;
     height: 140px;
     display: flex;
     gap: 10px;
@@ -101,7 +107,11 @@
 }
 .publish_container {
     display: flex;
-    width: 500px;
+    width: 600px;
     /* border: 1px solid red; */
     justify-content: space-between;
+}
+
+.post-cont {
+    display: flex;
 }

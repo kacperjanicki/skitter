@@ -26,6 +26,8 @@ export function writeUserData(username, email, firstname, lastname, imageUrl, da
         email: email,
         dateBirth: date,
         profile_picture: imageUrl,
+        followers: false,
+        following: false,
     });
 }
 

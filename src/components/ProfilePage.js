@@ -6,7 +6,7 @@ import GenerateNav from "./GenerateNav";
 import { Card, Button } from "react-bootstrap";
 import { checkuser } from "../firebase";
 import { database } from "../firebase";
-import { ref } from "firebase/database";
+import { ref, set } from "firebase/database";
 import { onValue, get, child } from "firebase/database";
 import ShowPosts from "./ShowPosts";
 
@@ -14,7 +14,7 @@ const ProfilePage = () => {
     const { userData, setSortMethod } = useContext(UserProvider);
     let { username } = useParams();
     const history = useNavigate();
-    setSortMethod("BY_LIKES");
+    setSortMethod("BY_USR");
 
     if (userData) {
         console.log(userData.username);
@@ -26,6 +26,18 @@ const ProfilePage = () => {
 
     const postlist = ref(database, "users/");
     const [userobj, setuserobj] = useState();
+
+    const handleFollow = () => {
+        const count = ref(database, `users/${username}/followers`);
+        get(count).then((snapshot) => {
+            if (snapshot.exists()) {
+                set(ref(database, `users/${username}/followers/${userData.username}`), {
+                    //drop a follow to sb
+                    name: userData.username,
+                });
+            }
+        });
+    };
 
     useEffect(() => {
         const url = "https://skitter-9e5e3-default-rtdb.europe-west1.firebasedatabase.app/users.json";
@@ -57,24 +69,44 @@ const ProfilePage = () => {
                                         <span>@{userobj.username}</span>
                                     </span>
                                     <span className="text-left">
-                                        <div style={{ display: "flex", justifyContent: "space-around" }}>
-                                            <div>
-                                                <strong>0</strong> followers<br></br>
-                                                <strong>0</strong> following
-                                            </div>
-                                            <div>
+                                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    justifyContent: "space-between",
+                                                    flexDirection: "column",
+                                                }}
+                                            >
+                                                <span>
+                                                    <strong>0</strong> follower(s)
+                                                </span>
+                                                <span>
+                                                    <strong>0</strong> following
+                                                </span>
+
+                                                {/* <div>
                                                 <Button variant="secondary" size="sm">
                                                     Edit profile
                                                 </Button>
+                                            </div> */}
                                             </div>
+                                            <div>Bio placeholder</div>
                                         </div>
                                     </span>
-                                    <span>Add a bio</span>
+                                    <span>Joined xx.xx.xxxx</span>
+                                    {userData ? (
+                                        <Button onClick={handleFollow}>Follow</Button>
+                                    ) : (
+                                        <Button disabled>Follow (You need to log in)</Button>
+                                    )}
                                 </div>
                             </div>
+
                             <div>
                                 <h1>{userobj.first_name}s' posts</h1>
-                                <ShowPosts person={userobj.username} />
+                                <div className="post-cont">
+                                    <ShowPosts person={userobj.username} />
+                                </div>
                             </div>
                         </div>
                         <div id="right"></div>

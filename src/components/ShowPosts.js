@@ -67,7 +67,7 @@ const ShowPosts = (person) => {
         gowno = single_posts.sort((a, b) => b.date_in_ms - a.date_in_ms);
     } else if (sortMethod == "LATEST-NEWEST") {
         gowno = single_posts.sort((a, b) => a.date_in_ms - b.date_in_ms);
-    } else if (sortMethod == "BY_LIKES") {
+    } else if (sortMethod == "BY_USR") {
         gowno = single_posts.filter((e) => e.posted_by == person.person);
     }
     // else if(sortMethod == 'BY_USR_NAME'){
