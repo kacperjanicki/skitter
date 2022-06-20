@@ -31,7 +31,6 @@ const ProfilePage = () => {
             }
         });
     }, []);
-
     var isBeingFollowed = false;
     if (follower_count) {
         var followers_num = Object.keys(follower_count).length;
@@ -54,6 +53,23 @@ const ProfilePage = () => {
                     name: userData.username,
                 });
                 setFollowers(snapshot.val());
+            }
+        });
+    };
+    const handleunFollow = () => {
+        const count = ref(database, `users/${username}/followers`);
+        get(count).then((snapshot) => {
+            if (snapshot.exists()) {
+                var val = snapshot.val();
+                const asArr = Object.entries(val);
+                const filtered = asArr.filter((a) => a[0] != userData.username);
+                const final = Object.fromEntries(filtered);
+
+                if (Object.keys(final).length == 0) {
+                    set(ref(database, `users/${username}/followers`), false);
+                } else {
+                    set(ref(database, `users/${username}/followers`), final);
+                }
             }
         });
     };
@@ -109,12 +125,6 @@ const ProfilePage = () => {
                                                 <span>
                                                     <strong>0</strong> following
                                                 </span>
-
-                                                {/* <div>
-                                                <Button variant="secondary" size="sm">
-                                                    Edit profile
-                                                </Button>
-                                            </div> */}
                                             </div>
                                             <div>Bio placeholder</div>
                                         </div>
@@ -122,7 +132,7 @@ const ProfilePage = () => {
                                     <span>Joined xx.xx.xxxx</span>
                                     {(() => {
                                         if (userData && isBeingFollowed) {
-                                            return <Button onClick={handleFollow}>Unfollow</Button>;
+                                            return <Button onClick={handleunFollow}>Unfollow</Button>;
                                         } else if (!userData) {
                                             return <Button disabled>Follow (You need to log in)</Button>;
                                         } else if (userData) {
