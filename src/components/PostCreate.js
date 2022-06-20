@@ -1,13 +1,11 @@
 import React, { useContext, useRef, useState } from "react";
-import { Container, Navbar, Nav, FloatingLabel, Form, Button, Alert } from "react-bootstrap";
+import { FloatingLabel, Form, Button, Alert } from "react-bootstrap";
 import { UserProvider } from "../App";
-import GenerateNav from "./GenerateNav";
 import { writePostData } from "../firebase";
 import "./loginpage.css";
-import { postReducer } from "../reducers";
 
 const PostCreate = () => {
-    const { userData } = useContext(UserProvider);
+    const { userData, currentUser } = useContext(UserProvider);
     const { setSortMethod } = useContext(UserProvider);
     const [error, setError] = useState();
     const [log, setLog] = useState();
@@ -15,7 +13,7 @@ const PostCreate = () => {
     const text = useRef();
     const formSubmit = (e) => {
         e.preventDefault();
-        if (!userData) {
+        if (!currentUser) {
             setError(`You have to log in`);
         } else if (userData) {
             try {
@@ -32,7 +30,6 @@ const PostCreate = () => {
         }
     };
     const handleSort = (e) => {
-        // console.log(e.target.value);
         setSortMethod(e.target.value);
     };
 

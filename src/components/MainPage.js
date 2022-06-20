@@ -8,9 +8,9 @@ import PostCreate from "./PostCreate";
 import ShowPosts from "./ShowPosts";
 
 const MainPage = () => {
-    const { userData, setSortMethod } = useContext(UserProvider);
+    const { userData, setSortMethod, currentUser } = useContext(UserProvider);
     setSortMethod("NEWEST-LATEST");
-
+    console.log(currentUser);
     return (
         <>
             <GenerateNav />

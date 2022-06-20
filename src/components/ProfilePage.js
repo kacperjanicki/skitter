@@ -9,6 +9,7 @@ import { database } from "../firebase";
 import { ref, set } from "firebase/database";
 import { onValue, get, child } from "firebase/database";
 import ShowPosts from "./ShowPosts";
+import { findByPlaceholderText } from "@testing-library/react";
 
 const ProfilePage = () => {
     const { userData, setSortMethod } = useContext(UserProvider);
@@ -17,15 +18,32 @@ const ProfilePage = () => {
     setSortMethod("BY_USR");
 
     if (userData) {
-        console.log(userData.username);
-        console.log(username);
         if (userData.username == username) {
             history("/profile");
         }
     }
+    const [follower_count, setFollower_count] = useState();
+    useEffect(() => {
+        const count = ref(database, `users/${username}/followers`);
+        get(count).then((snapshot) => {
+            if (snapshot.exists()) {
+                setFollower_count(snapshot.val());
+            }
+        });
+    }, []);
+
+    var isBeingFollowed = false;
+    if (follower_count) {
+        var followers_num = Object.keys(follower_count).length;
+        if (Object.keys(follower_count).includes(userData.username)) {
+            isBeingFollowed = true;
+        }
+        console.log(Object.keys(follower_count));
+    }
 
     const postlist = ref(database, "users/");
     const [userobj, setuserobj] = useState();
+    const [followers, setFollowers] = useState();
 
     const handleFollow = () => {
         const count = ref(database, `users/${username}/followers`);
@@ -35,6 +53,7 @@ const ProfilePage = () => {
                     //drop a follow to sb
                     name: userData.username,
                 });
+                setFollowers(snapshot.val());
             }
         });
     };
@@ -49,7 +68,6 @@ const ProfilePage = () => {
         fetchdata();
     }, []);
 
-    // console.log(userobj);
     return (
         <>
             {userobj ? (
@@ -78,7 +96,15 @@ const ProfilePage = () => {
                                                 }}
                                             >
                                                 <span>
-                                                    <strong>0</strong> follower(s)
+                                                    {follower_count ? (
+                                                        <>
+                                                            <strong>{followers_num}</strong> follower(s)
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <strong>0</strong> follower(s)
+                                                        </>
+                                                    )}
                                                 </span>
                                                 <span>
                                                     <strong>0</strong> following
@@ -94,11 +120,15 @@ const ProfilePage = () => {
                                         </div>
                                     </span>
                                     <span>Joined xx.xx.xxxx</span>
-                                    {userData ? (
-                                        <Button onClick={handleFollow}>Follow</Button>
-                                    ) : (
-                                        <Button disabled>Follow (You need to log in)</Button>
-                                    )}
+                                    {(() => {
+                                        if (userData && isBeingFollowed) {
+                                            return <Button onClick={handleFollow}>Unfollow</Button>;
+                                        } else if (!userData) {
+                                            return <Button disabled>Follow (You need to log in)</Button>;
+                                        } else if (userData) {
+                                            return <Button onClick={handleFollow}>Follow</Button>;
+                                        }
+                                    })()}
                                 </div>
                             </div>
 

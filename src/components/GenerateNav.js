@@ -3,7 +3,7 @@ import { Container, Navbar, Nav } from "react-bootstrap";
 import { UserProvider } from "../App";
 
 const GenerateNav = () => {
-    const { userData } = useContext(UserProvider);
+    const { userData, currentUser } = useContext(UserProvider);
     return (
         <Navbar
             fixed="top"
@@ -18,7 +18,7 @@ const GenerateNav = () => {
                     <Nav.Link href="/profile">Your Profile</Nav.Link>
                 </Nav>
             </Container>
-            {userData ? (
+            {currentUser && userData ? (
                 <Navbar.Collapse className="justify-content-end">
                     <Navbar.Text style={{ margin: "10px" }}>
                         Signed in as: <a href="/profile">{userData.full_name}</a>

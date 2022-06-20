@@ -59,7 +59,6 @@ const ShowPosts = (person) => {
     // console.log(single_posts);
     // let gowno = single_posts.sort((a, b) => b.date_in_ms - a.date_in_ms); //od najnowszych
     // console.log(sortMethod);
-    console.log(person);
     var gowno;
     if (!sortMethod) {
         gowno = single_posts;
