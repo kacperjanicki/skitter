@@ -11,6 +11,10 @@ body {
     background-color: #296ca8;
     justify-content: center;
 }
+.edit {
+    height: 40vh;
+}
+
 .container {
     position: absolute;
     top: 50%;
@@ -73,12 +77,15 @@ body {
 .profile {
     display: flex;
     align-content: center;
+    background-color: #0b5088;
+    color: white;
+    height: 100vh;
 }
 #txt {
     font-size: 40px;
 }
 
-#middle {
+.middle {
     width: 60vw;
     background-color: #5c84a8;
     flex-shrink: 0;
@@ -98,7 +105,7 @@ body {
     #right {
         display: none;
     }
-    #middle {
+    .middle {
         width: 100vw;
     }
 }

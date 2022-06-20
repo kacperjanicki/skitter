@@ -40,7 +40,7 @@ const Dashboard = () => {
                         <div className="profile">
                             <div id="left"></div>
                             <div id="middle wrap">
-                                <div id="middle">
+                                <div className="middle">
                                     <img
                                         src={userData.profile_picture}
                                         style={{ width: "200px", height: "200px", borderRadius: "200px" }}
@@ -87,7 +87,9 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <h1>Your posts</h1>
+                                    <div className="middle" style={{ paddingBottom: "10px" }}>
+                                        <h1>Your posts</h1>
+                                    </div>
                                     <div className="post-cont">
                                         <ShowPosts person={userData.username} />
                                         People you might know

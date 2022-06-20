@@ -17,7 +17,7 @@ export const auth = app.auth();
 export default app;
 
 export const database = getDatabase(app);
-export function writeUserData(username, email, firstname, lastname, imageUrl, date) {
+export function writeUserData(username, email, firstname, lastname, imageUrl, date, followers, following) {
     set(ref(database, "users/" + username), {
         username: username,
         first_name: firstname,
@@ -26,8 +26,8 @@ export function writeUserData(username, email, firstname, lastname, imageUrl, da
         email: email,
         dateBirth: date,
         profile_picture: imageUrl,
-        followers: false,
-        following: false,
+        followers: followers,
+        following: following,
     });
 }
 

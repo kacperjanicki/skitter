@@ -37,7 +37,9 @@ const LoginPage = () => {
                 fnameRef.current.value,
                 lnameRef.current.value,
                 avatarRef.current.value,
-                dateRef.current.value
+                dateRef.current.value,
+                false,
+                false
             );
 
             history("/home");

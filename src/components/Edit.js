@@ -1,7 +1,144 @@
-import React from "react";
+import ShowPosts from "./ShowPosts";
+import { ref } from "firebase/database";
+import React, { useState, useContext, useEffect, useRef } from "react";
+import { Alert, Button, Card, DropdownButton, Form } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { UserProvider } from "../App";
+import { auth, writeUserData } from "../firebase";
+import GenerateNav from "./GenerateNav";
 
 const Edit = () => {
-    return <div>test</div>;
+    const [error, setError] = useState("");
+    const [log, setlog] = useState();
+    const fnameRef = useRef();
+    const lnameRef = useRef();
+    const birthRef = useRef();
+    const { setcurrentUser, setSortMethod, logout, userData } = useContext(UserProvider);
+    const navigate = useNavigate();
+    console.log(userData);
+    setSortMethod("BY_USR");
+    const handleLogOut = async () => {
+        setError("");
+        try {
+            await logout();
+            navigate("/home");
+        } catch (err) {
+            setError(err);
+        }
+    };
+    const updateusr = async (e) => {
+        e.preventDefault();
+        try {
+            setError("");
+            setlog("");
+            await writeUserData(
+                userData.username,
+                userData.email,
+                fnameRef.current.value,
+                lnameRef.current.value,
+                userData.profile_picture,
+                birthRef.current.value,
+                userData.followers,
+                userData.following
+            );
+            await setlog("Profile updated successfully");
+        } catch (err) {
+            setError("");
+            setError(String(err));
+            console.log(err);
+        }
+    };
+
+    auth.onAuthStateChanged((currentUser) => {
+        if (currentUser) {
+            setcurrentUser(currentUser);
+        }
+    });
+
+    return (
+        <>
+            {userData ? (
+                <>
+                    <div style={{ position: "absolute", top: "50px", right: 0, zIndex: 5 }}>
+                        <Button onClick={handleLogOut}>Sign Out</Button>
+                    </div>
+                    <div style={{ position: "absolute", top: "50px" }}>
+                        <GenerateNav />
+
+                        <div className="profile edit">
+                            <div id="left"></div>
+                            <div className="middle edit">
+                                <div className="middle">
+                                    <img
+                                        src={userData.profile_picture}
+                                        style={{ width: "200px", height: "200px", borderRadius: "200px" }}
+                                    />
+                                    <div style={{ display: "flex", flexDirection: "column" }}>
+                                        <span className="text-left">
+                                            <strong id="txt">{userData.full_name}</strong>
+                                            <span>@{userData.username}</span>
+                                        </span>
+                                        <span className="text-left">
+                                            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        justifyContent: "space-between",
+                                                        flexDirection: "column",
+                                                    }}
+                                                >
+                                                    {/* <div>
+                                                <Button variant="secondary" size="sm">
+                                                    Edit profile
+                                                </Button>
+                                            </div> */}
+                                                </div>
+                                            </div>
+                                        </span>
+                                        <Form>
+                                            <Form.Group>
+                                                <Form.Label>First Name</Form.Label>
+                                                <Form.Control
+                                                    defaultValue={userData.first_name}
+                                                    ref={fnameRef}
+                                                ></Form.Control>
+                                            </Form.Group>
+                                            <Form.Group>
+                                                <Form.Label>Last Name</Form.Label>
+                                                <Form.Control
+                                                    defaultValue={userData.last_name}
+                                                    ref={lnameRef}
+                                                ></Form.Control>
+                                            </Form.Group>
+                                            <Form.Group>
+                                                <Form.Label>Date of birth</Form.Label>
+                                                <Form.Control
+                                                    type={"date"}
+                                                    defaultValue={userData.dateBirth}
+                                                    ref={birthRef}
+                                                ></Form.Control>
+                                            </Form.Group>
+                                        </Form>
+                                        <Button onClick={updateusr}>Confirm Changes</Button>
+                                        <div style={{ marginTop: "10px" }}>
+                                            {error && <Alert>{error}</Alert>}
+                                            {log && <Alert>{log}</Alert>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="right"></div>
+                        </div>
+                    </div>
+                </>
+            ) : (
+                <Button variant="link" onClick={handleLogOut}>
+                    Log out
+                </Button>
+            )}
+        </>
+    );
 };
 
 export default Edit;
