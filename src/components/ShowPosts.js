@@ -22,7 +22,7 @@ const SignlePost = (body) => {
     }
 
     return (
-        <div className="tweet">
+        <div className="tweet" id="tweetsingle">
             <div className="img_place">
                 {element.profile_pic ? (
                     <>
@@ -74,7 +74,7 @@ const ShowPosts = (person) => {
     // }
 
     return (
-        <div className="tweets">
+        <div className="tweets" id="alltweets">
             {gowno.map((element) => {
                 return <SignlePost body={element} key={element.id} />;
             })}

@@ -12,6 +12,7 @@ const Edit = () => {
     const [log, setlog] = useState();
     const fnameRef = useRef();
     const lnameRef = useRef();
+    const imgRef = useRef();
     const birthRef = useRef();
     const { setcurrentUser, setSortMethod, logout, userData } = useContext(UserProvider);
     const navigate = useNavigate();
@@ -36,7 +37,7 @@ const Edit = () => {
                 userData.email,
                 fnameRef.current.value,
                 lnameRef.current.value,
-                userData.profile_picture,
+                imgRef.current.value,
                 birthRef.current.value,
                 userData.followers,
                 userData.following
@@ -65,14 +66,26 @@ const Edit = () => {
                     <div style={{ position: "absolute", top: "50px" }}>
                         <GenerateNav />
 
-                        <div className="profile edit">
+                        <div className="profile">
                             <div id="left"></div>
                             <div className="middle edit">
                                 <div className="middle">
-                                    <img
-                                        src={userData.profile_picture}
-                                        style={{ width: "200px", height: "200px", borderRadius: "200px" }}
-                                    />
+                                    <div
+                                        style={{ display: "flex", flexDirection: "column", padding: "10px" }}
+                                    >
+                                        <img
+                                            src={userData.profile_picture}
+                                            style={{ width: "200px", height: "200px", borderRadius: "200px" }}
+                                        />
+                                        <Form.Group>
+                                            <Form.Label>IMG url</Form.Label>
+                                            <Form.Control
+                                                defaultValue={userData.profile_picture}
+                                                ref={imgRef}
+                                            ></Form.Control>
+                                        </Form.Group>
+                                    </div>
+
                                     <div style={{ display: "flex", flexDirection: "column" }}>
                                         <span className="text-left">
                                             <strong id="txt">{userData.full_name}</strong>

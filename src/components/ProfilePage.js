@@ -92,7 +92,7 @@ const ProfilePage = () => {
                     <div className="profile">
                         <div id="left"></div>
                         <div id="middle wrap">
-                            <div id="middle">
+                            <div className="middle">
                                 <img
                                     src={userobj.profile_picture}
                                     style={{ width: "200px", height: "200px", borderRadius: "200px" }}
