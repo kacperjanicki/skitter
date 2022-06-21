@@ -43,6 +43,7 @@ const ProfilePage = () => {
     }
 
     const [userobj, setuserobj] = useState();
+    const [following, setfollowing] = useState();
 
     const handleFollow = () => {
         const count = ref(database, `users/${username}/followers`);
@@ -57,7 +58,8 @@ const ProfilePage = () => {
         onValue(ref(database, `users/${username}/followers`), (snapshot) => {
             const data = snapshot.val();
             setcount(Object.keys(data).length);
-            isBeingFollowed = true;
+            // isBeingFollowed = true;
+            setfollowing(true);
         });
     };
     const handleunFollow = () => {
@@ -77,10 +79,12 @@ const ProfilePage = () => {
                 onValue(ref(database, `users/${username}/followers`), (snapshot) => {
                     const data = snapshot.val();
                     setcount(Object.keys(data).length);
-                    isBeingFollowed = false;
+                    // isBeingFollowed = false;
+                    setfollowing(false);
                 });
             }
         });
+        console.log(isBeingFollowed);
     };
     console.log(username);
     useEffect(() => {
@@ -145,8 +149,10 @@ const ProfilePage = () => {
                                     )}
 
                                     {(() => {
-                                        if (userData && isBeingFollowed) {
+                                        if (userData && following) {
                                             return <Button onClick={handleunFollow}>Unfollow</Button>;
+                                        } else if (userData && !following) {
+                                            return <Button onClick={handleFollow}>Follow</Button>;
                                         } else if (!userData) {
                                             return <Button disabled>Follow (You need to log in)</Button>;
                                         } else if (userData) {
