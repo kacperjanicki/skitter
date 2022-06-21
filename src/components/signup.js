@@ -15,7 +15,7 @@ const LoginPage = () => {
     const usernameRef = useRef(); //
     const fnameRef = useRef(); //   they go to user database
     const lnameRef = useRef(); //
-    const { signup } = useContext(UserProvider);
+    const { signup, login } = useContext(UserProvider);
     const [error, setError] = useState("");
     const [log, setLog] = useState("");
     const history = useNavigate();
@@ -39,10 +39,12 @@ const LoginPage = () => {
                 avatarRef.current.value,
                 dateRef.current.value,
                 false,
+                false,
                 false
             );
 
             history("/home");
+            login(emailRef.current.value, passwordRef.current.value);
             await setLog("User created successfully");
         } catch (err) {
             setError("");

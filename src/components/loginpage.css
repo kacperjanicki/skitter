@@ -25,11 +25,15 @@ body {
 }
 .tweet {
     text-align: left;
+    overflow: auto;
 }
 .tweets {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+.btnblue {
+    color: #0b5088;
 }
 
 .main {
@@ -72,6 +76,7 @@ body {
 .switch {
     background-color: #4a4e52 !important;
     color: white;
+    overflow: auto;
 }
 
 .footer {
@@ -91,6 +96,7 @@ body {
 }
 .profile {
     background-color: #0b5088;
+    overflow: auto;
 }
 
 #txt {

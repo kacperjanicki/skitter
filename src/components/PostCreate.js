@@ -6,7 +6,7 @@ import "./loginpage.css";
 
 const PostCreate = () => {
     const { userData, currentUser } = useContext(UserProvider);
-    const { setSortMethod } = useContext(UserProvider);
+    const { setSortMethod, sortMethod } = useContext(UserProvider);
     const [error, setError] = useState();
     const [log, setLog] = useState();
 
@@ -22,21 +22,29 @@ const PostCreate = () => {
                 e.target.reset();
                 setLog("Post sent!");
                 setSortMethod("NEWEST-LATEST");
-                document.getElementById("checked").selected = true;
+                document.getElementById("recent").click();
+                // document.getElementById("checked").selected = true;
             } catch (err) {
                 setError("");
                 setError(String(err));
             }
         }
     };
-    const handleSort = (e) => {
-        setSortMethod(e.target.value);
-    };
+    // const handlesort = (e) => {
+    //     console.log(sortMethod);
+    //     setSortMethod(e.target.value);
+
+    //     console.log(e.target.value);
+    // };
 
     return (
         <div className="form">
             <form onSubmit={formSubmit}>
-                <FloatingLabel controlId="floatingTextarea2" label="Start typing...">
+                <FloatingLabel
+                    controlId="floatingTextarea2"
+                    label="Start typing..."
+                    style={{ color: "black" }}
+                >
                     <Form.Control as="input" ref={text} style={{ height: "100px", width: "600px" }} />
                     {error && (
                         <Alert variant="danger" style={{ width: "600px" }}>
@@ -50,14 +58,44 @@ const PostCreate = () => {
                     )}
                     <div className="publish_container">
                         <Button>Publish</Button>
-                        <Form.Select onChange={handleSort} aria-label="Sort by:" style={{ width: "150px" }}>
-                            <option>Sort by:</option>
-                            <option value="NEWEST-LATEST" id="checked" selected={false}>
+                        <div>
+                            <Button
+                                size="sm"
+                                variant="secondary"
+                                value="NEWEST-LATEST"
+                                onClick={(e) => {
+                                    setSortMethod(e.target.value);
+                                    e.target.style.backgroundColor = "#0b5088";
+                                    e.target.addEventListener("focusout", () => {
+                                        e.target.style.backgroundColor = "";
+                                    });
+                                    document.getElementById("old").addEventListener("click", () => {
+                                        e.target.style.backgroundColor = "";
+                                    });
+                                }}
+                                id="recent"
+                            >
                                 Most recent
-                            </option>
-                            <option value="LATEST-NEWEST">Least recent</option>
-                            <option value="BY_LIKES">Highest likes</option>
-                        </Form.Select>
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="secondary"
+                                onClick={(e) => {
+                                    setSortMethod(e.target.value);
+                                    e.target.style.backgroundColor = "#0b5088";
+                                    e.target.addEventListener("focusout", () => {
+                                        e.target.style.backgroundColor = "";
+                                    });
+                                }}
+                                value="LATEST-NEWEST"
+                                id="old"
+                            >
+                                Least recent
+                            </Button>
+                            <Button size="sm" variant="secondary" value="BY_LIKES">
+                                By Likes
+                            </Button>
+                        </div>
                     </div>
                 </FloatingLabel>
             </form>

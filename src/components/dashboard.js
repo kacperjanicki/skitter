@@ -52,12 +52,17 @@ const Dashboard = () => {
                                         </span>
                                         <span className="text-left">
                                             <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                                <div style={{ display: "none" }} id="addbio">
+                                                    <input></input>
+                                                    <button style={{ border: "none" }}>Confirm</button>
+                                                </div>
                                                 <div
                                                     style={{
                                                         display: "flex",
                                                         justifyContent: "space-between",
                                                         flexDirection: "column",
                                                     }}
+                                                    id="info"
                                                 >
                                                     <span>
                                                         <strong>0</strong> follower(s)
@@ -72,10 +77,26 @@ const Dashboard = () => {
                                                 </Button>
                                             </div> */}
                                                 </div>
-                                                <div>Add a bio</div>
+                                                <div>
+                                                    <button
+                                                        style={{
+                                                            background: "none",
+                                                            border: "none",
+                                                            color: "white",
+                                                        }}
+                                                        onClick={() => {
+                                                            document.getElementById("addbio").style.display =
+                                                                "inline-block";
+                                                            document.getElementById("info").style.display =
+                                                                "none";
+                                                        }}
+                                                    >
+                                                        Add a bio
+                                                    </button>
+                                                </div>
                                             </div>
                                         </span>
-                                        <span>Joined xx.xx.xxxx</span>
+                                        <span>Joined: {userData.when_joined}</span>
                                         <Button
                                             variant="secondary"
                                             onClick={() => {

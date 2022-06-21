@@ -40,9 +40,7 @@ const ProfilePage = () => {
         console.log(Object.keys(follower_count));
     }
 
-    const postlist = ref(database, "users/");
     const [userobj, setuserobj] = useState();
-    const [followers, setFollowers] = useState();
 
     const handleFollow = () => {
         const count = ref(database, `users/${username}/followers`);
@@ -52,7 +50,6 @@ const ProfilePage = () => {
                     //drop a follow to sb
                     name: userData.username,
                 });
-                setFollowers(snapshot.val());
             }
         });
     };
@@ -73,7 +70,7 @@ const ProfilePage = () => {
             }
         });
     };
-
+    console.log(username);
     useEffect(() => {
         const url = "https://skitter-9e5e3-default-rtdb.europe-west1.firebasedatabase.app/users.json";
         const fetchdata = async () => {
@@ -129,7 +126,12 @@ const ProfilePage = () => {
                                             <div>Bio placeholder</div>
                                         </div>
                                     </span>
-                                    <span>Joined xx.xx.xxxx</span>
+                                    {userobj.when_joined ? ( //usun to potem
+                                        <span>Joined: {userobj.when_joined}</span>
+                                    ) : (
+                                        <span>Joined: data not given</span>
+                                    )}
+
                                     {(() => {
                                         if (userData && isBeingFollowed) {
                                             return <Button onClick={handleunFollow}>Unfollow</Button>;
@@ -143,7 +145,7 @@ const ProfilePage = () => {
                             </div>
 
                             <div>
-                                <h1>{userobj.first_name}s' posts</h1>
+                                <h1>{userobj.first_name}'s posts</h1>
                                 <div className="post-cont">
                                     <ShowPosts person={userobj.username} />
                                 </div>

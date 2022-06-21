@@ -17,7 +17,24 @@ export const auth = app.auth();
 export default app;
 
 export const database = getDatabase(app);
-export function writeUserData(username, email, firstname, lastname, imageUrl, date, followers, following) {
+export function writeUserData(
+    username,
+    email,
+    firstname,
+    lastname,
+    imageUrl,
+    date,
+    followers,
+    following,
+    bio
+) {
+    var date = new Date();
+    var result = date.toLocaleDateString("pl-PL", {
+        // you can use undefined as first argument
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    });
     set(ref(database, "users/" + username), {
         username: username,
         first_name: firstname,
@@ -28,6 +45,8 @@ export function writeUserData(username, email, firstname, lastname, imageUrl, da
         profile_picture: imageUrl,
         followers: followers,
         following: following,
+        bio: bio,
+        when_joined: result,
     });
 }
 

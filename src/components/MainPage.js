@@ -9,8 +9,7 @@ import ShowPosts from "./ShowPosts";
 
 const MainPage = () => {
     const { userData, setSortMethod, currentUser } = useContext(UserProvider);
-    setSortMethod("NEWEST-LATEST");
-    console.log(currentUser);
+    // setSortMethod("NEWEST-LATEST");
     const darkMode = () => {
         if (document.getElementById("mainpage").classList.contains("switch")) {
             document.getElementById("mainpage").classList.remove("switch");
@@ -26,9 +25,15 @@ const MainPage = () => {
         if (localStorage.getItem("mode") === "dark") {
             document.getElementById("mainpage").classList.add("switch");
             document.getElementById("button").innerHTML = "Dark theme";
+            document.querySelector("#alltweets").childNodes.forEach((div) => {
+                div.classList.add("tweetswitch");
+            });
         } else if (localStorage.getItem("mode") === "light") {
             document.getElementById("mainpage").classList.remove("switch");
             document.getElementById("button").innerHTML = "Light theme";
+            document.querySelector("#alltweets").childNodes.forEach((div) => {
+                div.classList.remove("tweetswitch");
+            });
         }
     }, []);
 

@@ -33,7 +33,7 @@ const SignlePost = (body) => {
                             }}
                         />
                         <div className="footer">
-                            Posted by: {element.posted_by}
+                            {element.posted_by}
                             <br />
                             {calculateDiff()}
                         </div>
@@ -55,20 +55,23 @@ const SignlePost = (body) => {
 };
 
 const ShowPosts = (person) => {
-    const { single_posts, sortMethod } = useContext(UserProvider);
-    // console.log(single_posts);
-    // let gowno = single_posts.sort((a, b) => b.date_in_ms - a.date_in_ms); //od najnowszych
-    // console.log(sortMethod);
+    const { single_posts, sortMethod, setSortMethod } = useContext(UserProvider);
+
     var gowno;
+    console.log(sortMethod);
     if (!sortMethod) {
         gowno = single_posts;
-    } else if (sortMethod == "NEWEST-LATEST") {
+    }
+    if (sortMethod == "NEWEST-LATEST") {
         gowno = single_posts.sort((a, b) => b.date_in_ms - a.date_in_ms);
-    } else if (sortMethod == "LATEST-NEWEST") {
+    }
+    if (sortMethod == "LATEST-NEWEST") {
         gowno = single_posts.sort((a, b) => a.date_in_ms - b.date_in_ms);
-    } else if (sortMethod == "BY_USR") {
+    }
+    if (sortMethod == "BY_USR") {
         gowno = single_posts.filter((e) => e.posted_by == person.person);
     }
+    // setSortMethod();
     // else if(sortMethod == 'BY_USR_NAME'){
     //     gowno = single_posts.filter((person)=>person.posted_by)
     // }
