@@ -9,7 +9,6 @@ import ShowPosts from "./ShowPosts";
 
 const MainPage = () => {
     const { userData, setSortMethod, currentUser } = useContext(UserProvider);
-    // setSortMethod("NEWEST-LATEST");
     const darkMode = () => {
         if (document.getElementById("mainpage").classList.contains("switch")) {
             document.getElementById("mainpage").classList.remove("switch");
@@ -22,6 +21,8 @@ const MainPage = () => {
         }
     };
     useEffect(() => {
+        setSortMethod("NEWEST-LATEST");
+
         if (localStorage.getItem("mode") === "dark") {
             document.getElementById("mainpage").classList.add("switch");
             document.getElementById("button").innerHTML = "Dark theme";

@@ -31,6 +31,9 @@ const SignlePost = (body) => {
                             onClick={() => {
                                 history(`/user/${element.posted_by}`);
                             }}
+                            onMouseOver={(e) => {
+                                console.log((e.target.style.cursor = "pointer"));
+                            }}
                         />
                         <div className="footer">
                             {element.posted_by}

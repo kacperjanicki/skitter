@@ -23,11 +23,13 @@ const ProfilePage = () => {
         }
     }
     const [follower_count, setFollower_count] = useState();
+    const [count, setcount] = useState();
     useEffect(() => {
         const count = ref(database, `users/${username}/followers`);
         get(count).then((snapshot) => {
             if (snapshot.exists()) {
                 setFollower_count(snapshot.val());
+                setcount(Object.keys(snapshot.val()).length);
             }
         });
     }, []);
@@ -52,6 +54,11 @@ const ProfilePage = () => {
                 });
             }
         });
+        onValue(ref(database, `users/${username}/followers`), (snapshot) => {
+            const data = snapshot.val();
+            setcount(Object.keys(data).length);
+            isBeingFollowed = true;
+        });
     };
     const handleunFollow = () => {
         const count = ref(database, `users/${username}/followers`);
@@ -67,6 +74,11 @@ const ProfilePage = () => {
                 } else {
                     set(ref(database, `users/${username}/followers`), final);
                 }
+                onValue(ref(database, `users/${username}/followers`), (snapshot) => {
+                    const data = snapshot.val();
+                    setcount(Object.keys(data).length);
+                    isBeingFollowed = false;
+                });
             }
         });
     };
@@ -109,9 +121,9 @@ const ProfilePage = () => {
                                                 }}
                                             >
                                                 <span>
-                                                    {follower_count ? (
+                                                    {count ? (
                                                         <>
-                                                            <strong>{followers_num}</strong> follower(s)
+                                                            <strong>{count}</strong> follower(s)
                                                         </>
                                                     ) : (
                                                         <>
