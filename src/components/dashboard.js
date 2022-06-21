@@ -16,7 +16,7 @@ const Dashboard = () => {
         setError("");
         try {
             await logout();
-            navigate("/home");
+            await navigate("/home");
         } catch (err) {
             setError(err);
         }

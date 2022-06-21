@@ -22,17 +22,19 @@ const MainPage = () => {
     };
     useEffect(() => {
         setSortMethod("NEWEST-LATEST");
-
-        if (localStorage.getItem("mode") === "dark") {
+        console.log(localStorage.getItem("mode"));
+        if (localStorage.getItem("mode") == "dark") {
             document.getElementById("mainpage").classList.add("switch");
             document.getElementById("button").innerHTML = "Dark theme";
-            document.querySelector("#alltweets").childNodes.forEach((div) => {
+            document.querySelectorAll("#tweetsingle").forEach((div) => {
+                console.log(div);
                 div.classList.add("tweetswitch");
             });
-        } else if (localStorage.getItem("mode") === "light") {
+        } else if (localStorage.getItem("mode") == "light") {
             document.getElementById("mainpage").classList.remove("switch");
             document.getElementById("button").innerHTML = "Light theme";
-            document.querySelector("#alltweets").childNodes.forEach((div) => {
+            document.querySelectorAll("#tweetsingle").forEach((div) => {
+                console.log(div);
                 div.classList.remove("tweetswitch");
             });
         }

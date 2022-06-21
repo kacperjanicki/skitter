@@ -70,5 +70,8 @@ export function writePostData(username, body, pic) {
         posted_by: username,
         body: body,
         profile_pic: pic,
+        comments: false,
+        likes: false,
+        commentcount: { count: 0 },
     });
 }

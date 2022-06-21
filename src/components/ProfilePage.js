@@ -3,22 +3,22 @@ import { useParams } from "react-router-dom";
 import { UserProvider } from "../App";
 import { useNavigate } from "react-router-dom";
 import GenerateNav from "./GenerateNav";
-import { Card, Button } from "react-bootstrap";
-import { checkuser } from "../firebase";
+import { Button } from "react-bootstrap";
+
 import { database } from "../firebase";
 import { ref, set } from "firebase/database";
-import { onValue, get, child } from "firebase/database";
+import { onValue, get } from "firebase/database";
 import ShowPosts from "./ShowPosts";
-import { findByPlaceholderText } from "@testing-library/react";
 
 const ProfilePage = () => {
-    const { userData, setSortMethod } = useContext(UserProvider);
+    const { userData, setSortMethod, currentUser } = useContext(UserProvider);
     let { username } = useParams();
     const history = useNavigate();
     setSortMethod("BY_USR");
-
+    console.log(userData);
+    console.log(currentUser);
     if (userData) {
-        if (userData.username == username) {
+        if (userData.username == username && currentUser != null) {
             history("/profile");
         }
     }
@@ -34,7 +34,7 @@ const ProfilePage = () => {
         });
     }, []);
     var isBeingFollowed = false;
-    if (follower_count) {
+    if (follower_count && userData) {
         var followers_num = Object.keys(follower_count).length;
         if (Object.keys(follower_count).includes(userData.username)) {
             isBeingFollowed = true;
@@ -149,14 +149,18 @@ const ProfilePage = () => {
                                     )}
 
                                     {(() => {
-                                        if (userData && following) {
-                                            return <Button onClick={handleunFollow}>Unfollow</Button>;
-                                        } else if (userData && !following) {
-                                            return <Button onClick={handleFollow}>Follow</Button>;
-                                        } else if (!userData) {
+                                        if (currentUser == null) {
                                             return <Button disabled>Follow (You need to log in)</Button>;
-                                        } else if (userData) {
-                                            return <Button onClick={handleFollow}>Follow</Button>;
+                                        } else if (isBeingFollowed) {
+                                            return <Button onClick={handleunFollow}>Unfollow</Button>;
+                                        } else {
+                                            if (userData && following) {
+                                                return <Button onClick={handleunFollow}>Unfollow</Button>;
+                                            } else if (userData && !following) {
+                                                return <Button onClick={handleFollow}>Follow</Button>;
+                                            } else if (userData) {
+                                                return <Button onClick={handleFollow}>Follow</Button>;
+                                            }
                                         }
                                     })()}
                                 </div>

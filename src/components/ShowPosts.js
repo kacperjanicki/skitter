@@ -31,9 +31,6 @@ const SignlePost = (body) => {
                             onClick={() => {
                                 history(`/user/${element.posted_by}`);
                             }}
-                            onMouseOver={(e) => {
-                                console.log((e.target.style.cursor = "pointer"));
-                            }}
                         />
                         <div className="footer">
                             {element.posted_by}
@@ -50,16 +47,16 @@ const SignlePost = (body) => {
                     />
                 )}
             </div>
-            <div className="body">
+            <div className="body" onClick={() => history(`/post/${element.id}`)}>
                 <div className="text">{element.body}</div>
             </div>
         </div>
     );
 };
 
-const ShowPosts = (person) => {
+const ShowPosts = (person, id) => {
     const { single_posts, sortMethod, setSortMethod } = useContext(UserProvider);
-
+    console.log(single_posts[id + 1]);
     var gowno;
     console.log(sortMethod);
     if (!sortMethod) {
@@ -78,7 +75,6 @@ const ShowPosts = (person) => {
     // else if(sortMethod == 'BY_USR_NAME'){
     //     gowno = single_posts.filter((person)=>person.posted_by)
     // }
-
     return (
         <div className="tweets" id="alltweets">
             {gowno.map((element) => {

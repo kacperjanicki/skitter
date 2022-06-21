@@ -13,6 +13,7 @@ import { getDatabase, ref, set, onValue } from "firebase/database";
 import { database } from "./firebase";
 import Forgot from "./components/Forgot";
 import MainPage from "./components/MainPage";
+import GeneratePost from "./components/GeneratePost";
 export const UserProvider = React.createContext();
 
 function App() {
@@ -100,6 +101,7 @@ function App() {
                     </Route>
                     <Route exact path="/" element={<BasicPage />}></Route>
                     <Route path="/user/:username" element={<ProfilePage />}></Route>
+                    <Route path="/post/:id" element={<GeneratePost />}></Route>
                     <Route exact path="/home" element={<MainPage />} />
 
                     <Route path="/signup" element={<LoginPage />}></Route>

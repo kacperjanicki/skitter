@@ -42,10 +42,15 @@ const PostCreate = () => {
             <form onSubmit={formSubmit}>
                 <FloatingLabel
                     controlId="floatingTextarea2"
-                    label="Start typing..."
+                    label="Add your post..."
                     style={{ color: "black" }}
                 >
-                    <Form.Control as="input" ref={text} style={{ height: "100px", width: "600px" }} />
+                    <Form.Control
+                        as="input"
+                        ref={text}
+                        style={{ height: "100px", width: "600px" }}
+                        id="postform"
+                    />
                     {error && (
                         <Alert variant="danger" style={{ width: "600px" }}>
                             {error}
@@ -57,7 +62,9 @@ const PostCreate = () => {
                         </Alert>
                     )}
                     <div className="publish_container">
-                        <Button>Publish</Button>
+                        <Button type="submit" form="postform">
+                            Publish
+                        </Button>
                         <div>
                             <Button
                                 size="sm"
