@@ -12,6 +12,7 @@ const Edit = () => {
     const lnameRef = useRef();
     const imgRef = useRef();
     const birthRef = useRef();
+    const bioRef = useRef();
     const { setcurrentUser, setSortMethod, logout, userData } = useContext(UserProvider);
     const navigate = useNavigate();
     console.log(userData);
@@ -38,7 +39,8 @@ const Edit = () => {
                 imgRef.current.value,
                 birthRef.current.value,
                 userData.followers,
-                userData.following
+                userData.following,
+                bioRef.current.value
             );
             await setlog("Profile updated successfully");
         } catch (err) {
@@ -53,6 +55,11 @@ const Edit = () => {
             setcurrentUser(currentUser);
         }
     });
+    useEffect(() => {
+        if (!userData.bio) {
+            document.getElementById("exampleFormControlTextarea1").focus();
+        }
+    }, []);
 
     return (
         <>
@@ -84,7 +91,9 @@ const Edit = () => {
                                         </Form.Group>
                                     </div>
 
-                                    <div style={{ display: "flex", flexDirection: "column" }}>
+                                    <div
+                                        style={{ display: "flex", flexDirection: "column", height: "500px" }}
+                                    >
                                         <span className="text-left">
                                             <strong id="txt">{userData.full_name}</strong>
                                             <span>@{userData.username}</span>
@@ -120,6 +129,17 @@ const Edit = () => {
                                                     defaultValue={userData.last_name}
                                                     ref={lnameRef}
                                                 ></Form.Control>
+                                            </Form.Group>
+                                            <Form.Group>
+                                                <Form.Label>Bio</Form.Label>
+                                                <textarea
+                                                    placeholder={userData.bio ? "" : "Add your bio"}
+                                                    Defaultvalue={userData.bio ? userData.bio : ""}
+                                                    class="form-control"
+                                                    id="exampleFormControlTextarea1"
+                                                    rows="3"
+                                                    ref={bioRef}
+                                                ></textarea>
                                             </Form.Group>
                                             <Form.Group>
                                                 <Form.Label>Date of birth</Form.Label>

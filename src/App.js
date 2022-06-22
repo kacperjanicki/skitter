@@ -2,7 +2,7 @@ import "./components/loginpage.css";
 import LoginPage from "./components/signup";
 import BasicPage from "./components/BasicPage";
 import ProfilePage from "./components/ProfilePage";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { auth } from "./firebase";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Edit from "./components/Edit";
@@ -69,9 +69,11 @@ function App() {
     }
     const [sorted_arr, setSorted_arr] = useState();
     const [sortMethod, setSortMethod] = useState();
+    const tweetref = useRef();
 
     const value = {
         currentUser,
+        tweetref,
         sortMethod,
         setSortMethod,
         userData,

@@ -21,7 +21,7 @@ const GeneratePost = () => {
     const [log, setLog] = useState();
     const [likesCount, setLikesCount] = useState();
     const [likesList, setlikesList] = useState();
-    setSortMethod("NEWEST-LATEST");
+    // setSortMethod("NEWEST-LATEST");
 
     useEffect(() => {
         get(count).then((snapshot) => {
@@ -37,6 +37,8 @@ const GeneratePost = () => {
                 } else {
                     document.getElementById("likebtn").style.color = "white";
                 }
+            } else if (!snapshot.exists()) {
+                set(ref(database, `posts/post${id}/likes`), false);
             }
         });
 
@@ -51,8 +53,6 @@ const GeneratePost = () => {
     const handleLike = () => {
         if (currentUser) {
             try {
-                const count = ref(database, `posts/post${id}/likes/`);
-                const newlike = push(count);
                 set(ref(database, `posts/post${id}/likes/${userData.username}`), userData.username);
             } catch (err) {
                 console.log(err);
@@ -122,7 +122,9 @@ const GeneratePost = () => {
                 <div id="middle wrap">
                     {post ? (
                         <div className="middle post">
-                            <div className="content">{post ? post.body : "loading"}</div>
+                            <div className="content" style={{ marginLeft: "60px", marginBottom: 0 }}>
+                                {post ? post.body : "loading"}
+                            </div>
                             <div className="context">
                                 <div style={{ display: "flex" }}>
                                     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -148,7 +150,7 @@ const GeneratePost = () => {
                                             textAlign: "left",
                                             display: "flex",
                                             gap: "30px",
-                                            alignItems: "center",
+                                            alignItems: "end",
                                             marginLeft: "10px",
                                         }}
                                     >
@@ -160,7 +162,7 @@ const GeneratePost = () => {
                                                     border: "1px solid black",
                                                 }}
                                                 onClick={(e) => {
-                                                    if (userData) {
+                                                    if (userData && currentUser) {
                                                         if (e.target.style.color == "white") {
                                                             handleLike();
                                                             // setlikesList([userData.username]);
@@ -182,7 +184,8 @@ const GeneratePost = () => {
 
                                             {likesCount ? `${likesCount} Likes` : `0 Likes`}
                                         </div>
-                                        <div>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                            <BiCommentDetail size="20px" />
                                             <button
                                                 style={{
                                                     border: "none",
@@ -190,13 +193,12 @@ const GeneratePost = () => {
                                                     color: "white",
                                                 }}
                                             >
-                                                <BiCommentDetail size="20px" />
                                                 {post.comments
                                                     ? `${Object.keys(post.comments).length} Comments`
                                                     : "0 Comments"}
                                             </button>
                                         </div>
-                                        <div>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                                             <button
                                                 style={{
                                                     border: "none",
@@ -211,11 +213,11 @@ const GeneratePost = () => {
                                                     }
                                                 }}
                                             >
-                                                <BiRepost size="30px" style={{ color: "white" }} />
+                                                <BiRepost size="25px" style={{ color: "white" }} />
                                             </button>
                                             0 Reposts
                                         </div>
-                                        <div>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                                             <button
                                                 style={{
                                                     border: "none",
@@ -224,7 +226,7 @@ const GeneratePost = () => {
                                                     cursor: "default",
                                                 }}
                                             >
-                                                <AiOutlineEye size="30px" />
+                                                <AiOutlineEye size="25px" />
                                             </button>
                                             0 Views
                                         </div>

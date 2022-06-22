@@ -24,12 +24,22 @@ const ProfilePage = () => {
     }
     const [follower_count, setFollower_count] = useState();
     const [count, setcount] = useState();
+    const [bio, setBio] = useState();
     useEffect(() => {
         const count = ref(database, `users/${username}/followers`);
         get(count).then((snapshot) => {
             if (snapshot.exists()) {
                 setFollower_count(snapshot.val());
                 setcount(Object.keys(snapshot.val()).length);
+            }
+        });
+        get(ref(database, `users/${username}/bio`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                if (snapshot.val() == false) {
+                    setBio("No bio");
+                } else {
+                    setBio(snapshot.val());
+                }
             }
         });
     }, []);
@@ -139,8 +149,8 @@ const ProfilePage = () => {
                                                     <strong>0</strong> following
                                                 </span>
                                             </div>
-                                            <div>Bio placeholder</div>
                                         </div>
+                                        <div style={{ marginBottom: "20px" }}>{bio}</div>
                                     </span>
                                     {userobj.when_joined ? ( //usun to potem
                                         <span>Joined: {userobj.when_joined}</span>

@@ -8,7 +8,9 @@ import PostCreate from "./PostCreate";
 import ShowPosts from "./ShowPosts";
 
 const MainPage = () => {
-    const { userData, setSortMethod, currentUser } = useContext(UserProvider);
+    const { userData, setSortMethod, currentUser, tweetref } = useContext(UserProvider);
+    // console.log(NodeList(tweetref.current));
+
     const darkMode = () => {
         if (document.getElementById("mainpage").classList.contains("switch")) {
             document.getElementById("mainpage").classList.remove("switch");
@@ -17,6 +19,7 @@ const MainPage = () => {
         } else {
             document.getElementById("mainpage").classList.add("switch");
             document.getElementById("button").innerHTML = "Dark theme";
+            tweetref.current.classList.add("tweetswitch");
             localStorage.setItem("mode", "dark");
         }
     };
@@ -26,16 +29,14 @@ const MainPage = () => {
         if (localStorage.getItem("mode") == "dark") {
             document.getElementById("mainpage").classList.add("switch");
             document.getElementById("button").innerHTML = "Dark theme";
-            document.querySelectorAll("#tweetsingle").forEach((div) => {
-                div.classList.add("tweetswitch");
-            });
         } else if (localStorage.getItem("mode") == "light") {
             document.getElementById("mainpage").classList.remove("switch");
             document.getElementById("button").innerHTML = "Light theme";
-            document.querySelectorAll("#tweetsingle").forEach((div) => {
-                console.log(div);
-                div.classList.remove("tweetswitch");
-            });
+
+            // document.querySelectorAll("#tweetsingle").forEach((div) => {
+            //     console.log(div);
+            //     div.classList.remove("tweetswitch");
+            // });
         }
     }, []);
 

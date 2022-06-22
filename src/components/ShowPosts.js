@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Card, Container } from "react-bootstrap";
+import { ref, get, set, onValue, push } from "firebase/database";
+import { database } from "../firebase";
+
 import { UserProvider } from "../App";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
@@ -8,9 +10,32 @@ import { BiCommentDetail } from "react-icons/bi";
 
 const SignlePost = (body) => {
     var element = body.body;
-    const { userData, currentUser } = useContext(UserProvider);
+    const { userData, currentUser, tweetref } = useContext(UserProvider);
     const history = useNavigate();
-    // console.log(element);
+    const [likescount, setLikesCount] = useState();
+    const [choice, setchoice] = useState();
+    useEffect(() => {
+        if (currentUser) {
+            get(ref(database, `posts/post${element.id}/likes`)).then((snapshot) => {
+                if (Object.values(snapshot.val()).includes(userData.username)) {
+                    setchoice("red");
+                } else if (!Object.values(snapshot.val()).includes(userData.username)) {
+                    setchoice("white");
+                }
+            });
+        } else {
+            setchoice("white");
+        }
+
+        onValue(ref(database, `posts/post${element.id}/likes`), (snapshot) => {
+            if (snapshot.exists()) {
+                setLikesCount(Object.keys(snapshot.val()).length);
+                console.log(Object.values(snapshot.val()).includes(userData.username));
+            } else if (!snapshot.exists()) {
+                set(ref(database, `posts/post${element.id}/likes`), false);
+            }
+        });
+    }, []);
 
     function calculateDiff() {
         const start = moment(element.date_in_ms);
@@ -33,16 +58,44 @@ const SignlePost = (body) => {
             return `${days} day ago`;
         }
     }
-    const giveLike = (e) => {
-        if (e.target.style.color == "white") {
-            e.target.style.color = "red";
-        } else {
-            e.target.style.color = "white";
+
+    const handleLike = (e) => {
+        let id = element.id;
+        if (currentUser) {
+            try {
+                const count = ref(database, `posts/post${id}/likes/`);
+                const newlike = push(count);
+                set(ref(database, `posts/post${id}/likes/${userData.username}`), userData.username);
+            } catch (err) {
+                console.log(err);
+            }
+        } else if (!userData) {
+            document.getElementById("likebtn").disabled = true;
+        }
+    };
+    const handleDislike = () => {
+        const count = ref(database, `posts/post${element.id}/likes`);
+        if (currentUser) {
+            get(count).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const val = snapshot.val();
+                    const obj = Object.entries(val);
+                    const filtered = obj.filter((a) => a[0] != userData.username);
+
+                    const final = Object.fromEntries(filtered);
+                    setLikesCount(filtered.length);
+                    console.log(final);
+                    set(count, final);
+                    if (final.length == 0) {
+                        set(count, false);
+                    }
+                }
+            });
         }
     };
 
     return (
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", flexDirection: "column" }} ref={tweetref}>
             <div className="tweet" id="tweetsingle" style={{ borderBottom: 0 }}>
                 <div className="img_place">
                     {element.profile_pic ? (
@@ -75,10 +128,28 @@ const SignlePost = (body) => {
             <div style={{ border: "1px solid black", textAlign: "left", width: "600px" }}>
                 <div style={{ display: "flex", gap: "30px", alignItems: "center" }}>
                     <div>
-                        <button style={{ background: "none", border: "none" }} onClick={giveLike}>
-                            <AiOutlineHeart size="20px" style={{ color: "white" }} />
+                        <button
+                            style={{ background: "none", border: "none" }}
+                            color="white"
+                            onClick={(e) => {
+                                if (userData && currentUser) {
+                                    if (e.target.style.color == "white") {
+                                        handleLike();
+                                        // setlikesList([userData.username]);
+                                        e.target.style.color = "red";
+                                    } else if (e.target.style.color == "red") {
+                                        handleDislike();
+                                        e.target.style.color = "white";
+                                    }
+                                } else {
+                                    document.getElementById("likebtn").disabled = true;
+                                    alert("Only logged in users can like posts");
+                                }
+                            }}
+                        >
+                            <AiOutlineHeart id="likebtn" size="20px" style={{ color: choice }} />
                         </button>
-                        0
+                        {likescount ? likescount : "0"}
                     </div>
                     <div>
                         <button
@@ -107,7 +178,7 @@ const SignlePost = (body) => {
 
 const ShowPosts = (person, id) => {
     const { single_posts, sortMethod, setSortMethod } = useContext(UserProvider);
-    console.log(single_posts[id + 1]);
+
     var gowno;
     console.log(sortMethod);
     if (!sortMethod) {
@@ -122,10 +193,7 @@ const ShowPosts = (person, id) => {
     if (sortMethod == "BY_USR") {
         gowno = single_posts.filter((e) => e.posted_by == person.person);
     }
-    // setSortMethod();
-    // else if(sortMethod == 'BY_USR_NAME'){
-    //     gowno = single_posts.filter((person)=>person.posted_by)
-    // }
+
     return (
         <div className="tweets" id="alltweets">
             {gowno.map((element) => {
