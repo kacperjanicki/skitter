@@ -3,23 +3,25 @@ import { useParams, useNavigate } from "react-router-dom";
 import { database } from "../firebase";
 import { ref, get, set, onValue, push } from "firebase/database";
 import GenerateNav from "./GenerateNav";
-import { AiOutlineHeart, AiOutlineEye } from "react-icons/ai";
+import { AiFillHeart, AiOutlineEye } from "react-icons/ai";
 import { BiCommentDetail, BiRepost } from "react-icons/bi";
-import { Button, FloatingLabel, Form } from "react-bootstrap";
+import { Button, FloatingLabel, Form, Alert } from "react-bootstrap";
 import { UserProvider } from "../App";
 import GenerateComments from "./GenerateComments";
 
 const GeneratePost = () => {
     let { id } = useParams();
     const commentRef = useRef();
-    const { userData, currentUser } = useContext(UserProvider);
-
+    const { userData, currentUser, setSortMethod } = useContext(UserProvider);
     const history = useNavigate();
     const count = ref(database, `posts/post${id}`);
     const count2 = ref(database, `posts/post${id}/likes`);
     const [post, setPost] = useState();
+    const [error, setError] = useState();
+    const [log, setLog] = useState();
     const [likesCount, setLikesCount] = useState();
     const [likesList, setlikesList] = useState();
+    setSortMethod("NEWEST-LATEST");
 
     useEffect(() => {
         get(count).then((snapshot) => {
@@ -28,66 +30,56 @@ const GeneratePost = () => {
             }
         });
         get(count2).then((snapshot) => {
-            if (snapshot.exists()) {
-                var people = [];
+            if (snapshot.exists() && userData) {
                 var val = snapshot.val();
-                Object.values(snapshot.val()).forEach((element) => {
-                    people.push(String(Object.values(element)));
-                });
-                console.log(people);
-                setlikesList(people);
-                setLikesCount(Object.keys(snapshot.val()).length);
+                if (Object.values(val).includes(userData.username)) {
+                    document.getElementById("likebtn").style.color = "red";
+                } else {
+                    document.getElementById("likebtn").style.color = "white";
+                }
             }
         });
-        if (userData && likesList) {
-            if (likesList.includes(userData.username)) {
-                document.getElementById("likebtn").style.color = "red";
-            }
-        }
+
+        onValue(ref(database, `posts/post${id}/likes`), (snapshot) => {
+            console.log(snapshot.val());
+            setlikesList(Object.values(snapshot.val()));
+            setLikesCount(Object.keys(snapshot.val()).length);
+        });
     }, []);
     console.log(likesList);
 
-    const [commentCount, setCommentcount] = useState();
     const handleLike = () => {
         if (currentUser) {
             try {
-                const count = ref(database, `posts/post${id}/likes`);
+                const count = ref(database, `posts/post${id}/likes/`);
                 const newlike = push(count);
-
-                if (!likesList.includes(userData.username)) {
-                    set(newlike, {
-                        given_by: userData.username,
-                    });
-                }
-
-                get(count).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log(snapshot.val());
-                        setLikesCount(Object.keys(snapshot.val()).length);
-                    }
-                });
+                set(ref(database, `posts/post${id}/likes/${userData.username}`), userData.username);
             } catch (err) {
                 console.log(err);
             }
         } else if (!userData) {
             document.getElementById("likebtn").disabled = true;
         }
-
-        // get(count).then((snapshot) => {
-        //     if (snapshot.exists()) {
-        //         var val = snapshot.val();
-        //         set(ref(database, `posts/post${id}/likes/count`), val + 1);
-        //         setLikesCount(val);
-        //     }
-        // });
     };
     const handleDislike = () => {
-        setLikesCount(likesCount - 1);
+        const count = ref(database, `posts/post${id}/likes`);
+        get(count).then((snapshot) => {
+            if (snapshot.exists()) {
+                const val = snapshot.val();
+                const obj = Object.entries(val);
+                const filtered = obj.filter((a) => a[0] != userData.username);
+
+                const final = Object.fromEntries(filtered);
+                console.log(final);
+                set(count, final);
+            }
+        });
     };
 
     const handleComment = (e) => {
         e.preventDefault();
         try {
+            setLog("");
             const postListRef = ref(database, `posts/post${id}/comments`);
             const newPostRef = push(postListRef);
             var date = new Date().getTime();
@@ -105,10 +97,21 @@ const GeneratePost = () => {
                 }
             });
             e.target.reset();
+            setLog("Comment added!");
         } catch (err) {
+            setError();
+            setError(String(err));
             console.log(err);
         }
     };
+    var choice;
+    if (likesList) {
+        if (likesList.includes(userData.username)) {
+            choice = "red";
+        } else {
+            choice = "white";
+        }
+    }
 
     // console.log(id);
     return (
@@ -146,18 +149,23 @@ const GeneratePost = () => {
                                             display: "flex",
                                             gap: "30px",
                                             alignItems: "center",
+                                            marginLeft: "10px",
                                         }}
                                     >
-                                        <div>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                                             <button
-                                                style={{ backgroundColor: "#5c84a8", color: "white" }}
+                                                style={{
+                                                    backgroundColor: "#5c84a8",
+                                                    color: choice,
+                                                    border: "1px solid black",
+                                                }}
                                                 onClick={(e) => {
                                                     if (userData) {
                                                         if (e.target.style.color == "white") {
                                                             handleLike();
-                                                            setlikesList([userData.username]);
+                                                            // setlikesList([userData.username]);
                                                             e.target.style.color = "red";
-                                                        } else {
+                                                        } else if (e.target.style.color == "red") {
                                                             handleDislike();
                                                             e.target.style.color = "white";
                                                         }
@@ -171,6 +179,7 @@ const GeneratePost = () => {
                                             >
                                                 Like
                                             </button>
+
                                             {likesCount ? `${likesCount} Likes` : `0 Likes`}
                                         </div>
                                         <div>
@@ -239,6 +248,16 @@ const GeneratePost = () => {
                             )}
                         </h2>
                         <div style={{ width: "60vw" }}>
+                            {error && (
+                                <Alert variant="danger" style={{ width: "600px" }}>
+                                    {error}
+                                </Alert>
+                            )}
+                            {log && (
+                                <Alert variant="success" style={{ width: "600px" }}>
+                                    {log}
+                                </Alert>
+                            )}
                             <Form className="post-cont" onSubmit={handleComment} id="commentform">
                                 <FloatingLabel
                                     controlId="floatingTextarea2"
@@ -254,16 +273,7 @@ const GeneratePost = () => {
                                     id="form"
                                     disabled={currentUser ? false : true}
                                 />
-                                {/* {error && (
-                                <Alert variant="danger" style={{ width: "600px" }}>
-                                    {error}
-                                </Alert>
-                            )}
-                            {log && (
-                                <Alert variant="success" style={{ width: "600px" }}>
-                                    {log}
-                                </Alert>
-                            )} */}
+
                                 <Button
                                     type="submit"
                                     form="commentform"

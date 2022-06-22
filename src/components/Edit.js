@@ -1,5 +1,3 @@
-import ShowPosts from "./ShowPosts";
-import { ref } from "firebase/database";
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { Alert, Button, Card, DropdownButton, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";

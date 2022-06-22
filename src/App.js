@@ -9,7 +9,7 @@ import Edit from "./components/Edit";
 import Dashboard from "./components/dashboard";
 import ActualLogin from "./components/login";
 import PrivateRoute from "./components/PrivateRoute";
-import { getDatabase, ref, set, onValue } from "firebase/database";
+import { ref, onValue } from "firebase/database";
 import { database } from "./firebase";
 import Forgot from "./components/Forgot";
 import MainPage from "./components/MainPage";
@@ -24,14 +24,12 @@ function App() {
     const signup = (email, password) => {
         return auth.createUserWithEmailAndPassword(email, password);
     };
-
     const login = (email, password) => {
         return auth.signInWithEmailAndPassword(email, password);
     };
     const resetpass = (email) => {
         return auth.sendPasswordResetEmail(email);
     };
-
     const logout = () => {
         return auth.signOut();
     };
@@ -55,7 +53,6 @@ function App() {
         });
         return unsubscribe;
     }, []);
-    //all posts as list of objects
     const postlist = ref(database, "posts/");
     const [posts, setPosts] = useState();
     useEffect(() => {

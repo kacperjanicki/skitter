@@ -1,5 +1,4 @@
 import React, { useContext, useRef, useState, useEffect } from "react";
-import { auth } from "../firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import "./loginpage.css";
@@ -52,7 +51,10 @@ const Forgot = () => {
                             </Card.Body>
                         </Card>
                         <div className="w-100 text-center mt-3 text-white">
-                            <Link to="/login" style={{ color: "white", textDecoration: "none", fontWeight: 500 }}>
+                            <Link
+                                to="/login"
+                                style={{ color: "white", textDecoration: "none", fontWeight: 500 }}
+                            >
                                 Go back to login page
                             </Link>
                         </div>
