@@ -11,7 +11,6 @@ const GenerateComments = (idOfPost) => {
 
     found_post.map((element) => {
         //   console.log(element.comments);
-        console.log(Object.keys(element.comments).length);
         const len = Object.keys(element.comments).length;
 
         Object.entries(element.comments).map((element) => {
@@ -20,7 +19,6 @@ const GenerateComments = (idOfPost) => {
         return container;
     });
 
-    console.log(container);
     return (
         <div>
             {container.map((element) => {

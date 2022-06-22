@@ -1,9 +1,31 @@
 import React from "react";
+import moment from "moment";
 
 const SingleComment = (data) => {
     let user = data.data;
+    function calculateDiff() {
+        const start = moment(user.date);
+        const end = moment(new Date().getTime());
+        const diff = end.diff(start);
+
+        //express as a duration
+        const diffDuration = moment.duration(diff);
+
+        // display
+        const days = diffDuration.days();
+        const hours = diffDuration.hours();
+        const minutes = diffDuration.minutes();
+
+        if (days < 1 && hours > 1) {
+            return `${hours}hr, ${minutes}m ago`;
+        } else if (days < 1 && hours < 1) {
+            return `${minutes} minutes ago`;
+        } else if (days >= 1) {
+            return `${days} day ago`;
+        }
+    }
     return (
-        <div className="tweet" id="tweetsingle">
+        <div className="tweet" id="tweetsingle" style={{ padding: "10px" }}>
             <div className="img_place">
                 {data ? (
                     <>
@@ -16,7 +38,7 @@ const SingleComment = (data) => {
                         <div className="footer">
                             {user.author}
                             <br />
-                            {/* {calculateDiff()} */}
+                            {calculateDiff()}
                         </div>
                     </>
                 ) : (

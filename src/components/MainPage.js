@@ -27,7 +27,6 @@ const MainPage = () => {
             document.getElementById("mainpage").classList.add("switch");
             document.getElementById("button").innerHTML = "Dark theme";
             document.querySelectorAll("#tweetsingle").forEach((div) => {
-                console.log(div);
                 div.classList.add("tweetswitch");
             });
         } else if (localStorage.getItem("mode") == "light") {

@@ -14,28 +14,95 @@ const GeneratePost = () => {
     const commentRef = useRef();
     const { userData, currentUser } = useContext(UserProvider);
 
-    console.log(currentUser);
-
     const history = useNavigate();
     const count = ref(database, `posts/post${id}`);
+    const count2 = ref(database, `posts/post${id}/likes`);
     const [post, setPost] = useState();
+    const [likesCount, setLikesCount] = useState();
+    const [likesList, setlikesList] = useState();
+
     useEffect(() => {
         get(count).then((snapshot) => {
             if (snapshot.exists()) {
                 setPost(snapshot.val());
             }
         });
+        get(count2).then((snapshot) => {
+            if (snapshot.exists()) {
+                var people = [];
+                var val = snapshot.val();
+                Object.values(snapshot.val()).forEach((element) => {
+                    people.push(String(Object.values(element)));
+                });
+                console.log(people);
+                setlikesList(people);
+                setLikesCount(Object.keys(snapshot.val()).length);
+            }
+        });
+        if (userData && likesList) {
+            if (likesList.includes(userData.username)) {
+                document.getElementById("likebtn").style.color = "red";
+            }
+        }
     }, []);
+    console.log(likesList);
+
+    const [commentCount, setCommentcount] = useState();
+    const handleLike = () => {
+        if (currentUser) {
+            try {
+                const count = ref(database, `posts/post${id}/likes`);
+                const newlike = push(count);
+
+                if (!likesList.includes(userData.username)) {
+                    set(newlike, {
+                        given_by: userData.username,
+                    });
+                }
+
+                get(count).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        setLikesCount(Object.keys(snapshot.val()).length);
+                    }
+                });
+            } catch (err) {
+                console.log(err);
+            }
+        } else if (!userData) {
+            document.getElementById("likebtn").disabled = true;
+        }
+
+        // get(count).then((snapshot) => {
+        //     if (snapshot.exists()) {
+        //         var val = snapshot.val();
+        //         set(ref(database, `posts/post${id}/likes/count`), val + 1);
+        //         setLikesCount(val);
+        //     }
+        // });
+    };
+    const handleDislike = () => {
+        setLikesCount(likesCount - 1);
+    };
 
     const handleComment = (e) => {
+        e.preventDefault();
         try {
             const postListRef = ref(database, `posts/post${id}/comments`);
             const newPostRef = push(postListRef);
+            var date = new Date().getTime();
+            const date2 = new Date(date);
             set(newPostRef, {
                 author: userData.username,
                 body: commentRef.current.value,
                 prof_pic: userData.profile_picture,
                 likes: 0,
+                date: date2.toLocaleString("sv"),
+            });
+            get(count).then((snapshot) => {
+                if (snapshot.exists()) {
+                    setPost(snapshot.val());
+                }
             });
             e.target.reset();
         } catch (err) {
@@ -83,18 +150,28 @@ const GeneratePost = () => {
                                     >
                                         <div>
                                             <button
-                                                style={{ border: "none", backgroundColor: "#5c84a8" }}
+                                                style={{ backgroundColor: "#5c84a8", color: "white" }}
                                                 onClick={(e) => {
-                                                    if (e.target.style.color == "white") {
-                                                        e.target.style.color = "red";
+                                                    if (userData) {
+                                                        if (e.target.style.color == "white") {
+                                                            handleLike();
+                                                            setlikesList([userData.username]);
+                                                            e.target.style.color = "red";
+                                                        } else {
+                                                            handleDislike();
+                                                            e.target.style.color = "white";
+                                                        }
                                                     } else {
-                                                        e.target.style.color = "white";
+                                                        document.getElementById("likebtn").disabled = true;
+                                                        alert("Only logged in users can like posts");
                                                     }
                                                 }}
+                                                id="likebtn"
+                                                disabled={false}
                                             >
-                                                <AiOutlineHeart size="20px" style={{ color: "white" }} />
+                                                Like
                                             </button>
-                                            0 Likes
+                                            {likesCount ? `${likesCount} Likes` : `0 Likes`}
                                         </div>
                                         <div>
                                             <button
@@ -105,8 +182,10 @@ const GeneratePost = () => {
                                                 }}
                                             >
                                                 <BiCommentDetail size="20px" />
+                                                {post.comments
+                                                    ? `${Object.keys(post.comments).length} Comments`
+                                                    : "0 Comments"}
                                             </button>
-                                            0 Comments
                                         </div>
                                         <div>
                                             <button
