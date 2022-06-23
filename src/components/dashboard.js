@@ -16,6 +16,7 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const bioref = useRef();
     setSortMethod("BY_USR");
+
     const handleLogOut = async () => {
         setError("");
         try {
@@ -31,8 +32,6 @@ const Dashboard = () => {
             get(ref(database, `users/${userData.username}/bio`)).then((snapshot) => {
                 if (snapshot.exists()) {
                     setbio(snapshot.val());
-                    console.log(snapshot.val());
-                    document.getElementById("biobtn").style.display = "none";
                 }
             });
         }
@@ -94,45 +93,35 @@ const Dashboard = () => {
                                                     }}
                                                     id="info"
                                                 >
-                                                    <span style={{ display: "flex", gap: "10px" }}>
-                                                        <strong>0</strong> follower(s)
-                                                        <strong>0</strong> following
-                                                    </span>
-
-                                                    {/* <div>
-                                                <Button variant="secondary" size="sm">
-                                                    Edit profile
-                                                </Button>
-                                            </div> */}
-                                                </div>
-                                                <div style={{ display: "block", width: "400px" }}>
-                                                    <button
-                                                        id="biobtn"
-                                                        style={{
-                                                            background: "none",
-                                                            border: "none",
-                                                            color: "white",
-                                                        }}
-                                                        onClick={() => {
-                                                            document.getElementById("addbio").style.display =
-                                                                "inline-block";
-                                                            document.getElementById("info").style.display =
-                                                                "none";
-                                                        }}
-                                                    >
-                                                        Add a bio
-                                                    </button>
+                                                    <div style={{ display: "flex", gap: "10px" }}>
+                                                        <span style={{ display: "flex", gap: "5px" }}>
+                                                            {userData.followers ? (
+                                                                <span>
+                                                                    <strong>
+                                                                        {
+                                                                            Object.keys(userData.followers)
+                                                                                .length
+                                                                        }
+                                                                    </strong>{" "}
+                                                                    follower(s)
+                                                                </span>
+                                                            ) : (
+                                                                <span>
+                                                                    <strong>0</strong> follower(s)
+                                                                </span>
+                                                            )}
+                                                        </span>
+                                                        <span style={{ display: "flex", gap: "5px" }}>
+                                                            <strong>0</strong> following
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </span>
-                                        {/* {log && (
-                                            <Alert variant="success" size="sm">
-                                                {log}
-                                            </Alert>
-                                        )} */}
+
                                         {error && <Alert>{error}</Alert>}
                                         {userData.bio ? (
-                                            userData.bio
+                                            <span style={{ marginBottom: "20px" }}>{userData.bio}</span>
                                         ) : (
                                             <span style={{ marginBottom: "20px", textAlign: "center" }}>
                                                 <button

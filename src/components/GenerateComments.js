@@ -22,7 +22,7 @@ const GenerateComments = (idOfPost) => {
     return (
         <div>
             {container.map((element) => {
-                return <SingleComment data={element} />;
+                return <SingleComment data={element} key={element.id} />;
             })}
         </div>
     );

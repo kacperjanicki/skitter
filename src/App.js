@@ -69,10 +69,13 @@ function App() {
     }
     const [sorted_arr, setSorted_arr] = useState();
     const [sortMethod, setSortMethod] = useState();
+    const [local, setlocal] = useState();
     const tweetref = useRef();
 
     const value = {
         currentUser,
+        local,
+        setlocal,
         tweetref,
         sortMethod,
         setSortMethod,

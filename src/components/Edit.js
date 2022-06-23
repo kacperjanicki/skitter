@@ -115,7 +115,7 @@ const Edit = () => {
                                                 </div>
                                             </div>
                                         </span>
-                                        <Form>
+                                        <Form onSubmit={updateusr}>
                                             <Form.Group>
                                                 <Form.Label>First Name</Form.Label>
                                                 <Form.Control
@@ -134,12 +134,13 @@ const Edit = () => {
                                                 <Form.Label>Bio</Form.Label>
                                                 <textarea
                                                     placeholder={userData.bio ? "" : "Add your bio"}
-                                                    Defaultvalue={userData.bio ? userData.bio : ""}
                                                     class="form-control"
                                                     id="exampleFormControlTextarea1"
                                                     rows="3"
                                                     ref={bioRef}
-                                                ></textarea>
+                                                >
+                                                    {userData.bio ? userData.bio : ""}
+                                                </textarea>
                                             </Form.Group>
                                             <Form.Group>
                                                 <Form.Label>Date of birth</Form.Label>

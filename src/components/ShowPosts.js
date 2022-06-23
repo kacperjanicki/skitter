@@ -10,32 +10,45 @@ import { BiCommentDetail } from "react-icons/bi";
 
 const SignlePost = (body) => {
     var element = body.body;
-    const { userData, currentUser, tweetref } = useContext(UserProvider);
+    const { userData, currentUser, tweetref, local } = useContext(UserProvider);
     const history = useNavigate();
     const [likescount, setLikesCount] = useState();
     const [choice, setchoice] = useState();
+
+    const [commentCount, setCommentCount] = useState();
+
     useEffect(() => {
         if (currentUser) {
             get(ref(database, `posts/post${element.id}/likes`)).then((snapshot) => {
-                if (Object.values(snapshot.val()).includes(userData.username)) {
-                    setchoice("red");
-                } else if (!Object.values(snapshot.val()).includes(userData.username)) {
-                    setchoice("white");
+                if (userData) {
+                    if (Object.values(snapshot.val()).includes(userData.username)) {
+                        setchoice("red");
+                        document.getElementById("likebtn").style.color = "red";
+                    }
                 }
             });
         } else {
-            setchoice("white");
+            setchoice("green");
         }
+
+        get(ref(database, `posts/post${element.id}/comments`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                setCommentCount(Object.keys(snapshot.val()).length);
+            } else if (!snapshot.exists()) {
+                setCommentCount(0);
+            }
+        });
 
         onValue(ref(database, `posts/post${element.id}/likes`), (snapshot) => {
             if (snapshot.exists()) {
                 setLikesCount(Object.keys(snapshot.val()).length);
-                console.log(Object.values(snapshot.val()).includes(userData.username));
             } else if (!snapshot.exists()) {
                 set(ref(database, `posts/post${element.id}/likes`), false);
             }
         });
     }, []);
+
+    console.log(local);
 
     function calculateDiff() {
         const start = moment(element.date_in_ms);
@@ -121,7 +134,12 @@ const SignlePost = (body) => {
                         />
                     )}
                 </div>
-                <div className="body" onClick={() => history(`/post/${element.id}`)}>
+                <div
+                    className="body"
+                    onClick={() => {
+                        history(`/post/${element.id}`);
+                    }}
+                >
                     <div className="text">{element.body}</div>
                 </div>
             </div>
@@ -130,16 +148,19 @@ const SignlePost = (body) => {
                     <div>
                         <button
                             style={{ background: "none", border: "none" }}
-                            color="white"
                             onClick={(e) => {
                                 if (userData && currentUser) {
-                                    if (e.target.style.color == "white") {
+                                    if (e.target.style.color != "red") {
                                         handleLike();
                                         // setlikesList([userData.username]);
                                         e.target.style.color = "red";
                                     } else if (e.target.style.color == "red") {
                                         handleDislike();
-                                        e.target.style.color = "white";
+                                        if (local == "white") {
+                                            e.target.style.color = "white";
+                                        } else if (local == "black") {
+                                            e.target.style.color = "black";
+                                        }
                                     }
                                 } else {
                                     document.getElementById("likebtn").disabled = true;
@@ -147,16 +168,29 @@ const SignlePost = (body) => {
                                 }
                             }}
                         >
-                            <AiOutlineHeart id="likebtn" size="20px" style={{ color: choice }} />
+                            {choice ? (
+                                <AiOutlineHeart
+                                    size="20px"
+                                    style={{ color: choice }}
+                                    id="likebtn"
+                                    className="feedback"
+                                />
+                            ) : (
+                                <AiOutlineHeart
+                                    size="20px"
+                                    style={{ color: local }}
+                                    id="likebtn"
+                                    className="feedback"
+                                />
+                            )}
                         </button>
                         {likescount ? likescount : "0"}
                     </div>
-                    <div>
+                    <div id="container">
                         <button
                             style={{
                                 border: "none",
                                 background: "none",
-                                color: "white",
                             }}
                             onClick={async () => {
                                 await history(`/post/${element.id}`);
@@ -165,9 +199,9 @@ const SignlePost = (body) => {
                                 }
                             }}
                         >
-                            <BiCommentDetail size="20px" />
+                            <BiCommentDetail size="20px" className="feedback" style={{ color: local }} />
                         </button>
-                        0 Comments
+                        {commentCount} Comments
                     </div>
                     <div>0 Reposts</div>
                 </div>
@@ -178,20 +212,28 @@ const SignlePost = (body) => {
 
 const ShowPosts = (person, id) => {
     const { single_posts, sortMethod, setSortMethod } = useContext(UserProvider);
-
+    function compare(a, b) {
+        if (Object.keys(a.likes).length > Object.keys(b.likes).length) {
+            return -1;
+        }
+        if (Object.keys(a.likes).length < Object.keys(b.likes).length) {
+            return 1;
+        }
+        return 0;
+    }
     var gowno;
-    console.log(sortMethod);
+    // console.log(sortMethod);
+
     if (!sortMethod) {
         gowno = single_posts;
-    }
-    if (sortMethod == "NEWEST-LATEST") {
+    } else if (sortMethod == "NEWEST-LATEST") {
         gowno = single_posts.sort((a, b) => b.date_in_ms - a.date_in_ms);
-    }
-    if (sortMethod == "LATEST-NEWEST") {
+    } else if (sortMethod == "LATEST-NEWEST") {
         gowno = single_posts.sort((a, b) => a.date_in_ms - b.date_in_ms);
-    }
-    if (sortMethod == "BY_USR") {
+    } else if (sortMethod == "BY_USR") {
         gowno = single_posts.filter((e) => e.posted_by == person.person);
+    } else if (sortMethod == "BY_LIKES") {
+        gowno = single_posts.sort(compare);
     }
 
     return (

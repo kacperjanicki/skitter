@@ -72,5 +72,6 @@ export function writePostData(username, body, pic) {
         profile_pic: pic,
         comments: false,
         likes: false,
+        views: false,
     });
 }

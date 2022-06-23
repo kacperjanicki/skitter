@@ -39,72 +39,77 @@ const PostCreate = () => {
 
     return (
         <div className="form">
-            <form onSubmit={formSubmit}>
-                <FloatingLabel
-                    controlId="floatingTextarea2"
-                    label="Add your post..."
-                    style={{ color: "black" }}
-                >
-                    <Form.Control
-                        as="input"
-                        ref={text}
-                        style={{ height: "100px", width: "600px" }}
-                        id="postform"
-                    />
-                    {error && (
-                        <Alert variant="danger" style={{ width: "600px" }}>
-                            {error}
-                        </Alert>
-                    )}
-                    {log && (
-                        <Alert variant="success" style={{ width: "600px" }}>
-                            {log}
-                        </Alert>
-                    )}
-                    <div className="publish_container">
-                        <Button type="submit" form="postform">
-                            Publish
+            <form onSubmit={formSubmit} id="postform">
+                <textarea
+                    placeholder="Add your post"
+                    ref={text}
+                    style={{ height: "100px", width: "600px", padding: "10px", marginTop: "20px" }}
+                    id="postform"
+                />
+                {error && (
+                    <Alert variant="danger" style={{ width: "600px" }}>
+                        {error}
+                    </Alert>
+                )}
+                {log && (
+                    <Alert variant="success" style={{ width: "600px" }}>
+                        {log}
+                    </Alert>
+                )}
+                <div className="publish_container">
+                    <Button type="submit" form="postform">
+                        Publish
+                    </Button>
+                    <div>
+                        <Button
+                            size="sm"
+                            variant="secondary"
+                            value="NEWEST-LATEST"
+                            onClick={(e) => {
+                                setSortMethod(e.target.value);
+                                e.target.style.backgroundColor = "#0b5088";
+                                e.target.addEventListener("focusout", () => {
+                                    e.target.style.backgroundColor = "";
+                                });
+                                document.getElementById("old").addEventListener("click", () => {
+                                    e.target.style.backgroundColor = "";
+                                });
+                            }}
+                            id="recent"
+                        >
+                            Most recent
                         </Button>
-                        <div>
-                            <Button
-                                size="sm"
-                                variant="secondary"
-                                value="NEWEST-LATEST"
-                                onClick={(e) => {
-                                    setSortMethod(e.target.value);
-                                    e.target.style.backgroundColor = "#0b5088";
-                                    e.target.addEventListener("focusout", () => {
-                                        e.target.style.backgroundColor = "";
-                                    });
-                                    document.getElementById("old").addEventListener("click", () => {
-                                        e.target.style.backgroundColor = "";
-                                    });
-                                }}
-                                id="recent"
-                            >
-                                Most recent
-                            </Button>
-                            <Button
-                                size="sm"
-                                variant="secondary"
-                                onClick={(e) => {
-                                    setSortMethod(e.target.value);
-                                    e.target.style.backgroundColor = "#0b5088";
-                                    e.target.addEventListener("focusout", () => {
-                                        e.target.style.backgroundColor = "";
-                                    });
-                                }}
-                                value="LATEST-NEWEST"
-                                id="old"
-                            >
-                                Least recent
-                            </Button>
-                            <Button size="sm" variant="secondary" value="BY_LIKES">
-                                By Likes
-                            </Button>
-                        </div>
+                        <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={(e) => {
+                                setSortMethod(e.target.value);
+                                e.target.style.backgroundColor = "#0b5088";
+                                e.target.addEventListener("focusout", () => {
+                                    e.target.style.backgroundColor = "";
+                                });
+                            }}
+                            value="LATEST-NEWEST"
+                            id="old"
+                        >
+                            Least recent
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant="secondary"
+                            value="BY_LIKES"
+                            onClick={(e) => {
+                                setSortMethod(e.target.value);
+                                e.target.style.backgroundColor = "#0b5088";
+                                e.target.addEventListener("focusout", () => {
+                                    e.target.style.backgroundColor = "";
+                                });
+                            }}
+                        >
+                            By Likes
+                        </Button>
                     </div>
-                </FloatingLabel>
+                </div>
             </form>
         </div>
     );

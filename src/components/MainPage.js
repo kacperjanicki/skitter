@@ -8,7 +8,7 @@ import PostCreate from "./PostCreate";
 import ShowPosts from "./ShowPosts";
 
 const MainPage = () => {
-    const { userData, setSortMethod, currentUser, tweetref } = useContext(UserProvider);
+    const { userData, setSortMethod, currentUser, tweetref, local, setlocal } = useContext(UserProvider);
     // console.log(NodeList(tweetref.current));
 
     const darkMode = () => {
@@ -22,21 +22,27 @@ const MainPage = () => {
             tweetref.current.classList.add("tweetswitch");
             localStorage.setItem("mode", "dark");
         }
+        console.log(localStorage.getItem("mode"));
+        if (localStorage.getItem("mode") == "dark") {
+            setlocal("white");
+        } else if (localStorage.getItem("mode") == "light") {
+            setlocal("black");
+        }
     };
     useEffect(() => {
         setSortMethod("NEWEST-LATEST");
-        console.log(localStorage.getItem("mode"));
+
         if (localStorage.getItem("mode") == "dark") {
             document.getElementById("mainpage").classList.add("switch");
             document.getElementById("button").innerHTML = "Dark theme";
         } else if (localStorage.getItem("mode") == "light") {
             document.getElementById("mainpage").classList.remove("switch");
             document.getElementById("button").innerHTML = "Light theme";
-
-            // document.querySelectorAll("#tweetsingle").forEach((div) => {
-            //     console.log(div);
-            //     div.classList.remove("tweetswitch");
-            // });
+        }
+        if (localStorage.getItem("mode") == "dark") {
+            setlocal("white");
+        } else if (localStorage.getItem("mode") == "light") {
+            setlocal("black");
         }
     }, []);
 
