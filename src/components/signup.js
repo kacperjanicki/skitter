@@ -5,6 +5,7 @@ import { Form, Button, Card, Alert } from "react-bootstrap";
 import "./loginpage.css";
 import { UserProvider } from "../App";
 import { Link, useNavigate } from "react-router-dom";
+import ImageResizeCropComponent from "./crop/Crop";
 
 const LoginPage = () => {
     const emailRef = useRef();
@@ -18,6 +19,8 @@ const LoginPage = () => {
     const { signup, login } = useContext(UserProvider);
     const [error, setError] = useState("");
     const [log, setLog] = useState("");
+    const [openCrop, setOpenCrop] = useState(false);
+
     const history = useNavigate();
     const { loading, setLoading } = useContext(UserProvider);
 
@@ -60,6 +63,10 @@ const LoginPage = () => {
                     <span id="title">Skitter</span>
                     <div className="login">
                         <Card>
+                            <div>
+                                <ImageResizeCropComponent />
+                            </div>
+
                             <Card.Body>
                                 <h2>Sign up</h2>
                                 {error && <Alert variant="danger">{error}</Alert>}
