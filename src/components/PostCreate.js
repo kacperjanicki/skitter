@@ -1,25 +1,23 @@
 import React, { useContext, useRef, useState } from "react";
-import { FloatingLabel, Form, Button, Alert } from "react-bootstrap";
+import { FloatingLabel, Form, Button, Alert, Modal } from "react-bootstrap";
 import { UserProvider } from "../App";
 import { writePostData } from "../firebase";
 import "./loginpage.css";
 
 const PostCreate = () => {
     const { userData, currentUser } = useContext(UserProvider);
-    const { setSortMethod, sortMethod } = useContext(UserProvider);
+    const { setSortMethod, sortMethod, setShow, showModal } = useContext(UserProvider);
     const [error, setError] = useState();
     const [log, setLog] = useState();
 
     const text = useRef();
     const formSubmit = (e) => {
-        e.preventDefault();
         if (!currentUser) {
             setError(`You have to log in`);
         } else if (userData) {
             try {
                 console.log(userData);
                 writePostData(userData.username, text.current.value, userData.profile_picture);
-                e.target.reset();
                 setLog("Post sent!");
                 setSortMethod("NEWEST-LATEST");
                 document.getElementById("recent").click();
@@ -27,90 +25,57 @@ const PostCreate = () => {
             } catch (err) {
                 setError("");
                 setError(String(err));
+                console.log(err);
             }
         }
     };
-    // const handlesort = (e) => {
-    //     console.log(sortMethod);
-    //     setSortMethod(e.target.value);
-
-    //     console.log(e.target.value);
-    // };
+    const handleClose = () => {
+        setShow(false);
+    };
 
     return (
         <div className="form">
-            <form onSubmit={formSubmit} id="postform">
-                <textarea
-                    placeholder="Add your post"
-                    ref={text}
-                    style={{ height: "100px", width: "600px", padding: "10px", marginTop: "20px" }}
-                    id="postform"
-                />
-                {error && (
-                    <Alert variant="danger" style={{ width: "600px" }}>
-                        {error}
-                    </Alert>
-                )}
-                {log && (
-                    <Alert variant="success" style={{ width: "600px" }}>
-                        {log}
-                    </Alert>
-                )}
-                <div className="publish_container">
-                    <Button type="submit" form="postform">
-                        Publish
-                    </Button>
-                    <div>
-                        <Button
-                            size="sm"
-                            variant="secondary"
-                            value="NEWEST-LATEST"
-                            onClick={(e) => {
-                                setSortMethod(e.target.value);
-                                e.target.style.backgroundColor = "#0b5088";
-                                e.target.addEventListener("focusout", () => {
-                                    e.target.style.backgroundColor = "";
-                                });
-                                document.getElementById("old").addEventListener("click", () => {
-                                    e.target.style.backgroundColor = "";
-                                });
-                            }}
-                            id="recent"
-                        >
-                            Most recent
+            {error && (
+                <Alert variant="danger" style={{ width: "600px" }}>
+                    {error}
+                </Alert>
+            )}
+            {log && (
+                <Alert variant="success" style={{ width: "600px" }}>
+                    {log}
+                </Alert>
+            )}
+            <div className="publish_container">
+                <div className="d-flex align-items-center justify-content-center"></div>
+                <Modal show={showModal} onHide={handleClose}>
+                    <Modal.Header closeButton></Modal.Header>
+                    <Modal.Body>
+                        <form onSubmit={formSubmit} id="postform">
+                            <textarea
+                                placeholder="What's on your mind?"
+                                ref={text}
+                                style={{ height: "100px", width: "100%", padding: "10px" }}
+                                id="postform"
+                                autoFocus={true}
+                            />
+                        </form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose}>
+                            Close
                         </Button>
                         <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={(e) => {
-                                setSortMethod(e.target.value);
-                                e.target.style.backgroundColor = "#0b5088";
-                                e.target.addEventListener("focusout", () => {
-                                    e.target.style.backgroundColor = "";
-                                });
-                            }}
-                            value="LATEST-NEWEST"
-                            id="old"
-                        >
-                            Least recent
-                        </Button>
-                        <Button
-                            size="sm"
-                            variant="secondary"
-                            value="BY_LIKES"
-                            onClick={(e) => {
-                                setSortMethod(e.target.value);
-                                e.target.style.backgroundColor = "#0b5088";
-                                e.target.addEventListener("focusout", () => {
-                                    e.target.style.backgroundColor = "";
-                                });
+                            variant="primary"
+                            onClick={() => {
+                                handleClose();
+                                formSubmit();
                             }}
                         >
-                            By Likes
+                            Send
                         </Button>
-                    </div>
-                </div>
-            </form>
+                    </Modal.Footer>
+                </Modal>
+            </div>
         </div>
     );
 };

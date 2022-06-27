@@ -2,17 +2,15 @@ import ShowPosts from "./ShowPosts";
 import { get, ref, set } from "firebase/database";
 import { database } from "../firebase";
 import React, { useState, useContext, useEffect, useRef } from "react";
-import { Alert, Button, Card, DropdownButton } from "react-bootstrap";
+import { Alert, Button, Modal, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { UserProvider } from "../App";
 import { auth } from "../firebase";
 import GenerateNav from "./GenerateNav";
-import { setLogLevel } from "firebase/app";
-import { BiSleepy } from "react-icons/bi";
 
 const Dashboard = () => {
     const [error, setError] = useState("");
-    const { setcurrentUser, setSortMethod, logout, userData } = useContext(UserProvider);
+    const { setcurrentUser, setSortMethod, logout, userData, setlocal, local } = useContext(UserProvider);
     const navigate = useNavigate();
     const bioref = useRef();
     setSortMethod("BY_USR");
@@ -60,25 +58,62 @@ const Dashboard = () => {
         console.log(bioref.current.value);
     };
 
+    console.log(localStorage.getItem("mode"));
+    if (localStorage.getItem("mode") == "dark") {
+        if (document.getElementById("mainpage")) {
+            document.getElementById("mainpage").classList.add("switch");
+            setlocal("white");
+        }
+    }
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    const [show2, setShow2] = useState(false);
+    const handleClose2 = () => setShow2(false);
+    const handleShow2 = () => setShow2(true);
+
+    const [following, setfollowing] = useState();
+    const [followers, setfollowers] = useState();
+
+    useEffect(() => {
+        if (userData) {
+            get(ref(database, `users/${userData.username}/following`)).then((snapshot) => {
+                setfollowing(Object.values(snapshot.val()));
+            });
+            get(ref(database, `users/${userData.username}/followers`)).then((snapshot) => {
+                setfollowers(Object.values(snapshot.val()));
+            });
+        }
+    }, []);
+
     return (
         <>
             {userData ? (
                 <>
-                    <div style={{ position: "absolute", top: "50px", right: 0, zIndex: 5 }}>
+                    <div style={{ position: "absolute", top: "0px", right: 0, zIndex: 5 }}>
                         <Button onClick={handleLogOut}>Sign Out</Button>
                     </div>
-                    <div style={{ position: "absolute", top: "50px" }}>
+                    <div
+                        className="cont home main"
+                        id="mainpage"
+                        style={{ display: "flex", flexDirection: "row", gap: "30px" }}
+                    >
                         <GenerateNav />
-
                         <div className="profile">
-                            <div id="left"></div>
                             <div id="middle wrap">
-                                <div className="middle">
+                                <div className="middle" style={{ color: "white" }}>
                                     <img
                                         src={userData.profile_picture}
                                         style={{ width: "200px", height: "200px", borderRadius: "200px" }}
                                     />
-                                    <div style={{ display: "flex", flexDirection: "column" }}>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            textAlign: "left",
+                                        }}
+                                    >
                                         <span className="text-left">
                                             <strong id="txt">{userData.full_name}</strong>
                                             <span>@{userData.username}</span>
@@ -96,7 +131,14 @@ const Dashboard = () => {
                                                     <div style={{ display: "flex", gap: "10px" }}>
                                                         <span style={{ display: "flex", gap: "5px" }}>
                                                             {userData.followers ? (
-                                                                <span>
+                                                                <button
+                                                                    style={{
+                                                                        background: "none",
+                                                                        border: "none",
+                                                                        color: "white",
+                                                                    }}
+                                                                    onClick={handleShow2}
+                                                                >
                                                                     <strong>
                                                                         {
                                                                             Object.keys(userData.followers)
@@ -104,7 +146,7 @@ const Dashboard = () => {
                                                                         }
                                                                     </strong>{" "}
                                                                     follower(s)
-                                                                </span>
+                                                                </button>
                                                             ) : (
                                                                 <span>
                                                                     <strong>0</strong> follower(s)
@@ -112,8 +154,133 @@ const Dashboard = () => {
                                                             )}
                                                         </span>
                                                         <span style={{ display: "flex", gap: "5px" }}>
-                                                            <strong>0</strong> following
+                                                            <button
+                                                                style={{
+                                                                    background: "none",
+                                                                    border: "none",
+                                                                    color: "white",
+                                                                }}
+                                                                onClick={handleShow}
+                                                            >
+                                                                <strong>
+                                                                    {Object.keys(userData.following).length}
+                                                                </strong>{" "}
+                                                                following
+                                                            </button>
                                                         </span>
+                                                        <Modal show={show} onHide={handleClose}>
+                                                            <Modal.Header closeButton>
+                                                                <Modal.Title>Following:</Modal.Title>
+                                                            </Modal.Header>
+                                                            <Modal.Body>
+                                                                <Form>
+                                                                    <Form.Group className="mb-3">
+                                                                        {following && following.length > 0 ? (
+                                                                            following.map((person) => {
+                                                                                return (
+                                                                                    <div
+                                                                                        style={{
+                                                                                            display: "flex",
+                                                                                            gap: "5px",
+                                                                                            justifyItems:
+                                                                                                "center",
+                                                                                            border: "1px solid #dee2e6",
+                                                                                        }}
+                                                                                    >
+                                                                                        <img
+                                                                                            src={
+                                                                                                person.profile_picture
+                                                                                            }
+                                                                                            style={{
+                                                                                                height: "50px",
+                                                                                                width: "50px",
+                                                                                            }}
+                                                                                            onClick={() => {
+                                                                                                navigate(
+                                                                                                    `/user/${person.name}`
+                                                                                                );
+                                                                                            }}
+                                                                                        />
+                                                                                        <h3>{person.name}</h3>
+                                                                                    </div>
+                                                                                );
+                                                                            })
+                                                                        ) : (
+                                                                            <>
+                                                                                <span>
+                                                                                    It seems you are not
+                                                                                    following anyone...
+                                                                                </span>
+                                                                                <br></br>
+                                                                                <a href="/suggested">
+                                                                                    Look for people to follow
+                                                                                </a>
+                                                                            </>
+                                                                        )}
+                                                                    </Form.Group>
+                                                                </Form>
+                                                            </Modal.Body>
+                                                            <Modal.Footer>
+                                                                <Button
+                                                                    variant="secondary"
+                                                                    onClick={handleClose}
+                                                                >
+                                                                    Close
+                                                                </Button>
+                                                            </Modal.Footer>
+                                                        </Modal>
+                                                        <Modal show={show2} onHide={handleClose2}>
+                                                            <Modal.Header closeButton>
+                                                                <Modal.Title>Followers:</Modal.Title>
+                                                            </Modal.Header>
+                                                            <Modal.Body>
+                                                                <Form>
+                                                                    <Form.Group className="mb-3">
+                                                                        {followers
+                                                                            ? followers.map((person) => {
+                                                                                  return (
+                                                                                      <div
+                                                                                          style={{
+                                                                                              display: "flex",
+                                                                                              gap: "5px",
+                                                                                              justifyItems:
+                                                                                                  "center",
+                                                                                              border: "1px solid #dee2e6",
+                                                                                          }}
+                                                                                      >
+                                                                                          <img
+                                                                                              src={
+                                                                                                  person.profile_picture
+                                                                                              }
+                                                                                              style={{
+                                                                                                  height: "50px",
+                                                                                                  width: "50px",
+                                                                                              }}
+                                                                                              onClick={() => {
+                                                                                                  navigate(
+                                                                                                      `/user/${person.name}`
+                                                                                                  );
+                                                                                              }}
+                                                                                          />
+                                                                                          <h3>
+                                                                                              {person.name}
+                                                                                          </h3>
+                                                                                      </div>
+                                                                                  );
+                                                                              })
+                                                                            : ""}
+                                                                    </Form.Group>
+                                                                </Form>
+                                                            </Modal.Body>
+                                                            <Modal.Footer>
+                                                                <Button
+                                                                    variant="secondary"
+                                                                    onClick={handleClose2}
+                                                                >
+                                                                    Close
+                                                                </Button>
+                                                            </Modal.Footer>
+                                                        </Modal>
                                                     </div>
                                                 </div>
                                             </div>
@@ -121,7 +288,15 @@ const Dashboard = () => {
 
                                         {error && <Alert>{error}</Alert>}
                                         {userData.bio ? (
-                                            <span style={{ marginBottom: "20px" }}>{userData.bio}</span>
+                                            <span
+                                                style={{
+                                                    marginBottom: "20px",
+                                                    marginTop: "10px",
+                                                    textAlign: "left",
+                                                }}
+                                            >
+                                                {userData.bio}
+                                            </span>
                                         ) : (
                                             <span style={{ marginBottom: "20px", textAlign: "center" }}>
                                                 <button
@@ -148,22 +323,20 @@ const Dashboard = () => {
                                             onClick={async () => {
                                                 navigate("/profile/edit");
                                             }}
+                                            style={{ width: "200px" }}
                                         >
                                             Edit profile
                                         </Button>
                                     </div>
                                 </div>
                                 <div>
-                                    <div className="middle" style={{ paddingBottom: "10px" }}>
+                                    <div className="middle" style={{ paddingBottom: "10px", color: "white" }}>
                                         <h1>Your posts</h1>
                                     </div>
-                                    <div className="post-cont">
-                                        <ShowPosts person={userData.username} />
-                                        People you might know
-                                    </div>
+
+                                    <ShowPosts person={userData.username} />
                                 </div>
                             </div>
-                            <div id="right"></div>
                         </div>
                     </div>
                 </>

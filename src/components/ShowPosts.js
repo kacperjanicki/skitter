@@ -10,7 +10,7 @@ import { BiCommentDetail } from "react-icons/bi";
 
 const SignlePost = (body) => {
     var element = body.body;
-    const { userData, currentUser, tweetref, local } = useContext(UserProvider);
+    const { userData, currentUser, tweetref, local, setlocal } = useContext(UserProvider);
     const history = useNavigate();
     const [likescount, setLikesCount] = useState();
     const [choice, setchoice] = useState();
@@ -21,14 +21,16 @@ const SignlePost = (body) => {
         if (currentUser) {
             get(ref(database, `posts/post${element.id}/likes`)).then((snapshot) => {
                 if (userData) {
-                    if (Object.values(snapshot.val()).includes(userData.username)) {
+                    console.log(Object.keys(snapshot.val()));
+                    if (Object.keys(snapshot.val()).includes(userData.username)) {
                         setchoice("red");
-                        document.getElementById("likebtn").style.color = "red";
+                        if (document.getElementById("likebtn")) {
+                        } else {
+                            document.getElementById("likebtn").style.color = local;
+                        }
                     }
                 }
             });
-        } else {
-            setchoice("green");
         }
 
         get(ref(database, `posts/post${element.id}/comments`)).then((snapshot) => {
@@ -47,8 +49,6 @@ const SignlePost = (body) => {
             }
         });
     }, []);
-
-    console.log(local);
 
     function calculateDiff() {
         const start = moment(element.date_in_ms);
@@ -69,6 +69,12 @@ const SignlePost = (body) => {
             return `${minutes} minutes ago`;
         } else if (days >= 1) {
             return `${days} day ago`;
+        }
+    }
+    if (localStorage.getItem("mode") == "dark") {
+        if (document.getElementById("mainpage")) {
+            document.getElementById("mainpage").classList.add("switch");
+            setlocal("white");
         }
     }
 
@@ -184,7 +190,7 @@ const SignlePost = (body) => {
                                 />
                             )}
                         </button>
-                        {likescount ? likescount : "0"}
+                        {likescount ? <span className="likecount">{likescount}</span> : "0"}
                     </div>
                     <div id="container">
                         <button
@@ -237,7 +243,7 @@ const ShowPosts = (person, id) => {
     }
 
     return (
-        <div className="tweets" id="alltweets">
+        <div className="tweets" id="alltweets" style={{ width: "600px" }}>
             {gowno.map((element) => {
                 return <SignlePost body={element} key={element.id} />;
             })}

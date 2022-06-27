@@ -1,8 +1,10 @@
 import React from "react";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 const SingleComment = (data) => {
     let user = data.data;
+    const history = useNavigate();
     function calculateDiff() {
         const start = moment(user.date);
         const end = moment(new Date().getTime());
@@ -31,9 +33,9 @@ const SingleComment = (data) => {
                     <>
                         <img
                             src={user.prof_pic}
-                            // onClick={() => {
-                            //     history(`/user/${element.posted_by}`);
-                            // }}
+                            onClick={() => {
+                                history(`/user/${user.author}`);
+                            }}
                         />
                         <div className="footer">
                             {user.author}

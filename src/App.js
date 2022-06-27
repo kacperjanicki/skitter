@@ -67,13 +67,55 @@ function App() {
     for (let i = 0; i < keys.length; i++) {
         single_posts.push(destination[keys[i]]);
     }
+    const darkMode = () => {
+        if (document.getElementById("mainpage").classList.contains("switch")) {
+            document.getElementById("mainpage").classList.remove("switch");
+            document.getElementById("modeswitch").innerHTML = "Light theme";
+            localStorage.setItem("mode", "light");
+        } else {
+            document.getElementById("mainpage").classList.add("switch");
+            document.getElementById("modeswitch").innerHTML = "Dark theme";
+            tweetref.current.classList.add("tweetswitch");
+            localStorage.setItem("mode", "dark");
+        }
+        console.log(localStorage.getItem("mode"));
+        if (localStorage.getItem("mode") == "dark") {
+            setlocal("white");
+        } else if (localStorage.getItem("mode") == "light") {
+            setlocal("black");
+        }
+    };
+
+    useEffect(() => {
+        console.log(local);
+        if (document.getElementById("mainpage")) {
+            if (localStorage.getItem("mode") == "dark") {
+                document.getElementById("mainpage").classList.add("switch");
+            } else if (localStorage.getItem("mode") == "light") {
+                document.getElementById("mainpage").classList.remove("switch");
+            }
+            if (localStorage.getItem("mode") == "dark") {
+                setlocal("white");
+            } else if (localStorage.getItem("mode") == "light") {
+                setlocal("black");
+            }
+        }
+    }, []);
+
     const [sorted_arr, setSorted_arr] = useState();
     const [sortMethod, setSortMethod] = useState();
     const [local, setlocal] = useState();
     const tweetref = useRef();
+    const [showModal, setShow] = useState(false);
+    const [displayType, setdisplayType] = useState();
 
     const value = {
         currentUser,
+        showModal,
+        displayType,
+        setdisplayType,
+        darkMode,
+        setShow,
         local,
         setlocal,
         tweetref,

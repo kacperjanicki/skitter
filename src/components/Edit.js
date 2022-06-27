@@ -13,7 +13,8 @@ const Edit = () => {
     const imgRef = useRef();
     const birthRef = useRef();
     const bioRef = useRef();
-    const { setcurrentUser, setSortMethod, logout, userData } = useContext(UserProvider);
+    const usernameRef = useRef();
+    const { setcurrentUser, setSortMethod, logout, userData, local, setlocal } = useContext(UserProvider);
     const navigate = useNavigate();
     console.log(userData);
     setSortMethod("BY_USR");
@@ -32,7 +33,7 @@ const Edit = () => {
             setError("");
             setlog("");
             await writeUserData(
-                userData.username,
+                usernameRef.current.value,
                 userData.email,
                 fnameRef.current.value,
                 lnameRef.current.value,
@@ -60,21 +61,27 @@ const Edit = () => {
             document.getElementById("exampleFormControlTextarea1").focus();
         }
     }, []);
+    if (localStorage.getItem("mode") == "dark") {
+        if (document.getElementById("mainpage")) {
+            document.getElementById("mainpage").classList.add("switch");
+            setlocal("white");
+        }
+    }
 
     return (
         <>
             {userData ? (
                 <>
-                    <div style={{ position: "absolute", top: "50px", right: 0, zIndex: 5 }}>
-                        <Button onClick={handleLogOut}>Sign Out</Button>
-                    </div>
-                    <div style={{ position: "absolute", top: "50px" }}>
+                    <div
+                        className="cont home main"
+                        id="mainpage"
+                        style={{ display: "flex", flexDirection: "row", gap: "30px" }}
+                    >
                         <GenerateNav />
 
                         <div className="profile">
-                            <div id="left"></div>
                             <div className="middle edit">
-                                <div className="middle">
+                                <div className="middle" style={{ color: "white", padding: "10px" }}>
                                     <div
                                         style={{ display: "flex", flexDirection: "column", padding: "10px" }}
                                     >
@@ -92,9 +99,14 @@ const Edit = () => {
                                     </div>
 
                                     <div
-                                        style={{ display: "flex", flexDirection: "column", height: "500px" }}
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            height: "500px",
+                                            padding: "10px",
+                                        }}
                                     >
-                                        <span className="text-left">
+                                        <span style={{ textAlign: "left" }}>
                                             <strong id="txt">{userData.full_name}</strong>
                                             <span>@{userData.username}</span>
                                         </span>
@@ -115,7 +127,7 @@ const Edit = () => {
                                                 </div>
                                             </div>
                                         </span>
-                                        <Form onSubmit={updateusr}>
+                                        <Form onSubmit={updateusr} style={{ padding: "5px" }}>
                                             <Form.Group>
                                                 <Form.Label>First Name</Form.Label>
                                                 <Form.Control
@@ -128,6 +140,13 @@ const Edit = () => {
                                                 <Form.Control
                                                     defaultValue={userData.last_name}
                                                     ref={lnameRef}
+                                                ></Form.Control>
+                                            </Form.Group>
+                                            <Form.Group>
+                                                <Form.Label>Username (once in 90 days)</Form.Label>
+                                                <Form.Control
+                                                    defaultValue={userData.username}
+                                                    ref={usernameRef}
                                                 ></Form.Control>
                                             </Form.Group>
                                             <Form.Group>
@@ -159,8 +178,6 @@ const Edit = () => {
                                     </div>
                                 </div>
                             </div>
-
-                            <div id="right"></div>
                         </div>
                     </div>
                 </>

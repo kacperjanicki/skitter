@@ -4,6 +4,7 @@ import { database } from "../firebase";
 import { ref, get, set, onValue, push } from "firebase/database";
 import GenerateNav from "./GenerateNav";
 import { AiFillHeart, AiOutlineEye } from "react-icons/ai";
+import { Modal } from "react-bootstrap";
 import { BiCommentDetail, BiRepost } from "react-icons/bi";
 import { Button, FloatingLabel, Form, Alert } from "react-bootstrap";
 import { UserProvider } from "../App";
@@ -21,6 +22,7 @@ const GeneratePost = () => {
     const [log, setLog] = useState();
     const [likesCount, setLikesCount] = useState();
     const [likesList, setlikesList] = useState();
+    const [likedby, setLiked_by] = useState();
     // setSortMethod("NEWEST-LATEST");
 
     useEffect(() => {
@@ -32,28 +34,37 @@ const GeneratePost = () => {
         get(count2).then((snapshot) => {
             if (snapshot.exists() && userData) {
                 var val = snapshot.val();
-                if (Object.values(val).includes(userData.username)) {
+                if (Object.keys(val).includes(userData.username)) {
                     document.getElementById("likebtn").style.color = "red";
                 } else {
                     document.getElementById("likebtn").style.color = "white";
                 }
+                setLiked_by(snapshot.val());
             } else if (!snapshot.exists()) {
                 set(ref(database, `posts/post${id}/likes`), false);
             }
         });
 
         onValue(ref(database, `posts/post${id}/likes`), (snapshot) => {
-            console.log(snapshot.val());
-            setlikesList(Object.values(snapshot.val()));
+            console.log(Object.values(snapshot.val()));
+            setLiked_by(Object.values(snapshot.val()));
+
+            setlikesList(Object.keys(snapshot.val()));
             setLikesCount(Object.keys(snapshot.val()).length);
         });
     }, []);
-    console.log(likesList);
+
+    console.log(likedby);
+    // console.log(Array.from(likedby));
 
     const handleLike = () => {
         if (currentUser) {
             try {
-                set(ref(database, `posts/post${id}/likes/${userData.username}`), userData.username);
+                set(ref(database, `posts/post${id}/likes/${userData.username}`), {
+                    name: userData.full_name,
+                    pic: userData.profile_picture,
+                    username: userData.username,
+                });
             } catch (err) {
                 console.log(err);
             }
@@ -106,23 +117,40 @@ const GeneratePost = () => {
     };
     var choice;
     if (likesList) {
-        if (likesList.includes(userData.username)) {
-            choice = "red";
-        } else {
-            choice = "white";
+        if (userData) {
+            if (likesList.includes(userData.username)) {
+                choice = "red";
+            } else {
+                choice = "white";
+            }
         }
     }
 
-    // console.log(id);
+    if (document.getElementById("mainpage")) {
+        if (localStorage.getItem("mode") == "dark") {
+            document.getElementById("mainpage").classList.add("switch");
+        }
+    }
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
     return (
-        <div style={{ position: "absolute", top: "50px" }}>
+        <div
+            className="cont home main"
+            id="mainpage"
+            style={{ display: "flex", flexDirection: "row", gap: "30px" }}
+        >
             <GenerateNav />
             <div className="profile">
-                <div id="left"></div>
                 <div id="middle wrap">
                     {post ? (
-                        <div className="middle post">
-                            <div className="content" style={{ marginLeft: "60px", marginBottom: 0 }}>
+                        <div className="middle post" style={{ color: "white", width: "600px" }}>
+                            <div
+                                className="content"
+                                style={{ marginLeft: "60px", marginBottom: 0, textAlign: "left" }}
+                            >
                                 {post ? post.body : "loading"}
                             </div>
                             <div className="context">
@@ -182,8 +210,65 @@ const GeneratePost = () => {
                                                 Like
                                             </button>
 
-                                            {likesCount ? `${likesCount} Likes` : `0 Likes`}
+                                            {likesCount ? (
+                                                <button
+                                                    style={{
+                                                        color: "white",
+                                                        background: "none",
+                                                        border: "none",
+                                                    }}
+                                                    onClick={handleShow}
+                                                >
+                                                    {likesCount} Likes
+                                                </button>
+                                            ) : (
+                                                `0 Likes`
+                                            )}
                                         </div>
+                                        <Modal show={show} onHide={handleClose}>
+                                            <Modal.Header closeButton>
+                                                <Modal.Title>Liked by</Modal.Title>
+                                            </Modal.Header>
+                                            <Modal.Body>
+                                                <Form>
+                                                    <Form.Group className="mb-3">
+                                                        {likedby
+                                                            ? likedby.map((person) => {
+                                                                  return (
+                                                                      <div
+                                                                          style={{
+                                                                              display: "flex",
+                                                                              gap: "5px",
+                                                                              justifyItems: "center",
+                                                                              border: "1px solid #dee2e6",
+                                                                          }}
+                                                                      >
+                                                                          <img
+                                                                              src={person.pic}
+                                                                              style={{
+                                                                                  height: "50px",
+                                                                                  width: "50px",
+                                                                              }}
+                                                                              onClick={() => {
+                                                                                  history(
+                                                                                      `/user/${person.username}`
+                                                                                  );
+                                                                              }}
+                                                                          />
+                                                                          <h3>{person.name}</h3>
+                                                                      </div>
+                                                                  );
+                                                              })
+                                                            : ""}
+                                                    </Form.Group>
+                                                </Form>
+                                            </Modal.Body>
+                                            <Modal.Footer>
+                                                <Button variant="secondary" onClick={handleClose}>
+                                                    Close
+                                                </Button>
+                                            </Modal.Footer>
+                                        </Modal>
                                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                                             <BiCommentDetail size="20px" />
                                             <button
@@ -239,17 +324,19 @@ const GeneratePost = () => {
                     )}
 
                     <div>
-                        <h2>
+                        <div style={{ width: "60vw" }}>
                             {currentUser ? (
-                                "Comments"
+                                ""
                             ) : (
-                                <span>
+                                <div style={{ textAlign: "left", position: "relative", left: 0 }}>
                                     <a href="/login">Log in</a> or <a href="/signup">create an account</a> to
                                     comment
-                                </span>
+                                </div>
                             )}
-                        </h2>
-                        <div style={{ width: "60vw" }}>
+                            <span style={{ width: "600px", textAlign: "left" }}>
+                                <h2>Comments</h2>
+                            </span>
+
                             {error && (
                                 <Alert variant="danger" style={{ width: "600px" }}>
                                     {error}
@@ -271,7 +358,7 @@ const GeneratePost = () => {
                                     as="input"
                                     size="lg"
                                     ref={commentRef}
-                                    style={{ height: "50px" }}
+                                    style={{ height: "50px", width: "520px" }}
                                     id="form"
                                     disabled={currentUser ? false : true}
                                 />
@@ -288,7 +375,6 @@ const GeneratePost = () => {
                         <GenerateComments idOfPost={id} />
                     </div>
                 </div>
-                <div id="right"></div>
             </div>
         </div>
     );

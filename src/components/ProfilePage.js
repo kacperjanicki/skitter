@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { UserProvider } from "../App";
 import { useNavigate } from "react-router-dom";
 import GenerateNav from "./GenerateNav";
-import { Button } from "react-bootstrap";
+import { Button, Modal, Form } from "react-bootstrap";
 
 import { database } from "../firebase";
 import { ref, set } from "firebase/database";
@@ -11,10 +11,14 @@ import { onValue, get } from "firebase/database";
 import ShowPosts from "./ShowPosts";
 
 const ProfilePage = () => {
-    const { userData, setSortMethod, currentUser } = useContext(UserProvider);
+    const { userData, setSortMethod, currentUser, local, setlocal } = useContext(UserProvider);
     let { username } = useParams();
     const history = useNavigate();
     setSortMethod("BY_USR");
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
     console.log(userData);
     console.log(currentUser);
     if (userData) {
@@ -62,6 +66,8 @@ const ProfilePage = () => {
                 set(ref(database, `users/${username}/followers/${userData.username}`), {
                     //drop a follow to sb
                     name: userData.username,
+                    full_name: userData.full_name,
+                    profile_picture: userData.profile_picture,
                 });
             }
         });
@@ -71,7 +77,12 @@ const ProfilePage = () => {
             // isBeingFollowed = true;
             setfollowing(true);
         });
+        set(ref(database, `users/${userData.username}/following/${username}`), {
+            name: username,
+            profile_picture: userobj.profile_picture,
+        });
     };
+
     const handleunFollow = () => {
         const count = ref(database, `users/${username}/followers`);
         get(count).then((snapshot) => {
@@ -94,7 +105,19 @@ const ProfilePage = () => {
                 });
             }
         });
-        console.log(isBeingFollowed);
+        get(ref(database, `users/${userData.username}/following`)).then((snapshot) => {
+            var val = snapshot.val();
+            const asArr = Object.entries(val);
+            const filtered = asArr.filter((a) => a[0] != username);
+            const final = Object.fromEntries(filtered);
+            console.log(asArr, filtered, final);
+
+            if (Object.keys(final).length == 0) {
+                set(ref(database, `users/${userData.username}/following`), false);
+            } else {
+                set(ref(database, `users/${userData.username}/following`), final);
+            }
+        });
     };
     console.log(username);
     useEffect(() => {
@@ -106,16 +129,25 @@ const ProfilePage = () => {
         };
         fetchdata();
     }, []);
+    if (localStorage.getItem("mode") == "dark") {
+        if (document.querySelector(".profile")) {
+            document.querySelector(".profile").classList.add("switch");
+            setlocal("white");
+        }
+    }
 
     return (
         <>
             {userobj ? (
-                <div style={{ position: "absolute", top: "50px" }}>
-                    <GenerateNav />
+                <div
+                    className="cont home main"
+                    id="mainpage"
+                    style={{ display: "flex", flexDirection: "row", gap: "30px" }}
+                >
+                    <GenerateNav style={{ color: local }} />
                     <div className="profile">
-                        <div id="left"></div>
-                        <div id="middle wrap">
-                            <div className="middle">
+                        <div>
+                            <div className="middle" style={{ color: "white" }}>
                                 <img
                                     src={userobj.profile_picture}
                                     style={{ width: "200px", height: "200px", borderRadius: "200px" }}
@@ -137,7 +169,16 @@ const ProfilePage = () => {
                                                 <span>
                                                     {count ? (
                                                         <>
-                                                            <strong>{count}</strong> follower(s)
+                                                            <button
+                                                                style={{
+                                                                    border: "none",
+                                                                    background: "none",
+                                                                    color: "white",
+                                                                }}
+                                                                onClick={handleShow}
+                                                            >
+                                                                <strong>{count}</strong> follower(s)
+                                                            </button>
                                                         </>
                                                     ) : (
                                                         <>
@@ -150,6 +191,56 @@ const ProfilePage = () => {
                                                 </span>
                                             </div>
                                         </div>
+
+                                        <Modal show={show} onHide={handleClose}>
+                                            <Modal.Header closeButton>
+                                                <Modal.Title>
+                                                    {userData ? `${userobj.full_name} followers` : ""}
+                                                </Modal.Title>
+                                            </Modal.Header>
+                                            <Modal.Body>
+                                                <Form>
+                                                    <Form.Group className="mb-3">
+                                                        {follower_count
+                                                            ? Object.values(follower_count).map((person) => {
+                                                                  return (
+                                                                      <div
+                                                                          style={{
+                                                                              display: "flex",
+                                                                              gap: "5px",
+                                                                              justifyItems: "center",
+                                                                              border: "1px solid #dee2e6",
+                                                                          }}
+                                                                      >
+                                                                          <img
+                                                                              src={person.profile_picture}
+                                                                              style={{
+                                                                                  height: "50px",
+                                                                                  width: "50px",
+                                                                              }}
+                                                                              onClick={() => {
+                                                                                  history(
+                                                                                      `/user/${person.name}`
+                                                                                  );
+                                                                              }}
+                                                                          />
+                                                                          <h3>{person.full_name}</h3>
+                                                                          <a href={`/user/${person.name}`}>
+                                                                              @{person.name}
+                                                                          </a>
+                                                                      </div>
+                                                                  );
+                                                              })
+                                                            : "try refreshing the page"}
+                                                    </Form.Group>
+                                                </Form>
+                                            </Modal.Body>
+                                            <Modal.Footer>
+                                                <Button variant="secondary" onClick={handleClose}>
+                                                    Close
+                                                </Button>
+                                            </Modal.Footer>
+                                        </Modal>
                                         <div style={{ marginBottom: "20px" }}>{bio}</div>
                                     </span>
                                     {userobj.when_joined ? ( //usun to potem

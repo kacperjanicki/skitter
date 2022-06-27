@@ -36,10 +36,18 @@ body {
 .btnblue {
     background-color: #0b5088;
 }
+.navitem {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.txt {
+    vertical-align: middle;
+}
 
 .main {
     height: 100vh;
-    width: 800px;
+    width: 600px;
     text-align: center;
     background-color: #5c84a8;
     overflow: auto;
@@ -57,7 +65,7 @@ body {
 
 .form {
     width: 50vw;
-    padding-top: 50px;
+    padding-top: 10px;
     text-align: left;
 }
 .tweet {
@@ -66,10 +74,7 @@ body {
     height: 140px;
     display: flex;
     gap: 10px;
-}
-
-.tweetswitch {
-    background-color: #296ca8;
+    padding: 5px;
 }
 
 .img_place > img {
@@ -96,20 +101,22 @@ body {
 
 .home {
     background-color: white;
-    margin-top: 40px;
+    /* margin-top: 40px; */
     color: "black";
+}
+
+.likecount:hover {
+    text-decoration: underline;
 }
 
 .profile {
     display: flex;
     align-content: center;
-    color: white;
+
+    /* color: white; */
+    overflow: hidden;
     height: 100vh;
     /* background-color: rgb(96, 199, 165); */
-}
-.profile {
-    background-color: #0b5088;
-    overflow: auto;
 }
 
 #txt {
@@ -117,29 +124,22 @@ body {
 }
 
 .middle {
-    width: 60vw;
+    width: 600px;
+    padding: 10px;
     background-color: #5c84a8;
     flex-shrink: 0;
     display: flex;
     gap: 20px;
 }
-#left {
-    width: 25vw;
-    /* background-color: red; */
-}
-#right {
-    /* background-color: green; */
-    width: 25vw;
-}
+
 @media screen and (max-width: 920px) {
-    #left,
-    #right {
-        display: none;
-    }
     .middle,
     .post-cont,
     .log {
         width: 100vw !important;
+    }
+    #test {
+        display: none;
     }
 }
 .wrap {

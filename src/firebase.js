@@ -1,7 +1,7 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, child, set, onValue, serverTimestamp, get } from "firebase/database";
+import { getDatabase, ref, set, onValue } from "firebase/database";
 
 const app = firebase.initializeApp({
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -41,7 +41,7 @@ export function writeUserData(
         last_name: lastname,
         full_name: `${firstname} ${lastname}`,
         email: email,
-        dateBirth: date,
+        dateBirth: String(date),
         profile_picture: imageUrl,
         followers: followers,
         following: following,
@@ -73,5 +73,6 @@ export function writePostData(username, body, pic) {
         comments: false,
         likes: false,
         views: false,
+        notifications: false,
     });
 }
