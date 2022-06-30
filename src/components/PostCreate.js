@@ -1,32 +1,62 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useRef, useState, useEffect } from "react";
 import { FloatingLabel, Form, Button, Alert, Modal } from "react-bootstrap";
 import { UserProvider } from "../App";
 import { writePostData } from "../firebase";
 import "./loginpage.css";
+import { database, storage } from "../firebase";
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 
 const PostCreate = () => {
     const { userData, currentUser } = useContext(UserProvider);
-    const { setSortMethod, sortMethod, setShow, showModal } = useContext(UserProvider);
+    const { setSortMethod, sortMethod, postcount, setShow, showModal } = useContext(UserProvider);
     const [error, setError] = useState();
     const [log, setLog] = useState();
+    const [innertext, setinnertext] = useState("");
+    const [url, seturl] = useState();
+    const [img, setimg] = useState();
+    useEffect(() => {
+        if (showModal) {
+            setimg();
+        }
+    }, []);
 
     const text = useRef();
     const formSubmit = (e) => {
         if (!currentUser) {
             setError(`You have to log in`);
         } else if (userData) {
+            if (img) {
+                console.log(img);
+                try {
+                    const uploadImg = async () => {
+                        const imgRef = ref(storage, `post_assets/${postcount + 1}`);
+                        const snap = await uploadBytes(imgRef, img);
+                        const url = await getDownloadURL(ref(storage, snap.ref.fullPath));
+                        seturl(url);
+                        if (url) {
+                            writePostData(userData.username, innertext, userData.profile_picture, url);
+                        }
+                    };
+                    uploadImg();
+                } catch (err) {
+                    console.log(err);
+                }
+            }
             try {
                 console.log(userData);
-                writePostData(userData.username, text.current.value, userData.profile_picture);
-                setLog("Post sent!");
+
+                if (!img && !url) {
+                    writePostData(userData.username, text.current.value, userData.profile_picture, false);
+                }
+
                 setSortMethod("NEWEST-LATEST");
                 document.getElementById("recent").click();
-                // document.getElementById("checked").selected = true;
             } catch (err) {
                 setError("");
                 setError(String(err));
                 console.log(err);
             }
+            setLog("Post sent!");
         }
     };
     const handleClose = () => {
@@ -57,8 +87,36 @@ const PostCreate = () => {
                                 style={{ height: "100px", width: "100%", padding: "10px" }}
                                 id="postform"
                                 autoFocus={true}
+                                onChange={(e) => {
+                                    setinnertext(e.target.value);
+                                }}
                             />
+                            <label for="fileinput">
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        gap: "10px",
+                                        alignItems: "center",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    <img
+                                        src="https://www.seekpng.com/png/full/406-4063154_image-gallery-landscape-square-potrait-pic-ui-comments.png"
+                                        style={{ height: "30px", cursor: "pointer" }}
+                                    ></img>
+                                    Attach image
+                                </div>
+                            </label>
+                            <input
+                                type="file"
+                                style={{ display: "none" }}
+                                id="fileinput"
+                                onChange={(e) => {
+                                    setimg(e.target.files[0]);
+                                }}
+                            ></input>
                         </form>
+                        {img ? <img src={img.name}></img> : ""}
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleClose}>

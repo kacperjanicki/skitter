@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { UserProvider } from "../App";
 
 const SingleComment = (data) => {
     let user = data.data;
     const history = useNavigate();
+    const { local } = useContext(UserProvider);
     function calculateDiff() {
         const start = moment(user.date);
         const end = moment(new Date().getTime());
@@ -26,8 +28,15 @@ const SingleComment = (data) => {
             return `${days} day ago`;
         }
     }
+    var borderchoice;
+    console.log(local);
+    if (local == "white") {
+        borderchoice = "1px solid #33373a";
+    } else if (local == "black") {
+        borderchoice = "1px solid #dee2e6";
+    }
     return (
-        <div className="tweet" id="tweetsingle" style={{ padding: "10px" }}>
+        <div className="tweet" id="tweetsingle" style={{ padding: "10px", border: borderchoice }}>
             <div className="img_place">
                 {data ? (
                     <>

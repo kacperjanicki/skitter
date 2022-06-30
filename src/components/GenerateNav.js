@@ -21,13 +21,13 @@ const GenerateNav = () => {
         lightMode,
         displayType,
         setdisplayType,
+        currentLoggedin,
     } = useContext(UserProvider);
     const navigate = useNavigate();
     const handleShow = () => setShow(true);
     const location = useLocation();
     console.log(location.pathname);
 
-    const [choice, setchoice] = useState(false);
     useEffect(() => {
         setSortMethod("NEWEST-LATEST");
     }, []);
@@ -193,7 +193,9 @@ const GenerateNav = () => {
                                 }}
                                 className="navbtn"
                                 onClick={() => {
-                                    navigate("/messages");
+                                    if (currentUser) {
+                                        navigate("/profile/messages");
+                                    }
                                 }}
                             >
                                 <TiMessages />
@@ -211,7 +213,7 @@ const GenerateNav = () => {
                                 }}
                                 className="navbtn"
                                 onClick={() => {
-                                    navigate("/profile");
+                                    navigate(`/user/${currentLoggedin}`);
                                 }}
                             >
                                 <CgProfile />

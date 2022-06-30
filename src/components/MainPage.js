@@ -10,7 +10,6 @@ import ShowPosts from "./ShowPosts";
 const MainPage = () => {
     const { userData, setSortMethod, currentUser, tweetref, local, setlocal, darkMode } =
         useContext(UserProvider);
-    const history = useNavigate();
 
     return (
         <>

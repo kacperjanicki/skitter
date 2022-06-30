@@ -7,8 +7,10 @@ body {
 .cont {
     width: 100vw !important;
     height: 100vh !important;
+
     display: flex;
     background-color: #296ca8;
+
     justify-content: center;
 }
 .edit {
@@ -36,6 +38,15 @@ body {
 .btnblue {
     background-color: #0b5088;
 }
+
+.switch #tweetsingle:hover {
+    background-color: #3f4144;
+}
+
+#tweetsingle:hover {
+    background-color: rgb(228, 229, 230);
+}
+
 .navitem {
     display: flex;
     gap: 10px;
@@ -50,6 +61,7 @@ body {
     width: 600px;
     text-align: center;
     background-color: #5c84a8;
+
     overflow: auto;
 }
 #title {
@@ -69,9 +81,11 @@ body {
     text-align: left;
 }
 .tweet {
-    border: 1px solid black;
+    /* border: 1px solid #dee2e6; */
     width: 600px;
-    height: 140px;
+    height: auto;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
     display: flex;
     gap: 10px;
     padding: 5px;
@@ -114,7 +128,8 @@ body {
     align-content: center;
 
     /* color: white; */
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow: visible;
     height: 100vh;
     /* background-color: rgb(96, 199, 165); */
 }
@@ -131,6 +146,27 @@ body {
     display: flex;
     gap: 20px;
 }
+.red {
+    height: "10px";
+    width: "10px";
+    background-color: red;
+    border-radius: 50%;
+}
+#msgform > div > input {
+    background: #5e6061;
+}
+
+.green {
+    border-radius: 50%;
+
+    background-color: green;
+}
+.green::before {
+    content: "\200B";
+}
+.inbox_user:hover {
+    background-color: #5e6061;
+}
 
 @media screen and (max-width: 920px) {
     .middle,
@@ -138,8 +174,12 @@ body {
     .log {
         width: 100vw !important;
     }
-    #test {
+    #test,
+    .inbox {
         display: none;
+    }
+    .content {
+        width: 100%;
     }
 }
 .wrap {

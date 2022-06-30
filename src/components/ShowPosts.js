@@ -7,21 +7,26 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { AiOutlineHeart } from "react-icons/ai";
 import { BiCommentDetail } from "react-icons/bi";
+import { border } from "@mui/system";
 
 const SignlePost = (body) => {
     var element = body.body;
+
     const { userData, currentUser, tweetref, local, setlocal } = useContext(UserProvider);
     const history = useNavigate();
     const [likescount, setLikesCount] = useState();
     const [choice, setchoice] = useState();
+    const [profpic, setProfpic] = useState();
 
     const [commentCount, setCommentCount] = useState();
 
     useEffect(() => {
+        get(ref(database, `users/${element.posted_by}`)).then((snapshot) => {
+            setProfpic(snapshot.val().profile_picture);
+        });
         if (currentUser) {
             get(ref(database, `posts/post${element.id}/likes`)).then((snapshot) => {
                 if (userData) {
-                    console.log(Object.keys(snapshot.val()));
                     if (Object.keys(snapshot.val()).includes(userData.username)) {
                         setchoice("red");
                         if (document.getElementById("likebtn")) {
@@ -48,7 +53,7 @@ const SignlePost = (body) => {
                 set(ref(database, `posts/post${element.id}/likes`), false);
             }
         });
-    }, []);
+    }, [element]);
 
     function calculateDiff() {
         const start = moment(element.date_in_ms);
@@ -82,9 +87,11 @@ const SignlePost = (body) => {
         let id = element.id;
         if (currentUser) {
             try {
-                const count = ref(database, `posts/post${id}/likes/`);
-                const newlike = push(count);
-                set(ref(database, `posts/post${id}/likes/${userData.username}`), userData.username);
+                set(ref(database, `posts/post${id}/likes/${userData.username}`), {
+                    name: userData.full_name,
+                    pic: userData.profile_picture,
+                    username: userData.username,
+                });
             } catch (err) {
                 console.log(err);
             }
@@ -112,15 +119,22 @@ const SignlePost = (body) => {
             });
         }
     };
+    var borderchoice;
+
+    if (local == "white") {
+        borderchoice = "1px solid #33373a";
+    } else if (local == "black") {
+        borderchoice = "1px solid #dee2e6";
+    }
 
     return (
         <div style={{ display: "flex", flexDirection: "column" }} ref={tweetref}>
-            <div className="tweet" id="tweetsingle" style={{ borderBottom: 0 }}>
+            <div className="tweet" id="tweetsingle" style={{ borderBottom: 0, border: borderchoice }}>
                 <div className="img_place">
-                    {element.profile_pic ? (
+                    {profpic ? (
                         <>
                             <img
-                                src={element.profile_pic}
+                                src={profpic}
                                 onClick={() => {
                                     history(`/user/${element.posted_by}`);
                                 }}
@@ -132,12 +146,7 @@ const SignlePost = (body) => {
                             </div>
                         </>
                     ) : (
-                        <img
-                            src={require("./placeholder.jpg")}
-                            onClick={() => {
-                                history(`/user/${element.posted_by}`);
-                            }}
-                        />
+                        ""
                     )}
                 </div>
                 <div
@@ -146,12 +155,32 @@ const SignlePost = (body) => {
                         history(`/post/${element.id}`);
                     }}
                 >
-                    <div className="text">{element.body}</div>
+                    <div className="text">
+                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                            {element.body}
+                            {element.additional ? (
+                                <img
+                                    src={element.additional}
+                                    style={{ width: "400px", borderRadius: "10px" }}
+                                ></img>
+                            ) : (
+                                ""
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div style={{ border: "1px solid black", textAlign: "left", width: "600px" }}>
+            <div
+                style={{
+                    border: borderchoice,
+                    textAlign: "left",
+                    width: "600px",
+                    borderBottomLeftRadius: "10px",
+                    borderBottomRightRadius: "10px",
+                }}
+            >
                 <div style={{ display: "flex", gap: "30px", alignItems: "center" }}>
-                    <div>
+                    <div style={{ display: "flex", gap: "5px", margin: "3px" }}>
                         <button
                             style={{ background: "none", border: "none" }}
                             onClick={(e) => {
@@ -190,9 +219,12 @@ const SignlePost = (body) => {
                                 />
                             )}
                         </button>
-                        {likescount ? <span className="likecount">{likescount}</span> : "0"}
+
+                        <span className="likecount" style={{ marginTop: "3px" }}>
+                            {likescount ? likescount : "0"}
+                        </span>
                     </div>
-                    <div id="container">
+                    <div style={{ display: "flex", gap: "5px", margin: "3px" }}>
                         <button
                             style={{
                                 border: "none",
@@ -207,7 +239,7 @@ const SignlePost = (body) => {
                         >
                             <BiCommentDetail size="20px" className="feedback" style={{ color: local }} />
                         </button>
-                        {commentCount} Comments
+                        {commentCount} Comment(s)
                     </div>
                     <div>0 Reposts</div>
                 </div>
@@ -217,7 +249,7 @@ const SignlePost = (body) => {
 };
 
 const ShowPosts = (person, id) => {
-    const { single_posts, sortMethod, setSortMethod } = useContext(UserProvider);
+    const { single_posts, sortMethod, userData } = useContext(UserProvider);
     function compare(a, b) {
         if (Object.keys(a.likes).length > Object.keys(b.likes).length) {
             return -1;
@@ -227,8 +259,9 @@ const ShowPosts = (person, id) => {
         }
         return 0;
     }
+    console.log(person);
+
     var gowno;
-    // console.log(sortMethod);
 
     if (!sortMethod) {
         gowno = single_posts;
@@ -240,12 +273,20 @@ const ShowPosts = (person, id) => {
         gowno = single_posts.filter((e) => e.posted_by == person.person);
     } else if (sortMethod == "BY_LIKES") {
         gowno = single_posts.sort(compare);
+    } else if (sortMethod == "PERSONAL_LIKES") {
+        if (userData) {
+            gowno = Object.values(userData.given_likes);
+        }
+    } else if (sortMethod == "USER_LIKES") {
+        gowno = Object.values(single_posts).filter((a) => Object.keys(a.likes).includes(person.person));
     }
 
     return (
         <div className="tweets" id="alltweets" style={{ width: "600px" }}>
             {gowno.map((element) => {
-                return <SignlePost body={element} key={element.id} />;
+                if (element.body) {
+                    return <SignlePost body={element} key={element.id} />;
+                }
             })}
         </div>
     );

@@ -4,7 +4,7 @@ import { UserProvider } from "../App";
 import { useNavigate } from "react-router-dom";
 import GenerateNav from "./GenerateNav";
 import { Button, Modal, Form } from "react-bootstrap";
-
+import { Button as Buttonmui } from "@mui/material";
 import { database } from "../firebase";
 import { ref, set } from "firebase/database";
 import { onValue, get } from "firebase/database";
@@ -14,8 +14,16 @@ const ProfilePage = () => {
     const { userData, setSortMethod, currentUser, local, setlocal } = useContext(UserProvider);
     let { username } = useParams();
     const history = useNavigate();
-    setSortMethod("BY_USR");
+
     const [show, setShow] = useState(false);
+    const [choice, setChoice] = useState();
+    if (choice == "tweets") {
+        setSortMethod("BY_USR");
+    } else if (choice == "likes") {
+        setSortMethod("USER_LIKES");
+    } else if (!choice) {
+        setSortMethod("BY_USR");
+    }
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -29,6 +37,8 @@ const ProfilePage = () => {
     const [follower_count, setFollower_count] = useState();
     const [count, setcount] = useState();
     const [bio, setBio] = useState();
+    const [profpic, setProfpic] = useState();
+
     useEffect(() => {
         const count = ref(database, `users/${username}/followers`);
         get(count).then((snapshot) => {
@@ -128,6 +138,10 @@ const ProfilePage = () => {
             setuserobj(json[username]);
         };
         fetchdata();
+
+        get(ref(database, `users/${username}`)).then((snapshot) => {
+            setProfpic(snapshot.val().profile_picture);
+        });
     }, []);
     if (localStorage.getItem("mode") == "dark") {
         if (document.querySelector(".profile")) {
@@ -149,7 +163,7 @@ const ProfilePage = () => {
                         <div>
                             <div className="middle" style={{ color: "white" }}>
                                 <img
-                                    src={userobj.profile_picture}
+                                    src={profpic}
                                     style={{ width: "200px", height: "200px", borderRadius: "200px" }}
                                 />
                                 <div style={{ display: "flex", flexDirection: "column" }}>
@@ -163,7 +177,8 @@ const ProfilePage = () => {
                                                 style={{
                                                     display: "flex",
                                                     justifyContent: "space-between",
-                                                    flexDirection: "column",
+                                                    flexDirection: "row",
+                                                    gap: "20px",
                                                 }}
                                             >
                                                 <span>
@@ -241,7 +256,7 @@ const ProfilePage = () => {
                                                 </Button>
                                             </Modal.Footer>
                                         </Modal>
-                                        <div style={{ marginBottom: "20px" }}>{bio}</div>
+                                        <div style={{ marginBottom: "20px", textAlign: "left" }}>{bio}</div>
                                     </span>
                                     {userobj.when_joined ? ( //usun to potem
                                         <span>Joined: {userobj.when_joined}</span>
@@ -268,7 +283,44 @@ const ProfilePage = () => {
                             </div>
 
                             <div>
-                                <h1>{userobj.first_name}'s posts</h1>
+                                <div className="middle" style={{ paddingBottom: "10px", color: "white" }}>
+                                    <Buttonmui
+                                        variant="secondary"
+                                        onClick={(e) => {
+                                            e.target.style.backgroundColor = "#0b5088";
+                                            setChoice("tweets");
+                                            e.target.addEventListener("focusout", () => {
+                                                e.target.style.backgroundColor = "";
+                                            });
+                                        }}
+                                    >
+                                        Tweets
+                                    </Buttonmui>
+                                    <Buttonmui
+                                        variant="secondary"
+                                        onClick={(e) => {
+                                            e.target.style.backgroundColor = "#0b5088";
+                                            setChoice("media");
+                                            e.target.addEventListener("focusout", () => {
+                                                e.target.style.backgroundColor = "";
+                                            });
+                                        }}
+                                    >
+                                        Media
+                                    </Buttonmui>
+                                    <Buttonmui
+                                        variant="secondary"
+                                        onClick={(e) => {
+                                            e.target.style.backgroundColor = "#0b5088";
+                                            setChoice("likes");
+                                            e.target.addEventListener("focusout", () => {
+                                                e.target.style.backgroundColor = "";
+                                            });
+                                        }}
+                                    >
+                                        Likes
+                                    </Buttonmui>
+                                </div>
                                 <div className="post-cont">
                                     <ShowPosts person={userobj.username} />
                                 </div>

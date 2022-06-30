@@ -2,8 +2,9 @@ import React, { useState, useContext, useEffect, useRef } from "react";
 import { Alert, Button, Card, DropdownButton, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { UserProvider } from "../App";
-import { auth, writeUserData } from "../firebase";
+import { auth, writeUserData, storage } from "../firebase";
 import GenerateNav from "./GenerateNav";
+import { ref, getDownloadURL, uploadBytes, deleteObject } from "firebase/storage";
 
 const Edit = () => {
     const [error, setError] = useState("");
@@ -14,7 +15,15 @@ const Edit = () => {
     const birthRef = useRef();
     const bioRef = useRef();
     const usernameRef = useRef();
-    const { setcurrentUser, setSortMethod, logout, userData, local, setlocal } = useContext(UserProvider);
+    const {
+        setcurrentUser,
+        setSortMethod,
+        logout,
+        userData,
+        setuserData,
+        setlocal,
+        setShouldChangePostData,
+    } = useContext(UserProvider);
     const navigate = useNavigate();
     console.log(userData);
     setSortMethod("BY_USR");
@@ -27,23 +36,62 @@ const Edit = () => {
             setError(err);
         }
     };
+    const [img, setimg] = useState();
+    const [url, seturl] = useState();
     const updateusr = async (e) => {
         e.preventDefault();
+
+        if (img) {
+            const uploadImg = async () => {
+                const imgRef = ref(storage, `prof_pics/${userData.username}`);
+                deleteObject(imgRef)
+                    .then(() => {})
+                    .catch((err) => {
+                        setError(String(err));
+                    });
+                const snap = await uploadBytes(imgRef, img);
+                const url = await getDownloadURL(ref(storage, snap.ref.fullPath));
+                seturl(url);
+                console.log(url);
+            };
+            uploadImg();
+        }
         try {
             setError("");
             setlog("");
-            await writeUserData(
-                usernameRef.current.value,
-                userData.email,
-                fnameRef.current.value,
-                lnameRef.current.value,
-                imgRef.current.value,
-                birthRef.current.value,
-                userData.followers,
-                userData.following,
-                bioRef.current.value
-            );
-            await setlog("Profile updated successfully");
+            if (url) {
+                await writeUserData(
+                    userData.username,
+                    userData.email,
+                    fnameRef.current.value,
+                    lnameRef.current.value,
+                    url,
+                    birthRef.current.value,
+                    userData.followers,
+                    userData.following,
+                    bioRef.current.value,
+                    true
+                );
+
+                setShouldChangePostData(true);
+                await setlog("Profile updated successfully");
+            } else if (!url) {
+                writeUserData(
+                    userData.username,
+                    userData.email,
+                    fnameRef.current.value,
+                    lnameRef.current.value,
+                    userData.profile_picture,
+                    birthRef.current.value,
+                    userData.followers,
+                    userData.following,
+                    bioRef.current.value,
+                    true
+                );
+
+                setShouldChangePostData(true);
+                await setlog("Profile updated successfully");
+            }
         } catch (err) {
             setError("");
             setError(String(err));
@@ -90,10 +138,10 @@ const Edit = () => {
                                             style={{ width: "200px", height: "200px", borderRadius: "200px" }}
                                         />
                                         <Form.Group>
-                                            <Form.Label>IMG url</Form.Label>
+                                            <Form.Label>Profile picture</Form.Label>
                                             <Form.Control
-                                                defaultValue={userData.profile_picture}
-                                                ref={imgRef}
+                                                type="file"
+                                                onChange={(e) => setimg(e.target.files[0])}
                                             ></Form.Control>
                                         </Form.Group>
                                     </div>
@@ -142,13 +190,7 @@ const Edit = () => {
                                                     ref={lnameRef}
                                                 ></Form.Control>
                                             </Form.Group>
-                                            <Form.Group>
-                                                <Form.Label>Username (once in 90 days)</Form.Label>
-                                                <Form.Control
-                                                    defaultValue={userData.username}
-                                                    ref={usernameRef}
-                                                ></Form.Control>
-                                            </Form.Group>
+
                                             <Form.Group>
                                                 <Form.Label>Bio</Form.Label>
                                                 <textarea

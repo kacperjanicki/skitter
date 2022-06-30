@@ -13,7 +13,7 @@ import GenerateComments from "./GenerateComments";
 const GeneratePost = () => {
     let { id } = useParams();
     const commentRef = useRef();
-    const { userData, currentUser, setSortMethod } = useContext(UserProvider);
+    const { userData, currentUser, unsubscribe, shouldChangePostData } = useContext(UserProvider);
     const history = useNavigate();
     const count = ref(database, `posts/post${id}`);
     const count2 = ref(database, `posts/post${id}/likes`);
@@ -23,39 +23,51 @@ const GeneratePost = () => {
     const [likesCount, setLikesCount] = useState();
     const [likesList, setlikesList] = useState();
     const [likedby, setLiked_by] = useState();
-    // setSortMethod("NEWEST-LATEST");
+    const [prof_pic, setProfpic] = useState();
 
     useEffect(() => {
         get(count).then((snapshot) => {
             if (snapshot.exists()) {
-                setPost(snapshot.val());
+                var final = snapshot.val();
+                get(ref(database, `users/${snapshot.val().posted_by}`)).then((snapshot) => {
+                    console.log(snapshot.val());
+                    const new_final = { ...final, profile_pic: snapshot.val().profile_picture };
+                    setPost(new_final);
+                });
+
+                try {
+                } catch (err) {
+                    console.log(err);
+                }
+
+                console.log(snapshot.val());
             }
         });
         get(count2).then((snapshot) => {
-            if (snapshot.exists() && userData) {
+            if (snapshot.exists()) {
                 var val = snapshot.val();
                 if (Object.keys(val).includes(userData.username)) {
                     document.getElementById("likebtn").style.color = "red";
                 } else {
                     document.getElementById("likebtn").style.color = "white";
                 }
-                setLiked_by(snapshot.val());
-            } else if (!snapshot.exists()) {
+                console.log(val);
+
+                setLiked_by(val);
+            } else if (!snapshot.exists() && Object.keys(snapshot.val()).length > 1) {
                 set(ref(database, `posts/post${id}/likes`), false);
             }
         });
 
         onValue(ref(database, `posts/post${id}/likes`), (snapshot) => {
             console.log(Object.values(snapshot.val()));
+            console.log(userData);
             setLiked_by(Object.values(snapshot.val()));
 
             setlikesList(Object.keys(snapshot.val()));
             setLikesCount(Object.keys(snapshot.val()).length);
         });
     }, []);
-
-    console.log(likedby);
-    // console.log(Array.from(likedby));
 
     const handleLike = () => {
         if (currentUser) {
@@ -64,6 +76,19 @@ const GeneratePost = () => {
                     name: userData.full_name,
                     pic: userData.profile_picture,
                     username: userData.username,
+                });
+                get(ref(database, `users/${userData.username}/given_likes`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        set(
+                            ref(
+                                database,
+                                `users/${userData.username}/given_likes/like${
+                                    Object.keys(snapshot.val()).length + 1
+                                }`
+                            ),
+                            post
+                        );
+                    }
                 });
             } catch (err) {
                 console.log(err);
@@ -79,40 +104,51 @@ const GeneratePost = () => {
                 const val = snapshot.val();
                 const obj = Object.entries(val);
                 const filtered = obj.filter((a) => a[0] != userData.username);
-
                 const final = Object.fromEntries(filtered);
                 console.log(final);
                 set(count, final);
+            }
+        });
+        get(ref(database, `users/${userData.username}/given_likes`)).then((snapshot) => {
+            const obj = Object.entries(snapshot.val());
+            const filtered = obj.filter((a) => a[1].id != post.id);
+            console.log(filtered);
+            if (filtered.length == 0) {
+                set(ref(database, `users/${userData.username}/given_likes`), false);
+            } else if (filtered.length > 0) {
+                set(ref(database, `users/${userData.username}/given_likes`), Object.fromEntries(filtered));
             }
         });
     };
 
     const handleComment = (e) => {
         e.preventDefault();
-        try {
-            setLog("");
-            const postListRef = ref(database, `posts/post${id}/comments`);
-            const newPostRef = push(postListRef);
-            var date = new Date().getTime();
-            const date2 = new Date(date);
-            set(newPostRef, {
-                author: userData.username,
-                body: commentRef.current.value,
-                prof_pic: userData.profile_picture,
-                likes: 0,
-                date: date2.toLocaleString("sv"),
-            });
-            get(count).then((snapshot) => {
-                if (snapshot.exists()) {
-                    setPost(snapshot.val());
-                }
-            });
-            e.target.reset();
-            setLog("Comment added!");
-        } catch (err) {
-            setError();
-            setError(String(err));
-            console.log(err);
+        if (commentRef.current.value) {
+            try {
+                setLog("");
+                const postListRef = ref(database, `posts/post${id}/comments`);
+                const newPostRef = push(postListRef);
+                var date = new Date().getTime();
+                const date2 = new Date(date);
+                set(newPostRef, {
+                    author: userData.username,
+                    body: commentRef.current.value,
+                    prof_pic: userData.profile_picture,
+                    likes: 0,
+                    date: date2.toLocaleString("sv"),
+                });
+                get(count).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        setPost(snapshot.val());
+                    }
+                });
+                e.target.reset();
+                setLog("Comment added!");
+            } catch (err) {
+                setError();
+                setError(String(err));
+                console.log(err);
+            }
         }
     };
     var choice;
@@ -140,18 +176,42 @@ const GeneratePost = () => {
         <div
             className="cont home main"
             id="mainpage"
-            style={{ display: "flex", flexDirection: "row", gap: "30px" }}
+            style={{ display: "flex", flexDirection: "row", gap: "30px", paddingBottom: "50px" }}
         >
             <GenerateNav />
             <div className="profile">
                 <div id="middle wrap">
                     {post ? (
-                        <div className="middle post" style={{ color: "white", width: "600px" }}>
+                        <div
+                            className="middle post"
+                            style={{
+                                color: "white",
+                                width: "600px",
+                                borderBottomLeftRadius: "10px",
+                                borderBottomRightRadius: "10px",
+                            }}
+                        >
                             <div
                                 className="content"
-                                style={{ marginLeft: "60px", marginBottom: 0, textAlign: "left" }}
+                                style={{
+                                    marginLeft: "60px",
+                                    marginBottom: 0,
+                                    textAlign: "left",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "10px",
+                                    fontSize: 20,
+                                }}
                             >
                                 {post ? post.body : "loading"}
+                                {post.additional ? (
+                                    <img
+                                        src={post.additional}
+                                        style={{ width: "400px", borderRadius: "10px" }}
+                                    ></img>
+                                ) : (
+                                    ""
+                                )}
                             </div>
                             <div className="context">
                                 <div style={{ display: "flex" }}>
@@ -234,6 +294,15 @@ const GeneratePost = () => {
                                                     <Form.Group className="mb-3">
                                                         {likedby
                                                             ? likedby.map((person) => {
+                                                                  get(
+                                                                      ref(
+                                                                          database,
+                                                                          `users/${person.username}`
+                                                                      )
+                                                                  ).then((snapshot) => {
+                                                                      person.pic =
+                                                                          snapshot.val().profile_picture;
+                                                                  });
                                                                   return (
                                                                       <div
                                                                           style={{
@@ -251,11 +320,17 @@ const GeneratePost = () => {
                                                                               }}
                                                                               onClick={() => {
                                                                                   history(
-                                                                                      `/user/${person.username}`
+                                                                                      `/user/${person.pic}`
                                                                                   );
                                                                               }}
                                                                           />
-                                                                          <h3>{person.name}</h3>
+                                                                          <h5>{person.name}</h5>
+                                                                          <br></br>
+                                                                          <a
+                                                                              href={`/user/${person.username}`}
+                                                                          >
+                                                                              @{person.username}
+                                                                          </a>
                                                                       </div>
                                                                   );
                                                               })
@@ -363,11 +438,7 @@ const GeneratePost = () => {
                                     disabled={currentUser ? false : true}
                                 />
 
-                                <Button
-                                    type="submit"
-                                    form="commentform"
-                                    disabled={currentUser ? false : true}
-                                >
+                                <Button type="submit" id="commentform" disabled={currentUser ? false : true}>
                                     Publish
                                 </Button>
                             </Form>

@@ -4,12 +4,13 @@ import BasicPage from "./components/BasicPage";
 import ProfilePage from "./components/ProfilePage";
 import React, { useState, useEffect, useRef } from "react";
 import { auth } from "./firebase";
+import Mess from "./components/Mess";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Edit from "./components/Edit";
 import Dashboard from "./components/dashboard";
 import ActualLogin from "./components/login";
 import PrivateRoute from "./components/PrivateRoute";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, get, set } from "firebase/database";
 import { database } from "./firebase";
 import Forgot from "./components/Forgot";
 import MainPage from "./components/MainPage";
@@ -31,9 +32,11 @@ function App() {
         return auth.sendPasswordResetEmail(email);
     };
     const logout = () => {
+        set(ref(database, `users/${userData.username}/isLoggedIn`), false);
         return auth.signOut();
     };
 
+    const [postcount, setPostCount] = useState();
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             setcurrentUser(user);
@@ -44,13 +47,21 @@ function App() {
                 .then((data) => {
                     const currentObj = Object.values(data).find((obj) => obj.email === user.email);
                     if (currentObj) {
+                        currentObj.isLoggedIn = true;
                         setuserData(currentObj);
+                        setCurrentLoggedIn(currentObj.username);
+                        console.log(currentObj);
+                        set(ref(database, `users/${currentObj.username}`), currentObj);
                     }
                 })
                 .catch((err) => {
                     console.log(err);
                 });
         });
+        get(ref(database, `/postcount/count`)).then((snapshot) => {
+            setPostCount(snapshot.val());
+        });
+
         return unsubscribe;
     }, []);
     const postlist = ref(database, "posts/");
@@ -108,10 +119,15 @@ function App() {
     const tweetref = useRef();
     const [showModal, setShow] = useState(false);
     const [displayType, setdisplayType] = useState();
+    const [shouldChangePostData, setShouldChangePostData] = useState();
+    const [currentLoggedin, setCurrentLoggedIn] = useState();
 
     const value = {
         currentUser,
         showModal,
+        currentLoggedin,
+        setCurrentLoggedIn,
+        postcount,
         displayType,
         setdisplayType,
         darkMode,
@@ -119,6 +135,8 @@ function App() {
         local,
         setlocal,
         tweetref,
+        setShouldChangePostData,
+        shouldChangePostData,
         sortMethod,
         setSortMethod,
         userData,
@@ -142,8 +160,10 @@ function App() {
                     <Route exact path="/profile" element={<PrivateRoute />}>
                         <Route exact path="/profile" element={<Dashboard />} />
                         <Route exact path="/profile/edit" element={<Edit />} />
+                        <Route exact path="/profile/messages" element={<Mess />}></Route>
                     </Route>
                     <Route exact path="/" element={<BasicPage />}></Route>
+
                     <Route path="/user/:username" element={<ProfilePage />}></Route>
                     <Route path="/post/:id" element={<GeneratePost />}></Route>
                     <Route exact path="/home" element={<MainPage />} />

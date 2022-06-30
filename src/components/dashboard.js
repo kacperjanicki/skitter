@@ -6,6 +6,7 @@ import { Alert, Button, Modal, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { UserProvider } from "../App";
 import { auth } from "../firebase";
+import { Button as Buttonmui } from "@mui/material";
 import GenerateNav from "./GenerateNav";
 
 const Dashboard = () => {
@@ -14,6 +15,13 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const bioref = useRef();
     setSortMethod("BY_USR");
+    const [choice, setChoice] = useState();
+
+    if (choice == "tweets") {
+        setSortMethod("BY_USR");
+    } else if (choice == "likes") {
+        setSortMethod("USER_LIKES");
+    }
 
     const handleLogOut = async () => {
         setError("");
@@ -91,9 +99,6 @@ const Dashboard = () => {
         <>
             {userData ? (
                 <>
-                    <div style={{ position: "absolute", top: "0px", right: 0, zIndex: 5 }}>
-                        <Button onClick={handleLogOut}>Sign Out</Button>
-                    </div>
                     <div
                         className="cont home main"
                         id="mainpage"
@@ -327,11 +332,55 @@ const Dashboard = () => {
                                         >
                                             Edit profile
                                         </Button>
+                                        <Button
+                                            size="sm"
+                                            variant="primary"
+                                            style={{ width: "200px" }}
+                                            onClick={handleLogOut}
+                                        >
+                                            Log out
+                                        </Button>
                                     </div>
                                 </div>
                                 <div>
                                     <div className="middle" style={{ paddingBottom: "10px", color: "white" }}>
-                                        <h1>Your posts</h1>
+                                        <Buttonmui
+                                            variant="secondary"
+                                            id="tweetsbtn"
+                                            onClick={(e) => {
+                                                e.target.style.backgroundColor = "#0b5088";
+                                                setChoice("tweets");
+                                                e.target.addEventListener("focusout", () => {
+                                                    e.target.style.backgroundColor = "";
+                                                });
+                                            }}
+                                        >
+                                            Tweets
+                                        </Buttonmui>
+                                        <Buttonmui
+                                            variant="secondary"
+                                            onClick={(e) => {
+                                                e.target.style.backgroundColor = "#0b5088";
+                                                setChoice("media");
+                                                e.target.addEventListener("focusout", () => {
+                                                    e.target.style.backgroundColor = "";
+                                                });
+                                            }}
+                                        >
+                                            Media
+                                        </Buttonmui>
+                                        <Buttonmui
+                                            variant="secondary"
+                                            onClick={(e) => {
+                                                e.target.style.backgroundColor = "#0b5088";
+                                                setChoice("likes");
+                                                e.target.addEventListener("focusout", () => {
+                                                    e.target.style.backgroundColor = "";
+                                                });
+                                            }}
+                                        >
+                                            Likes
+                                        </Buttonmui>
                                     </div>
 
                                     <ShowPosts person={userData.username} />

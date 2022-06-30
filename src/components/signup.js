@@ -1,10 +1,12 @@
 import React, { useContext, useRef, useState, useEffect } from "react";
-import { auth, writeUserData } from "../firebase";
+import { auth, writeUserData, storage } from "../firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import "./loginpage.css";
 import { UserProvider } from "../App";
 import { Link, useNavigate } from "react-router-dom";
+
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 
 const LoginPage = () => {
     const emailRef = useRef();
@@ -15,10 +17,11 @@ const LoginPage = () => {
     const usernameRef = useRef(); //
     const fnameRef = useRef(); //   they go to user database
     const lnameRef = useRef(); //
-    const { signup, login } = useContext(UserProvider);
+    const { signup, login, currentUser } = useContext(UserProvider);
     const [error, setError] = useState("");
     const [log, setLog] = useState("");
-    const [openCrop, setOpenCrop] = useState(false);
+    const [img, setimg] = useState();
+    const [url, seturl] = useState();
 
     const history = useNavigate();
     const { loading, setLoading, setlocal, local } = useContext(UserProvider);
@@ -28,27 +31,42 @@ const LoginPage = () => {
         if (passwordConfirmRef.current.value !== passwordRef.current.value) {
             return setError("Passwords do not match");
         }
+
+        if (img) {
+            const uploadImg = async () => {
+                const imgRef = ref(storage, `prof_pics/${usernameRef.current.value}`);
+                const snap = await uploadBytes(imgRef, img);
+                const url = await getDownloadURL(ref(storage, snap.ref.fullPath));
+                seturl(url);
+                // console.log(url);
+            };
+            uploadImg();
+        }
+
         console.log(dateRef.current.value);
         try {
             setError("");
             setLog("");
             setLoading(true);
-            await signup(emailRef.current.value, passwordRef.current.value);
-            await writeUserData(
-                usernameRef.current.value,
-                emailRef.current.value,
-                fnameRef.current.value,
-                lnameRef.current.value,
-                avatarRef.current.value,
-                String(dateRef.current.value),
-                false,
-                false,
-                false
-            );
 
-            history("/home");
-            login(emailRef.current.value, passwordRef.current.value);
-            await setLog("User created successfully");
+            if (url) {
+                await writeUserData(
+                    usernameRef.current.value,
+                    emailRef.current.value,
+                    fnameRef.current.value,
+                    lnameRef.current.value,
+                    url,
+                    String(dateRef.current.value),
+                    false,
+                    false,
+                    false,
+                    true
+                );
+                await signup(emailRef.current.value, passwordRef.current.value);
+                await login(emailRef.current.value, passwordRef.current.value);
+                await setLog("User created successfully");
+                history("/home");
+            }
         } catch (err) {
             setError("");
             setError(String(err)); //if email already in database
@@ -103,7 +121,11 @@ const LoginPage = () => {
                             </Form.Group>
                             <Form.Group id="password-confirm">
                                 <Form.Label>Profile picture</Form.Label>
-                                <Form.Control type="file" required></Form.Control>
+                                <Form.Control
+                                    type="file"
+                                    onChange={(e) => setimg(e.target.files[0])}
+                                    required
+                                ></Form.Control>
                             </Form.Group>
 
                             <div className="row">
@@ -126,7 +148,7 @@ const LoginPage = () => {
 
                 <div className="w-100 text-center mt-2" style={{ color: local }}>
                     Already have an account?
-                    <Link to={"/login"} style={{ color: "white", textDecoration: "none", fontWeight: 500 }}>
+                    <Link to={"/login"} style={{ color: local, fontWeight: 500 }}>
                         <span> Log in</span>
                     </Link>
                 </div>
