@@ -48,7 +48,7 @@ const LoginPage = () => {
             setError("");
             setLog("");
             setLoading(true);
-
+            console.log(dateRef.current.value);
             if (url) {
                 await writeUserData(
                     usernameRef.current.value,
@@ -57,6 +57,8 @@ const LoginPage = () => {
                     lnameRef.current.value,
                     url,
                     String(dateRef.current.value),
+                    false,
+                    false,
                     false,
                     false,
                     false,

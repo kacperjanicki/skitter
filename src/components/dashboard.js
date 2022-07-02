@@ -4,9 +4,10 @@ import { database } from "../firebase";
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { Alert, Button, Modal, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { FaBirthdayCake, FaPlaneArrival } from "react-icons/fa";
 import { UserProvider } from "../App";
 import { auth } from "../firebase";
-import { Button as Buttonmui } from "@mui/material";
+
 import GenerateNav from "./GenerateNav";
 
 const Dashboard = () => {
@@ -106,7 +107,7 @@ const Dashboard = () => {
                     >
                         <GenerateNav />
                         <div className="profile">
-                            <div id="middle wrap">
+                            <div>
                                 <div className="middle" style={{ color: "white" }}>
                                     <img
                                         src={userData.profile_picture}
@@ -123,7 +124,7 @@ const Dashboard = () => {
                                             <strong id="txt">{userData.full_name}</strong>
                                             <span>@{userData.username}</span>
                                         </span>
-                                        <span className="text-left" style={{ width: "30vw" }}>
+                                        <span className="text-left">
                                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                                                 <div
                                                     style={{
@@ -320,7 +321,35 @@ const Dashboard = () => {
                                             </span>
                                         )}
 
-                                        <span>Joined: {userData.when_joined}</span>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                gap: "5px",
+                                                marginBottom: "5px",
+                                            }}
+                                        >
+                                            <span
+                                                style={{
+                                                    display: "flex",
+                                                    alignContent: "center",
+                                                    gap: "5px",
+                                                }}
+                                            >
+                                                <FaPlaneArrival size={20} />
+                                                {userData.when_joined}
+                                            </span>
+                                            <span
+                                                style={{
+                                                    display: "flex",
+                                                    alignContent: "center",
+                                                    gap: "5px",
+                                                }}
+                                            >
+                                                <FaBirthdayCake size={20} />
+                                                {userData.dateBirth}
+                                            </span>
+                                        </div>
 
                                         <Button
                                             size="sm"
@@ -344,7 +373,7 @@ const Dashboard = () => {
                                 </div>
                                 <div>
                                     <div className="middle" style={{ paddingBottom: "10px", color: "white" }}>
-                                        <Buttonmui
+                                        {/* <Buttonmui
                                             variant="secondary"
                                             id="tweetsbtn"
                                             onClick={(e) => {
@@ -380,7 +409,7 @@ const Dashboard = () => {
                                             }}
                                         >
                                             Likes
-                                        </Buttonmui>
+                                        </Buttonmui> */}
                                     </div>
 
                                     <ShowPosts person={userData.username} />

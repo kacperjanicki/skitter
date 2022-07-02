@@ -3,8 +3,9 @@ import { useParams } from "react-router-dom";
 import { UserProvider } from "../App";
 import { useNavigate } from "react-router-dom";
 import GenerateNav from "./GenerateNav";
-import { Button, Modal, Form } from "react-bootstrap";
 import { Button as Buttonmui } from "@mui/material";
+import { Button, Modal, Form } from "react-bootstrap";
+import { FaBirthdayCake, FaPlaneArrival } from "react-icons/fa";
 import { database } from "../firebase";
 import { ref, set } from "firebase/database";
 import { onValue, get } from "firebase/database";
@@ -166,7 +167,7 @@ const ProfilePage = () => {
                                     src={profpic}
                                     style={{ width: "200px", height: "200px", borderRadius: "200px" }}
                                 />
-                                <div style={{ display: "flex", flexDirection: "column" }}>
+                                <div style={{ display: "flex", flexDirection: "column", textAlign: "left" }}>
                                     <span className="text-left">
                                         <strong id="txt">{userobj.full_name}</strong>
                                         <span>@{userobj.username}</span>
@@ -258,12 +259,35 @@ const ProfilePage = () => {
                                         </Modal>
                                         <div style={{ marginBottom: "20px", textAlign: "left" }}>{bio}</div>
                                     </span>
-                                    {userobj.when_joined ? ( //usun to potem
-                                        <span>Joined: {userobj.when_joined}</span>
-                                    ) : (
-                                        <span>Joined: data not given</span>
-                                    )}
-
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            gap: "5px",
+                                            marginBottom: "5px",
+                                        }}
+                                    >
+                                        <span
+                                            style={{
+                                                display: "flex",
+                                                alignContent: "center",
+                                                gap: "5px",
+                                            }}
+                                        >
+                                            <FaPlaneArrival size={20} />
+                                            {userobj.when_joined}
+                                        </span>
+                                        <span
+                                            style={{
+                                                display: "flex",
+                                                alignContent: "center",
+                                                gap: "5px",
+                                            }}
+                                        >
+                                            <FaBirthdayCake size={20} />
+                                            {userobj.dateBirth}
+                                        </span>
+                                    </div>
                                     {(() => {
                                         if (currentUser == null) {
                                             return <Button disabled>Follow (You need to log in)</Button>;

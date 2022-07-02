@@ -86,6 +86,8 @@ const Edit = () => {
                     userData.followers,
                     userData.following,
                     bioRef.current.value,
+                    userData.activity,
+                    userData.messages,
                     true
                 );
 
@@ -108,6 +110,7 @@ const Edit = () => {
         if (!userData.bio) {
             document.getElementById("exampleFormControlTextarea1").focus();
         }
+        console.log(userData);
     }, []);
     if (localStorage.getItem("mode") == "dark") {
         if (document.getElementById("mainpage")) {

@@ -1,14 +1,18 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { database } from "../firebase";
 import { ref, get, set, onValue, push } from "firebase/database";
 import GenerateNav from "./GenerateNav";
 import { AiFillHeart, AiOutlineEye } from "react-icons/ai";
 import { Modal } from "react-bootstrap";
 import { BiCommentDetail, BiRepost } from "react-icons/bi";
-import { Button, FloatingLabel, Form, Alert } from "react-bootstrap";
+import { Button, FloatingLabel, Form, Alert, Badge } from "react-bootstrap";
 import { UserProvider } from "../App";
 import GenerateComments from "./GenerateComments";
+import ReactLinkify from "react-linkify";
+import { AiOutlineHeart } from "react-icons/ai";
+import { BiArrowBack } from "react-icons/bi";
+import { nodeName } from "jquery";
 
 const GeneratePost = () => {
     let { id } = useParams();
@@ -53,7 +57,7 @@ const GeneratePost = () => {
                 }
                 console.log(val);
 
-                setLiked_by(val);
+                setLiked_by(Object.values(val));
             } else if (!snapshot.exists() && Object.keys(snapshot.val()).length > 1) {
                 set(ref(database, `posts/post${id}/likes`), false);
             }
@@ -90,6 +94,24 @@ const GeneratePost = () => {
                         );
                     }
                 });
+                var date = new Date().getTime();
+                const date2 = new Date(date);
+                console.log(post);
+                const activityref = ref(
+                    database,
+                    `/users/${post.posted_by}/activity/post${post.id}/${userData.username}/like`
+                );
+                // const newactivity = push(activityref);
+                console.log(userData);
+                set(activityref, {
+                    user: userData.username,
+                    user_fullname: userData.full_name,
+                    user_fname: userData.first_name,
+                    when: date2.toLocaleString("sv"),
+                    user_img: userData.profile_picture,
+                    ref: post.id,
+                    type: "like",
+                });
             } catch (err) {
                 console.log(err);
             }
@@ -109,6 +131,13 @@ const GeneratePost = () => {
                 set(count, final);
             }
         });
+
+        const activityref = ref(
+            database,
+            `/users/${post.posted_by}/activity/post${post.id}/${userData.username}/like`
+        );
+        set(activityref, false);
+
         get(ref(database, `users/${userData.username}/given_likes`)).then((snapshot) => {
             const obj = Object.entries(snapshot.val());
             const filtered = obj.filter((a) => a[1].id != post.id);
@@ -141,6 +170,22 @@ const GeneratePost = () => {
                     if (snapshot.exists()) {
                         setPost(snapshot.val());
                     }
+                });
+                console.log(post);
+                const activityref = ref(
+                    database,
+                    `/users/${post.posted_by}/activity/post${post.id}/${userData.username}/comment`
+                );
+                // const newactivity = push(activityref);
+                console.log(userData);
+                set(activityref, {
+                    user: userData.username,
+                    user_fullname: userData.full_name,
+                    user_fname: userData.first_name,
+                    when: date2.getTime(),
+                    user_img: userData.profile_picture,
+                    type: "comment",
+                    ref: post.id,
                 });
                 e.target.reset();
                 setLog("Comment added!");
@@ -178,40 +223,55 @@ const GeneratePost = () => {
             id="mainpage"
             style={{ display: "flex", flexDirection: "row", gap: "30px", paddingBottom: "50px" }}
         >
-            <GenerateNav />
+            {window.innerWidth < 400 ? (
+                <button
+                    style={{
+                        position: "absolute",
+                        zIndex: 2,
+                        left: 0,
+                        margin: "5px",
+                        border: "none",
+                        color: "white",
+                        background: "none",
+                    }}
+                    onClick={() => {
+                        history(-1);
+                    }}
+                >
+                    <BiArrowBack size={30} />
+                </button>
+            ) : (
+                <GenerateNav />
+            )}
+
             <div className="profile">
                 <div id="middle wrap">
                     {post ? (
-                        <div
-                            className="middle post"
-                            style={{
-                                color: "white",
-                                width: "600px",
-                                borderBottomLeftRadius: "10px",
-                                borderBottomRightRadius: "10px",
-                            }}
-                        >
-                            <div
-                                className="content"
-                                style={{
-                                    marginLeft: "60px",
-                                    marginBottom: 0,
-                                    textAlign: "left",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: "10px",
-                                    fontSize: 20,
-                                }}
-                            >
-                                {post ? post.body : "loading"}
-                                {post.additional ? (
-                                    <img
-                                        src={post.additional}
-                                        style={{ width: "400px", borderRadius: "10px" }}
-                                    ></img>
+                        <div className="middle post">
+                            <div className="content">
+                                {post ? (
+                                    <ReactLinkify
+                                        componentDecorator={(
+                                            decoratedHref: string,
+                                            decoratedText: string,
+                                            key: number
+                                        ) => (
+                                            <a
+                                                href={decoratedHref}
+                                                key={key}
+                                                target="_blank"
+                                                style={{ color: "white" }}
+                                            >
+                                                {decoratedText}
+                                            </a>
+                                        )}
+                                    >
+                                        {post.body}
+                                    </ReactLinkify>
                                 ) : (
-                                    ""
+                                    "loading"
                                 )}
+                                {post.additional ? <img src={post.additional}></img> : ""}
                             </div>
                             <div className="context">
                                 <div style={{ display: "flex" }}>
@@ -235,20 +295,17 @@ const GeneratePost = () => {
 
                                     <div
                                         style={{
-                                            textAlign: "left",
+                                            // textAlign: "left",
                                             display: "flex",
                                             gap: "30px",
                                             alignItems: "end",
                                             marginLeft: "10px",
+                                            width: "100%",
+                                            justifyContent: "space-around",
                                         }}
                                     >
                                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                                            <button
-                                                style={{
-                                                    backgroundColor: "#5c84a8",
-                                                    color: choice,
-                                                    border: "1px solid black",
-                                                }}
+                                            <div
                                                 onClick={(e) => {
                                                     if (userData && currentUser) {
                                                         if (e.target.style.color == "white") {
@@ -264,11 +321,24 @@ const GeneratePost = () => {
                                                         alert("Only logged in users can like posts");
                                                     }
                                                 }}
-                                                id="likebtn"
-                                                disabled={false}
                                             >
-                                                Like
-                                            </button>
+                                                <button
+                                                    style={{
+                                                        backgroundColor: "#5c84a8",
+                                                        color: choice,
+                                                        border: "none",
+                                                    }}
+                                                    id="likebtn"
+                                                    disabled={false}
+                                                >
+                                                    <AiOutlineHeart
+                                                        size="20px"
+                                                        style={{ color: choice }}
+                                                        id="likebtn"
+                                                        className="feedback"
+                                                    />
+                                                </button>
+                                            </div>
 
                                             {likesCount ? (
                                                 <button
@@ -279,10 +349,10 @@ const GeneratePost = () => {
                                                     }}
                                                     onClick={handleShow}
                                                 >
-                                                    {likesCount} Likes
+                                                    {likesCount}
                                                 </button>
                                             ) : (
-                                                `0 Likes`
+                                                `0`
                                             )}
                                         </div>
                                         <Modal show={show} onHide={handleClose}>
@@ -353,9 +423,7 @@ const GeneratePost = () => {
                                                     color: "white",
                                                 }}
                                             >
-                                                {post.comments
-                                                    ? `${Object.keys(post.comments).length} Comments`
-                                                    : "0 Comments"}
+                                                {post.comments ? `${Object.keys(post.comments).length}` : "0"}
                                             </button>
                                         </div>
                                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -375,9 +443,9 @@ const GeneratePost = () => {
                                             >
                                                 <BiRepost size="25px" style={{ color: "white" }} />
                                             </button>
-                                            0 Reposts
+                                            0
                                         </div>
-                                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                        {/* <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                                             <button
                                                 style={{
                                                     border: "none",
@@ -389,7 +457,7 @@ const GeneratePost = () => {
                                                 <AiOutlineEye size="25px" />
                                             </button>
                                             0 Views
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                             </div>

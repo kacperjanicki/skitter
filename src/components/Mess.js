@@ -18,8 +18,10 @@ const SingleUser = ({ user, selectUser }) => {
                 border: "1px groove #dee2e6",
                 borderRadius: "10px",
             }}
-            onClick={() => selectUser(data)}
             className="inbox_user"
+            onClick={(e) => {
+                selectUser(data);
+            }}
         >
             <div style={{ width: "80px", overflow: "visible" }}>
                 <img

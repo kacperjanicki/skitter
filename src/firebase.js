@@ -25,10 +25,12 @@ export function writeUserData(
     firstname,
     lastname,
     imageUrl,
-    date,
+    datebirth,
     followers,
     following,
     bio,
+    activity,
+    messages,
     isLoggedIn
 ) {
     var date = new Date();
@@ -38,20 +40,24 @@ export function writeUserData(
         month: "2-digit",
         day: "2-digit",
     });
+    console.log(datebirth);
     set(ref(database, `users/${username}`), {
         username: username,
         first_name: firstname,
         last_name: lastname,
         full_name: `${firstname} ${lastname}`,
         email: email,
-        dateBirth: String(date),
+        dateBirth: String(datebirth),
         profile_picture: imageUrl,
         followers: followers,
         following: following,
         bio: bio,
+        activity: activity,
+        messages: messages,
         when_joined: result,
         isLoggedIn: isLoggedIn,
     });
+    console.log(date);
 }
 
 const count = ref(database, "postcount/count");
@@ -79,7 +85,7 @@ export function writePostData(username, body, pic, additional) {
             comments: false,
             likes: false,
             views: false,
-            notifications: false,
+
             given_likes: false,
         });
     } catch (err) {

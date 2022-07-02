@@ -7,11 +7,11 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { AiOutlineHeart } from "react-icons/ai";
 import { BiCommentDetail } from "react-icons/bi";
-import { border } from "@mui/system";
+import ReactLinkify from "react-linkify";
 
 const SignlePost = (body) => {
     var element = body.body;
-
+    var mobile;
     const { userData, currentUser, tweetref, local, setlocal } = useContext(UserProvider);
     const history = useNavigate();
     const [likescount, setLikesCount] = useState();
@@ -53,6 +53,12 @@ const SignlePost = (body) => {
                 set(ref(database, `posts/post${element.id}/likes`), false);
             }
         });
+
+        if (window.innerWidth < 400) {
+            mobile = "90%";
+        } else {
+            mobile = "100%";
+        }
     }, [element]);
 
     function calculateDiff() {
@@ -85,6 +91,7 @@ const SignlePost = (body) => {
 
     const handleLike = (e) => {
         let id = element.id;
+        console.log(element);
         if (currentUser) {
             try {
                 set(ref(database, `posts/post${id}/likes/${userData.username}`), {
@@ -95,6 +102,24 @@ const SignlePost = (body) => {
             } catch (err) {
                 console.log(err);
             }
+            var date = new Date().getTime();
+            const date2 = new Date(date);
+
+            const activityref = ref(
+                database,
+                `/users/${element.posted_by}/activity/post${element.id}/${userData.username}/like`
+            );
+            const newactivity = push(activityref);
+
+            set(activityref, {
+                user: userData.username,
+                user_fullname: userData.full_name,
+                user_fname: userData.first_name,
+                when: date2.toLocaleString("sv"),
+                user_img: userData.profile_picture,
+                ref: element.id,
+                type: "like",
+            });
         } else if (!userData) {
             document.getElementById("likebtn").disabled = true;
         }
@@ -117,6 +142,11 @@ const SignlePost = (body) => {
                     }
                 }
             });
+            const activityref = ref(
+                database,
+                `/users/${element.posted_by}/activity/post${element.id}/${userData.username}/like`
+            );
+            set(activityref, false);
         }
     };
     var borderchoice;
@@ -125,123 +155,143 @@ const SignlePost = (body) => {
         borderchoice = "1px solid #33373a";
     } else if (local == "black") {
         borderchoice = "1px solid #dee2e6";
+    } else {
+        borderchoice = "1px solid #dee2e6";
     }
 
     return (
-        <div style={{ display: "flex", flexDirection: "column" }} ref={tweetref}>
-            <div className="tweet" id="tweetsingle" style={{ borderBottom: 0, border: borderchoice }}>
-                <div className="img_place">
-                    {profpic ? (
-                        <>
-                            <img
-                                src={profpic}
-                                onClick={() => {
-                                    history(`/user/${element.posted_by}`);
-                                }}
-                            />
-                            <div className="footer">
-                                {element.posted_by}
-                                <br />
-                                {calculateDiff()}
-                            </div>
-                        </>
-                    ) : (
-                        ""
-                    )}
-                </div>
-                <div
-                    className="body"
-                    onClick={() => {
-                        history(`/post/${element.id}`);
-                    }}
-                >
-                    <div className="text">
-                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                            {element.body}
-                            {element.additional ? (
+        <div className="tweetcont">
+            <div style={{ display: "flex", flexDirection: "column" }} ref={tweetref}>
+                <div className="tweet" id="tweetsingle" style={{ borderBottom: 0, border: borderchoice }}>
+                    <div className="img_place">
+                        {profpic ? (
+                            <>
                                 <img
-                                    src={element.additional}
-                                    style={{ width: "400px", borderRadius: "10px" }}
-                                ></img>
-                            ) : (
-                                ""
-                            )}
+                                    src={profpic}
+                                    onClick={() => {
+                                        history(`/user/${element.posted_by}`);
+                                    }}
+                                />
+                                <div className="footer">
+                                    {element.posted_by}
+                                    <br />
+                                    {calculateDiff()}
+                                </div>
+                            </>
+                        ) : (
+                            ""
+                        )}
+                    </div>
+                    <div
+                        className="body"
+                        onClick={() => {
+                            history(`/post/${element.id}`);
+                        }}
+                    >
+                        {/* eslint-ignore */}
+                        <div className="text">
+                            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                                <ReactLinkify
+                                    componentDecorator={(
+                                        decoratedHref: string,
+                                        decoratedText: string,
+                                        key: number
+                                    ) => (
+                                        <a
+                                            href={decoratedHref}
+                                            key={key}
+                                            target="_blank"
+                                            style={{ color: local }}
+                                        >
+                                            {decoratedText}
+                                        </a>
+                                    )}
+                                >
+                                    {element.body}
+                                </ReactLinkify>
+                                {element.additional ? (
+                                    <img src={element.additional} className="postimg"></img>
+                                ) : (
+                                    ""
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div
-                style={{
-                    border: borderchoice,
-                    textAlign: "left",
-                    width: "600px",
-                    borderBottomLeftRadius: "10px",
-                    borderBottomRightRadius: "10px",
-                }}
-            >
-                <div style={{ display: "flex", gap: "30px", alignItems: "center" }}>
-                    <div style={{ display: "flex", gap: "5px", margin: "3px" }}>
-                        <button
-                            style={{ background: "none", border: "none" }}
-                            onClick={(e) => {
-                                if (userData && currentUser) {
-                                    if (e.target.style.color != "red") {
-                                        handleLike();
-                                        // setlikesList([userData.username]);
-                                        e.target.style.color = "red";
-                                    } else if (e.target.style.color == "red") {
-                                        handleDislike();
-                                        if (local == "white") {
-                                            e.target.style.color = "white";
-                                        } else if (local == "black") {
-                                            e.target.style.color = "black";
+                <div
+                    style={{
+                        border: borderchoice,
+                        textAlign: "left",
+                        width: mobile,
+                        borderBottomLeftRadius: "10px",
+                        borderBottomRightRadius: "10px",
+                    }}
+                    id="postinfo"
+                >
+                    <div style={{ display: "flex", gap: "30px", alignItems: "center" }}>
+                        <div style={{ display: "flex", gap: "5px", margin: "3px" }}>
+                            <button
+                                style={{ background: "none", border: "none" }}
+                                onClick={(e) => {
+                                    if (userData && currentUser) {
+                                        if (e.target.style.color != "red") {
+                                            handleLike();
+                                            // setlikesList([userData.username]);
+                                            e.target.style.color = "red";
+                                        } else if (e.target.style.color == "red") {
+                                            handleDislike();
+                                            if (local == "white") {
+                                                e.target.style.color = "white";
+                                            } else if (local == "black") {
+                                                e.target.style.color = "black";
+                                            }
                                         }
+                                    } else {
+                                        document.getElementById("likebtn").disabled = true;
+                                        alert("Only logged in users can like posts");
                                     }
-                                } else {
-                                    document.getElementById("likebtn").disabled = true;
-                                    alert("Only logged in users can like posts");
-                                }
-                            }}
-                        >
-                            {choice ? (
-                                <AiOutlineHeart
-                                    size="20px"
-                                    style={{ color: choice }}
-                                    id="likebtn"
-                                    className="feedback"
-                                />
-                            ) : (
-                                <AiOutlineHeart
-                                    size="20px"
-                                    style={{ color: local }}
-                                    id="likebtn"
-                                    className="feedback"
-                                />
-                            )}
-                        </button>
+                                }}
+                            >
+                                {choice ? (
+                                    <AiOutlineHeart
+                                        size="20px"
+                                        style={{ color: choice }}
+                                        id="likebtn"
+                                        className="feedback"
+                                    />
+                                ) : (
+                                    <AiOutlineHeart
+                                        size="20px"
+                                        style={{ color: local }}
+                                        id="likebtn"
+                                        className="feedback"
+                                    />
+                                )}
+                            </button>
 
-                        <span className="likecount" style={{ marginTop: "3px" }}>
-                            {likescount ? likescount : "0"}
-                        </span>
+                            <span className="likecount" style={{ marginTop: "3px" }}>
+                                {likescount ? likescount : "0"}
+                            </span>
+                        </div>
+                        <div style={{ display: "flex", gap: "5px", margin: "3px" }}>
+                            <button
+                                style={{
+                                    border: "none",
+                                    background: "none",
+                                }}
+                                onClick={async () => {
+                                    await history(`/post/${element.id}`);
+                                    if (currentUser) {
+                                        document.querySelector("#form").focus();
+                                    }
+                                }}
+                            >
+                                <BiCommentDetail size="20px" className="feedback" style={{ color: local }} />
+                            </button>
+                            {commentCount} Comment(s)
+                        </div>
+                        <div>0 Reposts</div>
                     </div>
-                    <div style={{ display: "flex", gap: "5px", margin: "3px" }}>
-                        <button
-                            style={{
-                                border: "none",
-                                background: "none",
-                            }}
-                            onClick={async () => {
-                                await history(`/post/${element.id}`);
-                                if (currentUser) {
-                                    document.querySelector("#form").focus();
-                                }
-                            }}
-                        >
-                            <BiCommentDetail size="20px" className="feedback" style={{ color: local }} />
-                        </button>
-                        {commentCount} Comment(s)
-                    </div>
-                    <div>0 Reposts</div>
                 </div>
             </div>
         </div>
@@ -259,7 +309,6 @@ const ShowPosts = (person, id) => {
         }
         return 0;
     }
-    console.log(person);
 
     var gowno;
 

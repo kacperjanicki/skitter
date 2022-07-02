@@ -8,7 +8,7 @@ import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 
 const PostCreate = () => {
     const { userData, currentUser } = useContext(UserProvider);
-    const { setSortMethod, sortMethod, postcount, setShow, showModal } = useContext(UserProvider);
+    const { setSortMethod, local, postcount, setShow, showModal } = useContext(UserProvider);
     const [error, setError] = useState();
     const [log, setLog] = useState();
     const [innertext, setinnertext] = useState("");
@@ -50,41 +50,51 @@ const PostCreate = () => {
                 }
 
                 setSortMethod("NEWEST-LATEST");
-                document.getElementById("recent").click();
+                // document.getElementById("recent").click();
             } catch (err) {
                 setError("");
                 setError(String(err));
                 console.log(err);
             }
-            setLog("Post sent!");
+            setLog("Post sent! Your post will show up shortly");
         }
     };
     const handleClose = () => {
         setShow(false);
     };
+    var backgroundchoice;
+    if (local == "white") {
+        backgroundchoice = "#4a4e52";
+    } else {
+        backgroundchoice = "white";
+    }
 
     return (
         <div className="form">
             {error && (
-                <Alert variant="danger" style={{ width: "600px" }}>
+                <Alert variant="danger" className="alert">
                     {error}
                 </Alert>
             )}
             {log && (
-                <Alert variant="success" style={{ width: "600px" }}>
+                <Alert variant="success" className="alert">
                     {log}
                 </Alert>
             )}
-            <div className="publish_container">
-                <div className="d-flex align-items-center justify-content-center"></div>
+            <div className="publish_container" style={{ position: "absolute", left: "200px" }}>
                 <Modal show={showModal} onHide={handleClose}>
-                    <Modal.Header closeButton></Modal.Header>
-                    <Modal.Body>
+                    <Modal.Body style={{ backgroundColor: backgroundchoice, color: local }}>
                         <form onSubmit={formSubmit} id="postform">
                             <textarea
                                 placeholder="What's on your mind?"
                                 ref={text}
-                                style={{ height: "100px", width: "100%", padding: "10px" }}
+                                style={{
+                                    height: "100px",
+                                    width: "100%",
+                                    padding: "10px",
+                                    backgroundColor: backgroundchoice,
+                                    color: local,
+                                }}
                                 id="postform"
                                 autoFocus={true}
                                 onChange={(e) => {
@@ -100,10 +110,24 @@ const PostCreate = () => {
                                         cursor: "pointer",
                                     }}
                                 >
-                                    <img
-                                        src="https://www.seekpng.com/png/full/406-4063154_image-gallery-landscape-square-potrait-pic-ui-comments.png"
-                                        style={{ height: "30px", cursor: "pointer" }}
-                                    ></img>
+                                    {local == "white" ? (
+                                        <img
+                                            src="https://www.seekpng.com/png/full/406-4063154_image-gallery-landscape-square-potrait-pic-ui-comments.png"
+                                            style={{
+                                                height: "30px",
+                                                cursor: "pointer",
+                                                filter: "invert(100%)",
+                                            }}
+                                        ></img>
+                                    ) : (
+                                        <img
+                                            src="https://www.seekpng.com/png/full/406-4063154_image-gallery-landscape-square-potrait-pic-ui-comments.png"
+                                            style={{
+                                                height: "30px",
+                                                cursor: "pointer",
+                                            }}
+                                        ></img>
+                                    )}
                                     Attach image
                                 </div>
                             </label>
@@ -118,7 +142,7 @@ const PostCreate = () => {
                         </form>
                         {img ? <img src={img.name}></img> : ""}
                     </Modal.Body>
-                    <Modal.Footer>
+                    <Modal.Footer style={{ backgroundColor: backgroundchoice }}>
                         <Button variant="secondary" onClick={handleClose}>
                             Close
                         </Button>

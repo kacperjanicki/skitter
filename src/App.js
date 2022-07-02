@@ -35,8 +35,8 @@ function App() {
         set(ref(database, `users/${userData.username}/isLoggedIn`), false);
         return auth.signOut();
     };
-
     const [postcount, setPostCount] = useState();
+    const [notifications, setNotifications] = useState();
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             setcurrentUser(user);
@@ -50,7 +50,6 @@ function App() {
                         currentObj.isLoggedIn = true;
                         setuserData(currentObj);
                         setCurrentLoggedIn(currentObj.username);
-                        console.log(currentObj);
                         set(ref(database, `users/${currentObj.username}`), currentObj);
                     }
                 })
@@ -61,6 +60,11 @@ function App() {
         get(ref(database, `/postcount/count`)).then((snapshot) => {
             setPostCount(snapshot.val());
         });
+        if (userData) {
+            get(ref(database, `users/${userData.username}/activity`)).then((snapshot) => {
+                setNotifications(Object.values(snapshot.val()));
+            });
+        }
 
         return unsubscribe;
     }, []);
@@ -90,6 +94,7 @@ function App() {
             localStorage.setItem("mode", "dark");
         }
         console.log(localStorage.getItem("mode"));
+
         if (localStorage.getItem("mode") == "dark") {
             setlocal("white");
         } else if (localStorage.getItem("mode") == "light") {
@@ -98,7 +103,6 @@ function App() {
     };
 
     useEffect(() => {
-        console.log(local);
         if (document.getElementById("mainpage")) {
             if (localStorage.getItem("mode") == "dark") {
                 document.getElementById("mainpage").classList.add("switch");
@@ -123,6 +127,7 @@ function App() {
     const [currentLoggedin, setCurrentLoggedIn] = useState();
 
     const value = {
+        notifications,
         currentUser,
         showModal,
         currentLoggedin,
