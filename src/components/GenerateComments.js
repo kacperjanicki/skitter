@@ -16,8 +16,10 @@ const GenerateComments = (idOfPost) => {
         Object.entries(element.comments).map((element) => {
             container.push(element[1]);
         });
+        container = container.sort((a, b) => b.date_in_ms - a.date_in_ms);
         return container;
     });
+    console.log(container);
 
     return (
         <div>
