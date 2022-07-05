@@ -172,25 +172,23 @@ function App() {
 
     return (
         <UserProvider.Provider value={value}>
-            <Router>
-                <Routes>
-                    <Route exact path="/profile" element={<PrivateRoute />}>
-                        <Route exact path="/profile" element={<Dashboard />} />
-                        <Route exact path="/profile/edit" element={<Edit />} />
-                        <Route exact path="/profile/messages" element={<Mess />}></Route>
-                    </Route>
-                    <Route exact path="/" element={<BasicPage />}></Route>
-                    <Route exact path="/suggested" element={<Allusers />}></Route>
+            <Routes>
+                <Route exact path="/profile" element={<PrivateRoute />}>
+                    <Route exact path="/profile" element={<Dashboard />} />
+                    <Route exact path="/profile/edit" element={<Edit />} />
+                    <Route exact path="/profile/messages" element={<Mess />}></Route>
+                </Route>
+                <Route exact path="/" element={<BasicPage />}></Route>
+                <Route exact path="/suggested" element={<Allusers />}></Route>
 
-                    <Route path="/user/:username" element={<ProfilePage />}></Route>
-                    <Route path="/post/:id" element={<GeneratePost />}></Route>
-                    <Route exact path="/home" element={<MainPage />} />
+                <Route path="/user/:username" element={<ProfilePage />}></Route>
+                <Route path="/post/:id" element={<GeneratePost />}></Route>
+                <Route exact path="/home" element={<MainPage />} />
 
-                    <Route path="/signup" element={<LoginPage />}></Route>
-                    <Route path="/login" exact element={<ActualLogin />}></Route>
-                    <Route path="/forgot-password" exact element={<Forgot />}></Route>
-                </Routes>
-            </Router>
+                <Route path="/signup" element={<LoginPage />}></Route>
+                <Route path="/login" exact element={<ActualLogin />}></Route>
+                <Route path="/forgot-password" exact element={<Forgot />}></Route>
+            </Routes>
         </UserProvider.Provider>
     );
 }
