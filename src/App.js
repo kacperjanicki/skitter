@@ -179,7 +179,7 @@ function App() {
                         <Route exact path="/profile/edit" element={<Edit />} />
                         <Route exact path="/profile/messages" element={<Mess />}></Route>
                     </Route>
-                    <Route exact path="/twitterclone" element={<BasicPage />}></Route>
+                    <Route exact path="/" element={<BasicPage />}></Route>
                     <Route exact path="/suggested" element={<Allusers />}></Route>
 
                     <Route path="/user/:username" element={<ProfilePage />}></Route>
