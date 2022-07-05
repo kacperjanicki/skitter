@@ -172,27 +172,6 @@ function App() {
 
     return (
         <UserProvider.Provider value={value}>
-            <div
-                style={{
-                    position: "absolute",
-                    top: 0,
-                    right: 5,
-                    fontSize: "20px",
-                    color: local,
-                    opacity: "0.4",
-                    padding: "10px",
-                    zIndex: 5,
-
-                    alignItems: "center",
-                    cursor: "pointer",
-                }}
-                onClick={() => {
-                    window.open("https://github.com/kacperjanicki");
-                }}
-            >
-                <AiOutlineGithub size={30} className="github" />
-            </div>
-
             <Router>
                 <Routes>
                     <Route exact path="/profile" element={<PrivateRoute />}>
@@ -200,7 +179,7 @@ function App() {
                         <Route exact path="/profile/edit" element={<Edit />} />
                         <Route exact path="/profile/messages" element={<Mess />}></Route>
                     </Route>
-                    <Route exact path="/" element={<BasicPage />}></Route>
+                    <Route exact path="/twitterclone" element={<BasicPage />}></Route>
                     <Route exact path="/suggested" element={<Allusers />}></Route>
 
                     <Route path="/user/:username" element={<ProfilePage />}></Route>

@@ -21,6 +21,26 @@ const MainPage = () => {
             >
                 <GenerateNav />
                 <div>
+                    <div
+                        style={{
+                            position: "absolute",
+                            top: 0,
+                            right: 5,
+                            fontSize: "20px",
+                            color: local,
+                            opacity: "0.4",
+                            padding: "10px",
+                            zIndex: 5,
+
+                            alignItems: "center",
+                            cursor: "pointer",
+                        }}
+                        onClick={() => {
+                            window.open("https://github.com/kacperjanicki");
+                        }}
+                    >
+                        <AiOutlineGithub size={30} className="github" />
+                    </div>
                     <PostCreate />
                     <ShowPosts />
                 </div>
