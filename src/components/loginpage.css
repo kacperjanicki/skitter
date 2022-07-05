@@ -46,6 +46,10 @@ body {
 #tweetsingle:hover {
     background-color: rgb(228, 229, 230);
 }
+#allusr {
+    width: 50vw;
+    left: 25%;
+}
 
 .navitem {
     display: flex;
@@ -86,7 +90,6 @@ body {
     text-align: left;
 }
 .tweet {
-    /* border: 1px solid #dee2e6; */
     width: 600px;
     height: auto;
     border-top-left-radius: 10px;
@@ -98,7 +101,6 @@ body {
 
 .img_place > img {
     height: 90px;
-    /* display: flex; */
     border-radius: 80px;
     width: 90px;
 }
@@ -120,23 +122,24 @@ body {
 
 .home {
     background-color: white;
-    /* margin-top: 40px; */
     color: "black";
 }
 
 .likecount:hover {
     text-decoration: underline;
 }
+#mediachoose {
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
 
 .profile {
     display: flex;
     align-content: center;
     width: 50vw;
-    /* color: white; */
     overflow-x: hidden;
     overflow: visible;
     height: 100vh;
-    /* background-color: rgb(96, 199, 165); */
 }
 
 #txt {
@@ -151,8 +154,6 @@ body {
     display: flex;
     gap: 20px;
     color: white;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
 }
 .red {
     height: "10px";
@@ -175,18 +176,95 @@ body {
 .inbox_user:hover {
     background-color: #5e6061;
 }
+.addmobile {
+    display: none;
+}
+#navcontainer {
+    position: absolute;
+    left: 100px;
+    margin-top: 50px;
+}
 
-@media screen and (max-width: 920px) {
+#test {
+    /* margin-right: 20px; */
+    top: 20%;
+    left: 15%;
+    position: sticky;
+    display: flex;
+    flex-direction: column;
+}
+.mess {
+    height: 100vh;
+    background-color: #4a4e52;
+    position: fixed;
+    overflow: auto;
+}
+
+@media screen and (max-width: 1200px) {
     .middle,
     .post-cont,
     .log,
     .profile {
         width: 100vw !important;
+        /* padding: 10px; */
+        overflow-x: hidden;
     }
-    #test,
+    .post-cont > div > div {
+        position: relative;
+        width: 600px;
+        margin: 10px;
+    }
+    .txt,
     .inbox {
         display: none;
     }
+    #allusr {
+        width: 90vw;
+        left: 5%;
+        right: 5%;
+    }
+
+    .addmobile {
+        display: initial;
+        background-color: #1175b8;
+        border-radius: 50%;
+        border: none;
+        width: 50px;
+        height: 50px;
+        position: absolute;
+        z-index: 10;
+        right: 20px;
+        bottom: 70px;
+    }
+    #navcontainer {
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 5;
+    }
+
+    #test {
+        position: fixed;
+        display: flex;
+        position: sticky;
+        bottom: 0;
+        /* top: 90%; */
+        justify-content: space-between;
+        width: 100%;
+
+        height: 60px;
+        flex-direction: row;
+        z-index: 2;
+        margin-bottom: 0;
+        left: 0;
+        background-color: rgba(74, 78, 82, 0.7);
+        padding: 20px;
+    }
+    #hidebtn,
+    .hidebtn {
+        display: none;
+    }
+
     .content {
         width: 100%;
     }
@@ -213,17 +291,81 @@ body {
 .alert {
     width: 600px;
 }
-.addmobile {
+.profileimg {
+    width: 200px;
+    height: 200px;
+    border-radius: 200px;
+}
+.inbox_user {
+    height: 120px;
+    display: flex;
+    gap: 5px;
+    border: 1px groove #dee2e6;
+    border-radius: 10px;
+}
+.chatmsg {
+    width: fit-content;
+    right: 0;
+}
+
+.mess_container {
+    height: 100vh;
+    position: absolute;
+    left: 10%;
+    color: white;
+    display: flex;
+}
+.choose_user {
+    right: 20%;
+}
+#selectuser {
     display: none;
 }
-@media screen and (max-width: 390px) {
-    .tweetcont {
+
+@media screen and (max-width: 500px) {
+    .choose_user {
+        right: 10%;
+    }
+    #selectuser {
+        display: flex;
+    }
+
+    .mess {
+        position: fixed;
+        height: 100%;
+        overflow: auto;
         overflow-x: hidden;
     }
+    /* #send {
+        position: fixed;
+        bottom: 0;
+    } */
+    #msgform > div {
+        position: relative;
+        width: 145%;
+    }
+
+    .chatmsg {
+        width: 140%;
+        position: absolute;
+        right: 50%;
+        margin-left: 50%;
+        margin-bottom: 20%;
+    }
+    .mess_container {
+        margin-top: 10px;
+        left: 0;
+    }
+
     .profile {
         position: absolute;
         left: 0 !important;
         overflow: auto;
+    }
+    .profileimg {
+        margin-left: 10px;
+        width: 100px;
+        height: 100px;
     }
     .content {
         margin-left: 0;
@@ -233,19 +375,18 @@ body {
     .content > img {
         width: 100%;
     }
-
-    .github {
-        display: none;
+    .post-cont > div > div > div {
+        position: relative;
+        right: 110px;
+        width: 70%;
     }
+
     .tweetcont {
         position: relative;
-        /* background-color: green; */
-        left: 100px;
+        left: 110px;
         width: 400px;
     }
     .tweetcont > div > div {
-        width: 90%;
-
         width: 90%;
     }
     .tweetcont > div > div > div {
@@ -276,7 +417,7 @@ body {
     }
     #test {
         position: fixed;
-        display: flex;
+
         justify-content: space-between;
         width: 100%;
         height: 60px;

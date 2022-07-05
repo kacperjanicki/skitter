@@ -56,6 +56,7 @@ export function writeUserData(
         messages: messages,
         when_joined: result,
         isLoggedIn: isLoggedIn,
+        given_replies: false,
     });
     console.log(date);
 }

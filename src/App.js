@@ -8,6 +8,7 @@ import Mess from "./components/Mess";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Edit from "./components/Edit";
 import Dashboard from "./components/dashboard";
+import { AiOutlineGithub } from "react-icons/ai";
 import ActualLogin from "./components/login";
 import PrivateRoute from "./components/PrivateRoute";
 import { ref, onValue, get, set } from "firebase/database";
@@ -15,6 +16,8 @@ import { database } from "./firebase";
 import Forgot from "./components/Forgot";
 import MainPage from "./components/MainPage";
 import GeneratePost from "./components/GeneratePost";
+import Allusers from "./components/Allusers";
+
 export const UserProvider = React.createContext();
 
 function App() {
@@ -37,6 +40,7 @@ function App() {
     };
     const [postcount, setPostCount] = useState();
     const [notifications, setNotifications] = useState();
+    const [userlist, setUserList] = useState();
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             setcurrentUser(user);
@@ -65,6 +69,9 @@ function App() {
                 setNotifications(Object.values(snapshot.val()));
             });
         }
+        get(ref(database, `users`)).then((snapshot) => {
+            setUserList(Object.keys(snapshot.val()));
+        });
 
         return unsubscribe;
     }, []);
@@ -109,6 +116,7 @@ function App() {
             } else if (localStorage.getItem("mode") == "light") {
                 document.getElementById("mainpage").classList.remove("switch");
             }
+
             if (localStorage.getItem("mode") == "dark") {
                 setlocal("white");
             } else if (localStorage.getItem("mode") == "light") {
@@ -125,11 +133,15 @@ function App() {
     const [displayType, setdisplayType] = useState();
     const [shouldChangePostData, setShouldChangePostData] = useState();
     const [currentLoggedin, setCurrentLoggedIn] = useState();
+    const [editlog, seteditlog] = useState();
 
     const value = {
+        userlist,
         notifications,
         currentUser,
         showModal,
+        editlog,
+        seteditlog,
         currentLoggedin,
         setCurrentLoggedIn,
         postcount,
@@ -160,6 +172,27 @@ function App() {
 
     return (
         <UserProvider.Provider value={value}>
+            <div
+                style={{
+                    position: "absolute",
+                    top: 0,
+                    right: 5,
+                    fontSize: "20px",
+                    color: local,
+                    opacity: "0.4",
+                    padding: "10px",
+                    zIndex: 5,
+
+                    alignItems: "center",
+                    cursor: "pointer",
+                }}
+                onClick={() => {
+                    window.open("https://github.com/kacperjanicki");
+                }}
+            >
+                <AiOutlineGithub size={30} className="github" />
+            </div>
+
             <Router>
                 <Routes>
                     <Route exact path="/profile" element={<PrivateRoute />}>
@@ -168,6 +201,7 @@ function App() {
                         <Route exact path="/profile/messages" element={<Mess />}></Route>
                     </Route>
                     <Route exact path="/" element={<BasicPage />}></Route>
+                    <Route exact path="/suggested" element={<Allusers />}></Route>
 
                     <Route path="/user/:username" element={<ProfilePage />}></Route>
                     <Route path="/post/:id" element={<GeneratePost />}></Route>

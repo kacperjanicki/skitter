@@ -4,20 +4,16 @@ import { ref, get, onValue, set, push } from "firebase/database";
 import { useContext } from "react";
 import { UserProvider } from "../App";
 import "./loginpage.css";
+import { TbArrowBackUp } from "react-icons/tb";
 import { RiDatabase2Fill, RiRadioButtonLine } from "react-icons/ri";
 import { TbSend } from "react-icons/tb";
+import { Modal } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 const SingleUser = ({ user, selectUser }) => {
     var data = user;
     return (
         <div
-            style={{
-                height: "120px",
-                display: "flex",
-                gap: "5px",
-                border: "1px groove #dee2e6",
-                borderRadius: "10px",
-            }}
             className="inbox_user"
             onClick={(e) => {
                 selectUser(data);
@@ -84,6 +80,11 @@ const Mess = () => {
     const [chat, setChat] = useState();
     const [conversation, setConversation] = useState();
     const messRef = useRef();
+    const [show, setshow] = useState(false);
+    const handleClose = () => setshow(false);
+    const handleShow = () => {
+        setshow(true);
+    };
 
     const current_user = userData;
     useEffect(() => {
@@ -92,6 +93,9 @@ const Mess = () => {
             var final = Object.entries(snapshot.val()).filter((a) => a[0] != userData.username);
             setusers(final);
         });
+        if (chat) {
+            handleClose();
+        }
         onValue(ref(database, `users`), (snapshot) => {
             setusers(Object.entries(snapshot.val()).filter((a) => a[0] != userData.username));
         });
@@ -116,6 +120,7 @@ const Mess = () => {
                 }
             }
         );
+        handleClose();
     };
 
     if (conversation) {
@@ -154,19 +159,93 @@ const Mess = () => {
             );
         }
     };
+    const navigate = useNavigate();
 
     return (
-        <div style={{ backgroundColor: "#4a4e52", width: "100vw", height: "100vh" }}>
-            <div
-                style={{
-                    height: "100vh",
-                    position: "absolute",
-                    left: "10%",
+        <div
+            style={{
+                width: "100vw",
 
-                    color: "white",
-                    display: "flex",
-                }}
-            >
+                margin: 0,
+            }}
+            className="mess"
+        >
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton style={{ backgroundColor: "#4a4e52", color: "white" }}>
+                    <Modal.Title>Select user:</Modal.Title>
+                </Modal.Header>
+                <Modal.Body style={{ backgroundColor: "#4a4e52", color: "white" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                        {users
+                            ? users.map((user) => {
+                                  onValue(
+                                      ref(database, `/users/${user[1].username}/isLoggedIn`),
+                                      (snapshot) => {
+                                          user[1].isLoggedIn = snapshot.val();
+                                      }
+                                  );
+                                  return (
+                                      <SingleUser user={user} selectUser={selectUser} key={user.username} />
+                                  );
+                              })
+                            : ""}
+                    </div>
+                </Modal.Body>
+            </Modal>
+            {chat ? (
+                <>
+                    <button
+                        style={{
+                            color: "white",
+                            border: "none",
+                            width: "80%",
+                            padding: "5px",
+                            marginLeft: "20px",
+                            marginBottom: "10px",
+                            borderRadius: "30px",
+                            background: "#5c636a",
+                        }}
+                        onClick={() => {
+                            navigate(-1);
+                        }}
+                    >
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                gap: "5px",
+                            }}
+                        >
+                            <TbArrowBackUp />
+                            Back
+                        </div>
+                    </button>
+                    <button
+                        style={{
+                            padding: "10px",
+                            marginLeft: "10px",
+                            position: "relative",
+                            top: 0,
+                            left: "25%",
+                            opacity: "0.7",
+                            border: "none",
+                            background: "none",
+                            color: "white",
+                            fontSize: "20px",
+                            zIndex: 10,
+                        }}
+                        className="choose_user"
+                        onClick={handleShow}
+                        id="selectuser"
+                    >
+                        Select a user
+                    </button>
+                </>
+            ) : (
+                ""
+            )}
+            <div className="mess_container">
                 <div
                     style={{ width: "300px", borderLeft: "1px groove #dee2e6", paddingLeft: "5px" }}
                     className="inbox"
@@ -219,7 +298,7 @@ const Mess = () => {
                                     conversation.map((msg) => {
                                         var choice;
                                         if (msg.from != current_user.username) {
-                                            choice = "250px";
+                                            choice = "170px";
                                         }
                                         return (
                                             <div
@@ -227,17 +306,21 @@ const Mess = () => {
                                                     display: "inline-block",
                                                     padding: "10px",
                                                     margin: "2px",
-                                                    //   minWidth: "20%",
-                                                    width: "fit-content",
                                                     marginLeft: choice,
+                                                    marginRight: "auto",
                                                     whiteSpace: "initial",
                                                     border: "1px groove #dee2e6",
                                                     position: "relative",
-                                                    right: 0,
                                                     borderRadius: "5px",
                                                 }}
+                                                className="chatmsg"
                                             >
-                                                <div style={{ display: "flex", gap: "10px" }}>
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        gap: "10px",
+                                                    }}
+                                                >
                                                     <img
                                                         src={msg.sender_img}
                                                         style={{
@@ -247,7 +330,7 @@ const Mess = () => {
                                                             borderRadius: "20%",
                                                         }}
                                                     ></img>
-                                                    <span>{msg.body}</span>
+                                                    <span className="msgbody">{msg.body}</span>
                                                 </div>
                                             </div>
                                         );
@@ -292,9 +375,28 @@ const Mess = () => {
                             </div>
                         </div>
                     ) : (
-                        <h1 style={{ padding: "10px", marginLeft: "10px", opacity: "0.7" }}>
-                            Select a user to start conversation
-                        </h1>
+                        <>
+                            {window.innerWidth < 500 ? (
+                                <button
+                                    style={{
+                                        padding: "10px",
+                                        marginLeft: "10px",
+                                        position: "relative",
+                                        opacity: "0.7",
+                                        border: "none",
+                                        background: "none",
+                                        color: "white",
+                                        fontSize: "20px",
+                                    }}
+                                    className="choose_user"
+                                    onClick={handleShow}
+                                >
+                                    Select a user
+                                </button>
+                            ) : (
+                                ""
+                            )}
+                        </>
                     )}
                 </div>
             </div>

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { ref, get, set, onValue, push } from "firebase/database";
 import { database } from "../firebase";
-
+import { useLocation } from "react-router-dom";
 import { UserProvider } from "../App";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
@@ -12,7 +12,7 @@ import ReactLinkify from "react-linkify";
 const SignlePost = (body) => {
     var element = body.body;
     var mobile;
-    const { userData, currentUser, tweetref, local, setlocal } = useContext(UserProvider);
+    const { userData, currentUser, tweetref, local, setlocal, sortMethod } = useContext(UserProvider);
     const history = useNavigate();
     const [likescount, setLikesCount] = useState();
     const [choice, setchoice] = useState();
@@ -24,6 +24,12 @@ const SignlePost = (body) => {
         get(ref(database, `users/${element.posted_by}`)).then((snapshot) => {
             setProfpic(snapshot.val().profile_picture);
         });
+        if (sortMethod == "REPLIES") {
+            get(ref(database, `users/${element.author}`)).then((snapshot) => {
+                setProfpic(snapshot.val().profile_picture);
+            });
+        }
+
         if (currentUser) {
             get(ref(database, `posts/post${element.id}/likes`)).then((snapshot) => {
                 if (userData) {
@@ -158,10 +164,10 @@ const SignlePost = (body) => {
     } else {
         borderchoice = "1px solid #dee2e6";
     }
-
+    console.log(element);
     return (
         <div className="tweetcont">
-            <div style={{ display: "flex", flexDirection: "column" }} ref={tweetref}>
+            <div style={{ display: "flex", flexDirection: "column" }} ref={tweetref} id="profilediv">
                 <div className="tweet" id="tweetsingle" style={{ borderBottom: 0, border: borderchoice }}>
                     <div className="img_place">
                         {profpic ? (
@@ -172,10 +178,11 @@ const SignlePost = (body) => {
                                         history(`/user/${element.posted_by}`);
                                     }}
                                 />
-                                <div className="footer">
-                                    {element.posted_by}
-                                    <br />
-                                    {calculateDiff()}
+                                <div
+                                    style={{ display: "flex", flexDirection: "column", whiteSpace: "nowrap" }}
+                                >
+                                    {element.posted_by ? element.posted_by : element.author}
+                                    <span>{calculateDiff()}</span>
                                 </div>
                             </>
                         ) : (
@@ -228,70 +235,79 @@ const SignlePost = (body) => {
                     }}
                     id="postinfo"
                 >
-                    <div style={{ display: "flex", gap: "30px", alignItems: "center" }}>
-                        <div style={{ display: "flex", gap: "5px", margin: "3px" }}>
-                            <button
-                                style={{ background: "none", border: "none" }}
-                                onClick={(e) => {
-                                    if (userData && currentUser) {
-                                        if (e.target.style.color != "red") {
-                                            handleLike();
-                                            // setlikesList([userData.username]);
-                                            e.target.style.color = "red";
-                                        } else if (e.target.style.color == "red") {
-                                            handleDislike();
-                                            if (local == "white") {
-                                                e.target.style.color = "white";
-                                            } else if (local == "black") {
-                                                e.target.style.color = "black";
+                    {console.log(element)}
+                    {element.published_on ? (
+                        <div style={{ display: "flex", gap: "30px", alignItems: "center" }}>
+                            <div style={{ display: "flex", gap: "5px", margin: "3px" }}>
+                                <button
+                                    style={{ background: "none", border: "none" }}
+                                    onClick={(e) => {
+                                        if (userData && currentUser) {
+                                            if (e.target.style.color != "red") {
+                                                handleLike();
+                                                // setlikesList([userData.username]);
+                                                e.target.style.color = "red";
+                                            } else if (e.target.style.color == "red") {
+                                                handleDislike();
+                                                if (local == "white") {
+                                                    e.target.style.color = "white";
+                                                } else if (local == "black") {
+                                                    e.target.style.color = "black";
+                                                }
                                             }
+                                        } else {
+                                            document.getElementById("likebtn").disabled = true;
+                                            alert("Only logged in users can like posts");
                                         }
-                                    } else {
-                                        document.getElementById("likebtn").disabled = true;
-                                        alert("Only logged in users can like posts");
-                                    }
-                                }}
-                            >
-                                {choice ? (
-                                    <AiOutlineHeart
-                                        size="20px"
-                                        style={{ color: choice }}
-                                        id="likebtn"
-                                        className="feedback"
-                                    />
-                                ) : (
-                                    <AiOutlineHeart
-                                        size="20px"
-                                        style={{ color: local }}
-                                        id="likebtn"
-                                        className="feedback"
-                                    />
-                                )}
-                            </button>
+                                    }}
+                                >
+                                    {choice ? (
+                                        <AiOutlineHeart
+                                            size="20px"
+                                            style={{ color: choice }}
+                                            id="likebtn"
+                                            className="feedback"
+                                        />
+                                    ) : (
+                                        <AiOutlineHeart
+                                            size="20px"
+                                            style={{ color: local }}
+                                            id="likebtn"
+                                            className="feedback"
+                                        />
+                                    )}
+                                </button>
 
-                            <span className="likecount" style={{ marginTop: "3px" }}>
-                                {likescount ? likescount : "0"}
-                            </span>
+                                <span className="likecount" style={{ marginTop: "3px" }}>
+                                    {likescount ? likescount : "0"}
+                                </span>
+                            </div>
+                            <div style={{ display: "flex", gap: "5px", margin: "3px" }}>
+                                <button
+                                    style={{
+                                        border: "none",
+                                        background: "none",
+                                    }}
+                                    onClick={async () => {
+                                        await history(`/post/${element.id}`);
+                                        if (currentUser) {
+                                            document.querySelector("#form").focus();
+                                        }
+                                    }}
+                                >
+                                    <BiCommentDetail
+                                        size="20px"
+                                        className="feedback"
+                                        style={{ color: local }}
+                                    />
+                                </button>
+                                {commentCount} Comment(s)
+                            </div>
+                            <div>0 Reposts</div>
                         </div>
-                        <div style={{ display: "flex", gap: "5px", margin: "3px" }}>
-                            <button
-                                style={{
-                                    border: "none",
-                                    background: "none",
-                                }}
-                                onClick={async () => {
-                                    await history(`/post/${element.id}`);
-                                    if (currentUser) {
-                                        document.querySelector("#form").focus();
-                                    }
-                                }}
-                            >
-                                <BiCommentDetail size="20px" className="feedback" style={{ color: local }} />
-                            </button>
-                            {commentCount} Comment(s)
-                        </div>
-                        <div>0 Reposts</div>
-                    </div>
+                    ) : (
+                        ""
+                    )}
                 </div>
             </div>
         </div>
@@ -300,6 +316,13 @@ const SignlePost = (body) => {
 
 const ShowPosts = (person, id) => {
     const { single_posts, sortMethod, userData } = useContext(UserProvider);
+    const [replies, setReplies] = useState();
+    useEffect(() => {
+        get(ref(database, `users/${person.person}/given_replies`)).then((snapshot) => {
+            console.log(Object.values(snapshot.val()));
+            setReplies(Object.values(snapshot.val()));
+        });
+    }, []);
     function compare(a, b) {
         if (Object.keys(a.likes).length > Object.keys(b.likes).length) {
             return -1;
@@ -328,17 +351,28 @@ const ShowPosts = (person, id) => {
         }
     } else if (sortMethod == "USER_LIKES") {
         gowno = Object.values(single_posts).filter((a) => Object.keys(a.likes).includes(person.person));
-    }
+        console.log(gowno);
+    } else if (sortMethod == "REPLIES") {
+        var filtered;
+        console.log(person.person);
 
-    return (
-        <div className="tweets" id="alltweets" style={{ width: "600px" }}>
-            {gowno.map((element) => {
-                if (element.body) {
-                    return <SignlePost body={element} key={element.id} />;
-                }
-            })}
-        </div>
-    );
+        if (replies) {
+            gowno = replies;
+        }
+    }
+    if (gowno) {
+        return (
+            <div className="tweets" id="alltweets" style={{ width: "600px" }}>
+                {gowno.map((element) => {
+                    if (element.body) {
+                        return <SignlePost body={element} key={element.id} />;
+                    }
+                })}
+            </div>
+        );
+    } else if (!gowno) {
+        return "Nothing here!";
+    }
 };
 
 export default ShowPosts;

@@ -164,7 +164,20 @@ const GeneratePost = () => {
                     body: commentRef.current.value,
                     prof_pic: userData.profile_picture,
                     likes: 0,
+                    id: post.id,
                     date: date2.toLocaleString("sv"),
+                    date_in_ms: date,
+                });
+                const userReplies = ref(database, `users/${userData.username}/given_replies`);
+                const newreply = push(userReplies);
+                set(newreply, {
+                    author: userData.username,
+                    body: commentRef.current.value,
+                    prof_pic: userData.profile_picture,
+                    likes: 0,
+                    id: post.id,
+                    date: date2.toLocaleString("sv"),
+                    date_in_ms: date,
                 });
                 get(count).then((snapshot) => {
                     if (snapshot.exists()) {
@@ -223,26 +236,33 @@ const GeneratePost = () => {
             id="mainpage"
             style={{ display: "flex", flexDirection: "row", gap: "30px", paddingBottom: "50px" }}
         >
-            {window.innerWidth < 400 ? (
-                <button
-                    style={{
-                        position: "absolute",
-                        zIndex: 2,
-                        left: 0,
-                        margin: "5px",
-                        border: "none",
-                        color: "white",
-                        background: "none",
-                    }}
-                    onClick={() => {
-                        history(-1);
-                    }}
-                >
-                    <BiArrowBack size={30} />
-                </button>
-            ) : (
-                <GenerateNav />
-            )}
+            {window.innerWidth < 920
+                ? (() => {
+                      document.querySelector(".github").style.display = "none";
+                      return (
+                          <>
+                              <button
+                                  style={{
+                                      position: "absolute",
+                                      zIndex: 2,
+                                      left: 0,
+                                      margin: "5px",
+                                      border: "none",
+                                      color: "white",
+                                      background: "none",
+                                  }}
+                                  onClick={() => {
+                                      history(-1);
+                                      document.querySelector(".github").style.display = "initial";
+                                  }}
+                              >
+                                  <BiArrowBack size={30} />
+                              </button>
+                              <GenerateNav />
+                          </>
+                      );
+                  })()
+                : ""}
 
             <div className="profile">
                 <div id="middle wrap">
@@ -271,7 +291,16 @@ const GeneratePost = () => {
                                 ) : (
                                     "loading"
                                 )}
-                                {post.additional ? <img src={post.additional}></img> : ""}
+                                {post.additional ? (
+                                    <img
+                                        src={post.additional}
+                                        onClick={() => {
+                                            window.open(post.additional);
+                                        }}
+                                    ></img>
+                                ) : (
+                                    ""
+                                )}
                             </div>
                             <div className="context">
                                 <div style={{ display: "flex" }}>

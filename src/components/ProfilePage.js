@@ -8,6 +8,7 @@ import { Button, Modal, Form } from "react-bootstrap";
 import { FaBirthdayCake, FaPlaneArrival } from "react-icons/fa";
 import { database } from "../firebase";
 import { ref, set } from "firebase/database";
+import { BiArrowBack } from "react-icons/bi";
 import { onValue, get } from "firebase/database";
 import ShowPosts from "./ShowPosts";
 
@@ -22,6 +23,8 @@ const ProfilePage = () => {
         setSortMethod("BY_USR");
     } else if (choice == "likes") {
         setSortMethod("USER_LIKES");
+    } else if (choice == "replies") {
+        setSortMethod("REPLIES");
     } else if (!choice) {
         setSortMethod("BY_USR");
     }
@@ -159,14 +162,36 @@ const ProfilePage = () => {
                     id="mainpage"
                     style={{ display: "flex", flexDirection: "row", gap: "30px" }}
                 >
-                    <GenerateNav style={{ color: local }} />
+                    {window.innerWidth < 930 ? (
+                        (() => {
+                            document.querySelector(".github").style.display = "none";
+                            return (
+                                <button
+                                    style={{
+                                        position: "absolute",
+                                        zIndex: 2,
+                                        left: 0,
+                                        margin: "5px",
+                                        border: "none",
+                                        color: "white",
+                                        background: "none",
+                                    }}
+                                    onClick={() => {
+                                        history(-1);
+                                        document.querySelector(".github").style.display = "initial";
+                                    }}
+                                >
+                                    <BiArrowBack size={30} />
+                                </button>
+                            );
+                        })()
+                    ) : (
+                        <GenerateNav style={{ color: local }} />
+                    )}
                     <div className="profile">
                         <div>
                             <div className="middle" style={{ color: "white" }}>
-                                <img
-                                    src={profpic}
-                                    style={{ width: "200px", height: "200px", borderRadius: "200px" }}
-                                />
+                                <img src={profpic} className="profileimg" />
                                 <div style={{ display: "flex", flexDirection: "column", textAlign: "left" }}>
                                     <span className="text-left">
                                         <strong id="txt">{userobj.full_name}</strong>
@@ -307,7 +332,11 @@ const ProfilePage = () => {
                             </div>
 
                             <div>
-                                <div className="middle" style={{ paddingBottom: "10px", color: "white" }}>
+                                <div
+                                    className="middle"
+                                    style={{ paddingBottom: "10px", color: "white" }}
+                                    id="mediachoose"
+                                >
                                     <Buttonmui
                                         variant="secondary"
                                         onClick={(e) => {
@@ -324,13 +353,13 @@ const ProfilePage = () => {
                                         variant="secondary"
                                         onClick={(e) => {
                                             e.target.style.backgroundColor = "#0b5088";
-                                            setChoice("media");
+                                            setChoice("replies");
                                             e.target.addEventListener("focusout", () => {
                                                 e.target.style.backgroundColor = "";
                                             });
                                         }}
                                     >
-                                        Media
+                                        Replies
                                     </Buttonmui>
                                     <Buttonmui
                                         variant="secondary"

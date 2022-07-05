@@ -5,7 +5,6 @@ import { Form, Button, Card, Alert } from "react-bootstrap";
 import "./loginpage.css";
 import { UserProvider } from "../App";
 import { Link, useNavigate } from "react-router-dom";
-
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 
 const LoginPage = () => {
@@ -17,7 +16,7 @@ const LoginPage = () => {
     const usernameRef = useRef(); //
     const fnameRef = useRef(); //   they go to user database
     const lnameRef = useRef(); //
-    const { signup, login, currentUser } = useContext(UserProvider);
+    const { signup, login, currentUser, userlist } = useContext(UserProvider);
     const [error, setError] = useState("");
     const [log, setLog] = useState("");
     const [img, setimg] = useState();
@@ -25,7 +24,7 @@ const LoginPage = () => {
 
     const history = useNavigate();
     const { loading, setLoading, setlocal, local } = useContext(UserProvider);
-
+    console.log(userlist);
     async function handleSubmit(e) {
         e.preventDefault();
         if (passwordConfirmRef.current.value !== passwordRef.current.value) {
@@ -49,25 +48,29 @@ const LoginPage = () => {
             setLog("");
             setLoading(true);
             console.log(dateRef.current.value);
-            if (url) {
-                await writeUserData(
-                    usernameRef.current.value,
-                    emailRef.current.value,
-                    fnameRef.current.value,
-                    lnameRef.current.value,
-                    url,
-                    String(dateRef.current.value),
-                    false,
-                    false,
-                    false,
-                    false,
-                    false,
-                    true
-                );
-                await signup(emailRef.current.value, passwordRef.current.value);
-                await login(emailRef.current.value, passwordRef.current.value);
-                await setLog("User created successfully");
-                history("/home");
+            if (userlist.includes(usernameRef.current.value)) {
+                setError("User already in database");
+            } else {
+                if (url) {
+                    await writeUserData(
+                        usernameRef.current.value,
+                        emailRef.current.value,
+                        fnameRef.current.value,
+                        lnameRef.current.value,
+                        url,
+                        String(dateRef.current.value),
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        true
+                    );
+                    await signup(emailRef.current.value, passwordRef.current.value);
+                    await login(emailRef.current.value, passwordRef.current.value);
+                    await setLog("User created successfully");
+                    history("/home");
+                }
             }
         } catch (err) {
             setError("");

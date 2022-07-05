@@ -3,9 +3,11 @@ import { Nav, Modal, Form } from "react-bootstrap";
 import Button from "@mui/material/Button";
 import { Badge } from "@mui/material";
 import { UserProvider } from "../App";
-import { AiFillHome, AiOutlineSend, AiOutlineUserAdd } from "react-icons/ai";
+import { AiFillHome, AiOutlineUserAdd } from "react-icons/ai";
+import { TbArrowBackUp } from "react-icons/tb";
 import { IoMdNotifications } from "react-icons/io";
 import { TiMessages } from "react-icons/ti";
+
 import { CgCheck, CgProfile } from "react-icons/cg";
 import { VscEdit } from "react-icons/vsc";
 import { useLocation } from "react-router-dom";
@@ -100,7 +102,7 @@ const GenerateNav = () => {
     }
 
     return (
-        <>
+        <div>
             {location.pathname == "/home" ? (
                 <button className="addmobile" onClick={handleShow}>
                     <VscEdit color="white" />
@@ -117,24 +119,13 @@ const GenerateNav = () => {
                 </button>
             )}
 
-            <Nav
-                id="test"
-                fixed="top"
-                bg="primary"
-                variant="dark"
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    marginTop: "160px",
-                    position: "sticky",
-                    top: 50,
-                }}
-            >
+            <Nav bg="primary" variant="dark" id="navcontainer">
                 <ul
                     style={{
                         listStyleType: "none",
                         fontWeight: "500",
                         fontSize: "30px",
+                        position: "sticky",
                     }}
                     id="test"
                 >
@@ -164,27 +155,85 @@ const GenerateNav = () => {
                                 );
                             } else if (location.pathname != "/home") {
                                 return (
-                                    <li className="navitem" style={{ marginBottom: "20px" }} id="hidebtn">
-                                        <button
-                                            style={{
-                                                border: "none",
-                                                background: "none",
-                                                color: "white",
-                                                borderRadius: "30px",
-                                                fontSize: "20px",
+                                    <>
+                                        {window.innerWidth > 1200 ? (
+                                            <button
+                                                style={{
+                                                    color: "white",
+                                                    border: "none",
+                                                    width: "80%",
+                                                    padding: "5px",
+                                                    marginBottom: "10px",
+                                                    borderRadius: "30px",
+                                                    background: "#5c636a",
+                                                }}
+                                                onClick={() => {
+                                                    if (location.pathname == "/profile") {
+                                                        navigate(-3);
+                                                    } else {
+                                                        navigate(-1);
+                                                    }
+                                                }}
+                                            >
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        justifyContent: "center",
+                                                        alignItems: "center",
+                                                        gap: "5px",
+                                                    }}
+                                                >
+                                                    <TbArrowBackUp />
+                                                    Back
+                                                </div>
+                                            </button>
+                                        ) : (
+                                            ""
+                                            // <button
+                                            //     style={{
+                                            //         position: "fixed",
+                                            //         zIndex: 5,
+                                            //         left: 30,
+                                            //         top: 0,
+                                            //         margin: "5px",
+                                            //         border: "none",
+                                            //         color: "white",
+                                            //         background: "none",
+                                            //     }}
+                                            //     onClick={() => {
+                                            //         if (location.pathname == "/profile") {
+                                            //             navigate(-3);
+                                            //         } else {
+                                            //             navigate(-1);
+                                            //         }
+                                            //     }}
+                                            // >
+                                            //     <TbArrowBackUp size={30} />
+                                            // </button>
+                                        )}
 
-                                                width: "100%",
-                                                padding: "10px",
-                                                backgroundColor: "#1175b8",
-                                            }}
-                                            onClick={() => {
-                                                handleShow();
-                                                navigate("/home");
-                                            }}
-                                        >
-                                            Tweet
-                                        </button>
-                                    </li>
+                                        <li className="navitem" style={{ marginBottom: "20px" }} id="hidebtn">
+                                            <button
+                                                style={{
+                                                    border: "none",
+                                                    background: "none",
+                                                    color: "white",
+                                                    borderRadius: "30px",
+                                                    fontSize: "20px",
+
+                                                    width: "100%",
+                                                    padding: "10px",
+                                                    backgroundColor: "#1175b8",
+                                                }}
+                                                onClick={() => {
+                                                    handleShow();
+                                                    navigate("/home");
+                                                }}
+                                            >
+                                                Tweet
+                                            </button>
+                                        </li>
+                                    </>
                                 );
                             }
                         } else if (!currentUser) {
@@ -208,6 +257,7 @@ const GenerateNav = () => {
                                             onClick={() => {
                                                 navigate("/signup");
                                             }}
+                                            size="sm"
                                         >
                                             Sign up
                                         </Button>
@@ -217,20 +267,37 @@ const GenerateNav = () => {
                         }
                     })()}
                     <li className="navitem">
-                        <button
-                            style={{
-                                border: "none",
-                                background: "none",
-                                marginBottom: "8px",
-                                color: local,
-                            }}
-                            className="navbtn"
-                            onClick={() => {
-                                navigate("/home");
-                            }}
-                        >
-                            <AiFillHome />
-                        </button>
+                        {window.innerWidth < 1200 ? (
+                            <button
+                                style={{
+                                    border: "none",
+                                    background: "none",
+                                    marginBottom: "8px",
+                                    color: "white",
+                                }}
+                                className="navbtn"
+                                onClick={() => {
+                                    navigate("/home");
+                                }}
+                            >
+                                <AiFillHome />
+                            </button>
+                        ) : (
+                            <button
+                                style={{
+                                    border: "none",
+                                    background: "none",
+                                    marginBottom: "8px",
+                                    color: local,
+                                }}
+                                className="navbtn"
+                                onClick={() => {
+                                    navigate("/home");
+                                }}
+                            >
+                                <AiFillHome />
+                            </button>
+                        )}
 
                         <div
                             className="txt"
@@ -244,24 +311,45 @@ const GenerateNav = () => {
                     {currentUser ? (
                         <>
                             <li className="navitem">
-                                <button
-                                    style={{
-                                        border: "none",
-                                        background: "none",
-                                        marginBottom: "8px",
-                                        color: local,
-                                    }}
-                                    className="navbtn"
-                                    onClick={handleShow2}
-                                >
-                                    {activity ? (
-                                        <Badge badgeContent={activity.length} color="primary">
+                                {window.innerWidth < 1200 ? (
+                                    <button
+                                        style={{
+                                            border: "none",
+                                            background: "none",
+                                            marginBottom: "8px",
+                                            color: "white",
+                                        }}
+                                        className="navbtn"
+                                        onClick={handleShow2}
+                                    >
+                                        {activity ? (
+                                            <Badge badgeContent={activity.length} color="primary">
+                                                <IoMdNotifications />
+                                            </Badge>
+                                        ) : (
                                             <IoMdNotifications />
-                                        </Badge>
-                                    ) : (
-                                        <IoMdNotifications />
-                                    )}
-                                </button>
+                                        )}
+                                    </button>
+                                ) : (
+                                    <button
+                                        style={{
+                                            border: "none",
+                                            background: "none",
+                                            marginBottom: "8px",
+                                            color: local,
+                                        }}
+                                        className="navbtn"
+                                        onClick={handleShow2}
+                                    >
+                                        {activity ? (
+                                            <Badge badgeContent={activity.length} color="primary">
+                                                <IoMdNotifications />
+                                            </Badge>
+                                        ) : (
+                                            <IoMdNotifications />
+                                        )}
+                                    </button>
+                                )}
 
                                 <div className="txt">Activity</div>
                             </li>
@@ -392,40 +480,76 @@ const GenerateNav = () => {
                                 </Modal.Footer>
                             </Modal>
                             <li className="navitem">
-                                <button
-                                    style={{
-                                        border: "none",
-                                        background: "none",
-                                        marginBottom: "8px",
-                                        color: local,
-                                    }}
-                                    className="navbtn"
-                                    onClick={() => {
-                                        if (currentUser) {
-                                            navigate("/profile/messages");
-                                        }
-                                    }}
-                                >
-                                    <TiMessages />
-                                </button>
+                                {window.innerWidth < 1200 ? (
+                                    <button
+                                        style={{
+                                            border: "none",
+                                            background: "none",
+                                            marginBottom: "8px",
+                                            color: "white",
+                                        }}
+                                        className="navbtn"
+                                        onClick={() => {
+                                            if (currentUser) {
+                                                navigate("/profile/messages");
+                                            }
+                                        }}
+                                    >
+                                        <TiMessages />
+                                    </button>
+                                ) : (
+                                    <button
+                                        style={{
+                                            border: "none",
+                                            background: "none",
+                                            marginBottom: "8px",
+                                            color: local,
+                                        }}
+                                        className="navbtn"
+                                        onClick={() => {
+                                            if (currentUser) {
+                                                navigate("/profile/messages");
+                                            }
+                                        }}
+                                    >
+                                        <TiMessages />
+                                    </button>
+                                )}
 
                                 <div className="txt">Messages</div>
                             </li>
                             <li className="navitem">
-                                <button
-                                    style={{
-                                        border: "none",
-                                        background: "none",
-                                        marginBottom: "8px",
-                                        color: local,
-                                    }}
-                                    className="navbtn"
-                                    onClick={() => {
-                                        navigate(`/user/${currentLoggedin}`);
-                                    }}
-                                >
-                                    <CgProfile />
-                                </button>
+                                {window.innerWidth < 1200 ? (
+                                    <button
+                                        style={{
+                                            border: "none",
+                                            background: "none",
+                                            marginBottom: "8px",
+                                            color: "white",
+                                        }}
+                                        className="navbtn"
+                                        onClick={() => {
+                                            navigate(`/user/${currentLoggedin}`);
+                                        }}
+                                    >
+                                        <CgProfile />
+                                    </button>
+                                ) : (
+                                    <button
+                                        style={{
+                                            border: "none",
+                                            background: "none",
+                                            marginBottom: "8px",
+                                            color: local,
+                                        }}
+                                        className="navbtn"
+                                        onClick={() => {
+                                            navigate(`/user/${currentLoggedin}`);
+                                        }}
+                                    >
+                                        <CgProfile />
+                                    </button>
+                                )}
 
                                 <div
                                     className="txt"
@@ -444,9 +568,21 @@ const GenerateNav = () => {
                     )}
                     {location.pathname == "/home" ? (
                         <>
-                            <Button id="modeswitch" size="sm" onClick={darkMode} style={{ color: local }}>
-                                Light theme
-                            </Button>
+                            {window.innerWidth < 1200 ? (
+                                <Button
+                                    id="modeswitch"
+                                    size="sm"
+                                    onClick={darkMode}
+                                    style={{ color: "white" }}
+                                >
+                                    Light theme
+                                </Button>
+                            ) : (
+                                <Button id="modeswitch" size="sm" onClick={darkMode} style={{ color: local }}>
+                                    Light theme
+                                </Button>
+                            )}
+
                             <li className="hidebtn">
                                 <Button
                                     size="sm"
@@ -561,7 +697,7 @@ const GenerateNav = () => {
                     )}
                 </ul>
             </Nav>
-        </>
+        </div>
     );
 };
 

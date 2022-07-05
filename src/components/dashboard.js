@@ -3,16 +3,18 @@ import { get, ref, set } from "firebase/database";
 import { database } from "../firebase";
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { Alert, Button, Modal, Form } from "react-bootstrap";
+import { Button as Buttonmui } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { FaBirthdayCake, FaPlaneArrival } from "react-icons/fa";
 import { UserProvider } from "../App";
 import { auth } from "../firebase";
-
+import { BiArrowBack } from "react-icons/bi";
 import GenerateNav from "./GenerateNav";
 
 const Dashboard = () => {
     const [error, setError] = useState("");
-    const { setcurrentUser, setSortMethod, logout, userData, setlocal, local } = useContext(UserProvider);
+    const { setcurrentUser, setSortMethod, logout, userData, setlocal, local, editlog } =
+        useContext(UserProvider);
     const navigate = useNavigate();
     const bioref = useRef();
     setSortMethod("BY_USR");
@@ -22,6 +24,8 @@ const Dashboard = () => {
         setSortMethod("BY_USR");
     } else if (choice == "likes") {
         setSortMethod("USER_LIKES");
+    } else if (choice == "replies") {
+        setSortMethod("REPLIES");
     }
 
     const handleLogOut = async () => {
@@ -105,14 +109,37 @@ const Dashboard = () => {
                         id="mainpage"
                         style={{ display: "flex", flexDirection: "row", gap: "30px" }}
                     >
-                        <GenerateNav />
+                        {window.innerWidth < 1200 ? (
+                            <button
+                                style={{
+                                    position: "absolute",
+                                    zIndex: 2,
+                                    left: 0,
+                                    margin: "5px",
+                                    border: "none",
+                                    color: "white",
+                                    background: "none",
+                                }}
+                                onClick={() => {
+                                    navigate(-3);
+                                }}
+                            >
+                                <BiArrowBack size={30} />
+                            </button>
+                        ) : (
+                            <GenerateNav style={{ color: local }} />
+                        )}
                         <div className="profile">
                             <div>
+                                {editlog ? (
+                                    <Alert variant="success" style={{ marginBottom: 0 }}>
+                                        {editlog}
+                                    </Alert>
+                                ) : (
+                                    ""
+                                )}
                                 <div className="middle" style={{ color: "white" }}>
-                                    <img
-                                        src={userData.profile_picture}
-                                        style={{ width: "200px", height: "200px", borderRadius: "200px" }}
-                                    />
+                                    <img src={userData.profile_picture} className="profileimg" />
                                     <div
                                         style={{
                                             display: "flex",
@@ -371,9 +398,14 @@ const Dashboard = () => {
                                         </Button>
                                     </div>
                                 </div>
+
                                 <div>
-                                    <div className="middle" style={{ paddingBottom: "10px", color: "white" }}>
-                                        {/* <Buttonmui
+                                    <div
+                                        className="middle"
+                                        style={{ paddingBottom: "10px", marginTop: 0, color: "white" }}
+                                        id="mediachoose"
+                                    >
+                                        <Buttonmui
                                             variant="secondary"
                                             id="tweetsbtn"
                                             onClick={(e) => {
@@ -390,13 +422,13 @@ const Dashboard = () => {
                                             variant="secondary"
                                             onClick={(e) => {
                                                 e.target.style.backgroundColor = "#0b5088";
-                                                setChoice("media");
+                                                setChoice("replies");
                                                 e.target.addEventListener("focusout", () => {
                                                     e.target.style.backgroundColor = "";
                                                 });
                                             }}
                                         >
-                                            Media
+                                            Replies
                                         </Buttonmui>
                                         <Buttonmui
                                             variant="secondary"
@@ -409,10 +441,11 @@ const Dashboard = () => {
                                             }}
                                         >
                                             Likes
-                                        </Buttonmui> */}
+                                        </Buttonmui>
                                     </div>
-
-                                    <ShowPosts person={userData.username} />
+                                    <div className="post-cont">
+                                        <ShowPosts person={userData.username} />
+                                    </div>
                                 </div>
                             </div>
                         </div>

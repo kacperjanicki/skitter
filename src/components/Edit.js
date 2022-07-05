@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { UserProvider } from "../App";
 import { auth, writeUserData, storage } from "../firebase";
 import GenerateNav from "./GenerateNav";
+import { database } from "../firebase";
+import { set } from "firebase/database";
 import { ref, getDownloadURL, uploadBytes, deleteObject } from "firebase/storage";
 
 const Edit = () => {
@@ -15,6 +17,7 @@ const Edit = () => {
     const birthRef = useRef();
     const bioRef = useRef();
     const usernameRef = useRef();
+    const { seteditlog } = useContext(UserProvider);
     const {
         setcurrentUser,
         setSortMethod,
@@ -53,6 +56,7 @@ const Edit = () => {
                 const url = await getDownloadURL(ref(storage, snap.ref.fullPath));
                 seturl(url);
                 console.log(url);
+                set(ref(database, `users/${userData.username}/profile_picture`), url);
             };
             uploadImg();
         }
@@ -74,7 +78,6 @@ const Edit = () => {
                 );
 
                 setShouldChangePostData(true);
-                await setlog("Profile updated successfully");
             } else if (!url) {
                 writeUserData(
                     userData.username,
@@ -92,7 +95,8 @@ const Edit = () => {
                 );
 
                 setShouldChangePostData(true);
-                await setlog("Profile updated successfully");
+                seteditlog("Profile updated, refresh to see changes");
+                await navigate("/profile");
             }
         } catch (err) {
             setError("");
@@ -131,8 +135,8 @@ const Edit = () => {
                         <GenerateNav />
 
                         <div className="profile">
-                            <div className="middle edit">
-                                <div className="middle" style={{ color: "white", padding: "10px" }}>
+                            <div>
+                                <div className="middle" style={{ color: "white", padding: "30px" }}>
                                     <div
                                         style={{ display: "flex", flexDirection: "column", padding: "10px" }}
                                     >
@@ -169,13 +173,7 @@ const Edit = () => {
                                                         justifyContent: "space-between",
                                                         flexDirection: "column",
                                                     }}
-                                                >
-                                                    {/* <div>
-                                                <Button variant="secondary" size="sm">
-                                                    Edit profile
-                                                </Button>
-                                            </div> */}
-                                                </div>
+                                                ></div>
                                             </div>
                                         </span>
                                         <Form onSubmit={updateusr} style={{ padding: "5px" }}>

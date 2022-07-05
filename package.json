@@ -32,6 +32,8 @@
         "react-router-dom": "^6.3.0",
         "react-scripts": "5.0.1",
         "react-tiny-link": "^3.6.1",
+        "stream": "^0.0.2",
+        "update": "^0.7.4",
         "uploady": "^0.6.6",
         "use-state-if-mounted": "^1.0.7",
         "web-vitals": "^2.1.4"
@@ -62,5 +64,8 @@
     },
     "devDependencies": {
         "nodemon": "^2.0.16"
+    },
+    "browser": {
+        "crypto": false
     }
 }
