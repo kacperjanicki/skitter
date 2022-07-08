@@ -164,7 +164,7 @@ const SignlePost = (body) => {
     } else {
         borderchoice = "1px solid #dee2e6";
     }
-    console.log(element);
+
     return (
         <div className="tweetcont">
             <div style={{ display: "flex", flexDirection: "column" }} ref={tweetref} id="profilediv">
@@ -235,7 +235,6 @@ const SignlePost = (body) => {
                     }}
                     id="postinfo"
                 >
-                    {console.log(element)}
                     {element.published_on ? (
                         <div style={{ display: "flex", gap: "30px", alignItems: "center" }}>
                             <div style={{ display: "flex", gap: "5px", margin: "3px" }}>

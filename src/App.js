@@ -5,7 +5,7 @@ import ProfilePage from "./components/ProfilePage";
 import React, { useState, useEffect, useRef } from "react";
 import { auth } from "./firebase";
 import Mess from "./components/Mess";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Edit from "./components/Edit";
 import Dashboard from "./components/dashboard";
 import { AiOutlineGithub } from "react-icons/ai";
@@ -14,6 +14,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import { ref, onValue, get, set } from "firebase/database";
 import { database } from "./firebase";
 import Forgot from "./components/Forgot";
+import { HashRouter as Router } from "react-router-dom";
 import MainPage from "./components/MainPage";
 import GeneratePost from "./components/GeneratePost";
 import Allusers from "./components/Allusers";
@@ -172,23 +173,25 @@ function App() {
 
     return (
         <UserProvider.Provider value={value}>
-            <Routes>
-                <Route exact path="/profile" element={<PrivateRoute />}>
-                    <Route exact path="/profile" element={<Dashboard />} />
-                    <Route exact path="/profile/edit" element={<Edit />} />
-                    <Route exact path="/profile/messages" element={<Mess />}></Route>
-                </Route>
-                <Route exact path="/" element={<BasicPage />}></Route>
-                <Route exact path="/suggested" element={<Allusers />}></Route>
+            <Router>
+                <Routes>
+                    <Route exact path="/profile" element={<PrivateRoute />}>
+                        <Route exact path="/profile" element={<Dashboard />} />
+                        <Route exact path="/profile/edit" element={<Edit />} />
+                        <Route exact path="/profile/messages" element={<Mess />}></Route>
+                    </Route>
+                    <Route exact path="/" element={<BasicPage />}></Route>
+                    <Route exact path="/suggested" element={<Allusers />}></Route>
 
-                <Route path="/user/:username" element={<ProfilePage />}></Route>
-                <Route path="/post/:id" element={<GeneratePost />}></Route>
-                <Route exact path="/home" element={<MainPage />} />
+                    <Route path="/user/:username" element={<ProfilePage />}></Route>
+                    <Route path="/post/:id" element={<GeneratePost />}></Route>
+                    <Route exact path="/home" element={<MainPage />} />
 
-                <Route path="/signup" element={<LoginPage />}></Route>
-                <Route path="/login" exact element={<ActualLogin />}></Route>
-                <Route path="/forgot-password" exact element={<Forgot />}></Route>
-            </Routes>
+                    <Route path="/signup" element={<LoginPage />}></Route>
+                    <Route path="/login" exact element={<ActualLogin />}></Route>
+                    <Route path="/forgot-password" exact element={<Forgot />}></Route>
+                </Routes>
+            </Router>
         </UserProvider.Provider>
     );
 }
