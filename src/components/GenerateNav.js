@@ -12,7 +12,7 @@ import { CgCheck, CgProfile } from "react-icons/cg";
 import { VscEdit } from "react-icons/vsc";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { MdOutlineLogin } from "react-icons/md";
+import { MdInvertColors, MdOutlineLogin } from "react-icons/md";
 import { get, onValue, ref, set } from "firebase/database";
 import moment from "moment";
 import { database } from "../firebase";
@@ -118,6 +118,35 @@ const GenerateNav = () => {
                     <VscEdit color="white" />
                 </button>
             )}
+            {!currentUser ? (
+                <ul style={{ position: "absolute", right: "5%", zIndex: 5 }}>
+                    <li className="navitem" style={{ marginBottom: "5px" }}>
+                        <Button
+                            variant="contained"
+                            startIcon={<MdOutlineLogin />}
+                            onClick={() => {
+                                navigate("/login");
+                            }}
+                        >
+                            Login
+                        </Button>
+                    </li>
+                    <li className="navitem" style={{ marginBottom: "20px" }}>
+                        <Button
+                            variant="contained"
+                            startIcon={<AiOutlineUserAdd />}
+                            onClick={() => {
+                                navigate("/signup");
+                            }}
+                            size="sm"
+                        >
+                            Sign up
+                        </Button>
+                    </li>
+                </ul>
+            ) : (
+                ""
+            )}
 
             <Nav bg="primary" variant="dark" id="navcontainer">
                 <ul
@@ -159,7 +188,7 @@ const GenerateNav = () => {
                                         {window.innerWidth > 1200 ? (
                                             <button
                                                 style={{
-                                                    color: "white",
+                                                    color: local,
                                                     border: "none",
                                                     width: "80%",
                                                     padding: "5px",
@@ -174,6 +203,7 @@ const GenerateNav = () => {
                                                         navigate(-1);
                                                     }
                                                 }}
+                                                className="backbtnnav"
                                             >
                                                 <div
                                                     style={{
@@ -189,27 +219,6 @@ const GenerateNav = () => {
                                             </button>
                                         ) : (
                                             ""
-                                            // <button
-                                            //     style={{
-                                            //         position: "fixed",
-                                            //         zIndex: 5,
-                                            //         left: 30,
-                                            //         top: 0,
-                                            //         margin: "5px",
-                                            //         border: "none",
-                                            //         color: "white",
-                                            //         background: "none",
-                                            //     }}
-                                            //     onClick={() => {
-                                            //         if (location.pathname == "/profile") {
-                                            //             navigate(-3);
-                                            //         } else {
-                                            //             navigate(-1);
-                                            //         }
-                                            //     }}
-                                            // >
-                                            //     <TbArrowBackUp size={30} />
-                                            // </button>
                                         )}
 
                                         <li className="navitem" style={{ marginBottom: "20px" }} id="hidebtn">
@@ -236,34 +245,6 @@ const GenerateNav = () => {
                                     </>
                                 );
                             }
-                        } else if (!currentUser) {
-                            return (
-                                <>
-                                    <li className="navitem" style={{ marginBottom: "5px" }}>
-                                        <Button
-                                            variant="contained"
-                                            startIcon={<MdOutlineLogin />}
-                                            onClick={() => {
-                                                navigate("/login");
-                                            }}
-                                        >
-                                            Login
-                                        </Button>
-                                    </li>
-                                    <li className="navitem" style={{ marginBottom: "20px" }}>
-                                        <Button
-                                            variant="contained"
-                                            startIcon={<AiOutlineUserAdd />}
-                                            onClick={() => {
-                                                navigate("/signup");
-                                            }}
-                                            size="sm"
-                                        >
-                                            Sign up
-                                        </Button>
-                                    </li>
-                                </>
-                            );
                         }
                     })()}
                     <li className="navitem">
@@ -273,7 +254,7 @@ const GenerateNav = () => {
                                     border: "none",
                                     background: "none",
                                     marginBottom: "8px",
-                                    color: "white",
+                                    color: local,
                                 }}
                                 className="navbtn"
                                 onClick={() => {
@@ -317,7 +298,7 @@ const GenerateNav = () => {
                                             border: "none",
                                             background: "none",
                                             marginBottom: "8px",
-                                            color: "white",
+                                            color: local,
                                         }}
                                         className="navbtn"
                                         onClick={handleShow2}
@@ -486,7 +467,7 @@ const GenerateNav = () => {
                                             border: "none",
                                             background: "none",
                                             marginBottom: "8px",
-                                            color: "white",
+                                            color: local,
                                         }}
                                         className="navbtn"
                                         onClick={() => {
@@ -525,7 +506,7 @@ const GenerateNav = () => {
                                             border: "none",
                                             background: "none",
                                             marginBottom: "8px",
-                                            color: "white",
+                                            color: local,
                                         }}
                                         className="navbtn"
                                         onClick={() => {
@@ -569,12 +550,7 @@ const GenerateNav = () => {
                     {location.pathname == "/home" ? (
                         <>
                             {window.innerWidth < 1200 ? (
-                                <Button
-                                    id="modeswitch"
-                                    size="sm"
-                                    onClick={darkMode}
-                                    style={{ color: "white" }}
-                                >
+                                <Button id="modeswitch" size="sm" onClick={darkMode} style={{ color: local }}>
                                     Light theme
                                 </Button>
                             ) : (

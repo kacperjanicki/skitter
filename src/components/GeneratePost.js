@@ -53,7 +53,9 @@ const GeneratePost = () => {
                 if (Object.keys(val).includes(userData.username)) {
                     document.getElementById("likebtn").style.color = "red";
                 } else {
-                    document.getElementById("likebtn").style.color = "white";
+                    if (document.getElementById("likebtn")) {
+                        document.getElementById("likebtn").style.color = "white";
+                    }
                 }
                 console.log(val);
 
@@ -236,33 +238,39 @@ const GeneratePost = () => {
             id="mainpage"
             style={{ display: "flex", flexDirection: "row", gap: "30px", paddingBottom: "50px" }}
         >
-            {window.innerWidth < 920
-                ? (() => {
-                      document.querySelector(".github").style.display = "none";
-                      return (
-                          <>
-                              <button
-                                  style={{
-                                      position: "absolute",
-                                      zIndex: 2,
-                                      left: 0,
-                                      margin: "5px",
-                                      border: "none",
-                                      color: "white",
-                                      background: "none",
-                                  }}
-                                  onClick={() => {
-                                      history(-1);
-                                      document.querySelector(".github").style.display = "initial";
-                                  }}
-                              >
-                                  <BiArrowBack size={30} />
-                              </button>
-                              <GenerateNav />
-                          </>
-                      );
-                  })()
-                : ""}
+            {(() => {
+                if (document.querySelector(".github")) {
+                    document.querySelector(".github").style.display = "none";
+                }
+
+                return (
+                    <>
+                        <button
+                            style={{
+                                position: "absolute",
+                                zIndex: 2,
+                                left: 0,
+
+                                border: "none",
+                                color: "white",
+                                background: "none",
+                            }}
+                            className="backbtn"
+                            onClick={() => {
+                                history(-1);
+                                document.querySelector(".github").style.display = "initial";
+                            }}
+                        >
+                            <div className="arrowback" style={{ marginLeft: "10px" }}>
+                                <BiArrowBack size={30} />
+                            </div>
+                        </button>
+                        <div style={{ marginRight: "20px" }}>
+                            <GenerateNav />
+                        </div>
+                    </>
+                );
+            })()}
 
             <div className="profile">
                 <div id="middle wrap">

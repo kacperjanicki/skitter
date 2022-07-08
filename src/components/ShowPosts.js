@@ -85,7 +85,7 @@ const SignlePost = (body) => {
         } else if (days < 1 && hours < 1) {
             return `${minutes} minutes ago`;
         } else if (days >= 1) {
-            return `${days} day ago`;
+            return `${days} day(s) ago`;
         }
     }
     if (localStorage.getItem("mode") == "dark") {
