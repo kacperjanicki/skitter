@@ -418,17 +418,17 @@ const GeneratePost = () => {
                                                                               justifyItems: "center",
                                                                               border: "1px solid #dee2e6",
                                                                           }}
+                                                                          onClick={() => {
+                                                                              history(
+                                                                                  `/user/${person.username}`
+                                                                              );
+                                                                          }}
                                                                       >
                                                                           <img
                                                                               src={person.pic}
                                                                               style={{
                                                                                   height: "50px",
                                                                                   width: "50px",
-                                                                              }}
-                                                                              onClick={() => {
-                                                                                  history(
-                                                                                      `/user/${person.pic}`
-                                                                                  );
                                                                               }}
                                                                           />
                                                                           <h5>{person.name}</h5>
