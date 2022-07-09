@@ -324,8 +324,7 @@ const Mess = () => {
                                                     <img
                                                         src={msg.sender_img}
                                                         style={{
-                                                            height: "fit-content",
-
+                                                            height: "80px",
                                                             width: "80px",
                                                             borderRadius: "20%",
                                                         }}
