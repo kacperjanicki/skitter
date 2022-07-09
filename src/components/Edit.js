@@ -6,6 +6,7 @@ import { auth, writeUserData, storage } from "../firebase";
 import GenerateNav from "./GenerateNav";
 import { database } from "../firebase";
 import { set } from "firebase/database";
+import { BiArrowBack } from "react-icons/bi";
 import { ref, getDownloadURL, uploadBytes, deleteObject } from "firebase/storage";
 
 const Edit = () => {
@@ -133,13 +134,45 @@ const Edit = () => {
                         style={{ display: "flex", flexDirection: "row", gap: "30px" }}
                     >
                         <GenerateNav />
+                        <button
+                            style={{
+                                position: "absolute",
+                                zIndex: 2,
+                                left: 0,
+
+                                border: "none",
+                                color: "white",
+                                background: "none",
+                            }}
+                            className="backbtn"
+                            onClick={() => {
+                                navigate(-1);
+                                document.querySelector(".github").style.display = "initial";
+                            }}
+                        >
+                            <div className="arrowback" style={{ marginLeft: "10px" }}>
+                                <BiArrowBack size={30} />
+                            </div>
+                        </button>
 
                         <div className="profile">
                             <div>
-                                <div className="middle" style={{ color: "white", padding: "30px" }}>
+                                <div
+                                    className="middle"
+                                    style={{
+                                        color: "white",
+                                        padding: "30px",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                    }}
+                                >
                                     <div
                                         style={{ display: "flex", flexDirection: "column", padding: "10px" }}
                                     >
+                                        <span style={{ textAlign: "left" }}>
+                                            <strong id="txt">{userData.full_name}</strong>
+                                            <span>@{userData.username}</span>
+                                        </span>
                                         <img
                                             src={userData.profile_picture}
                                             style={{ width: "200px", height: "200px", borderRadius: "200px" }}
@@ -161,10 +194,6 @@ const Edit = () => {
                                             padding: "10px",
                                         }}
                                     >
-                                        <span style={{ textAlign: "left" }}>
-                                            <strong id="txt">{userData.full_name}</strong>
-                                            <span>@{userData.username}</span>
-                                        </span>
                                         <span className="text-left">
                                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                                                 <div
