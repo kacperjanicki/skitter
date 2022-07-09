@@ -503,7 +503,7 @@ const GeneratePost = () => {
                         "loading"
                     )}
 
-                    <div>
+                    <div style={{ padding: "5px" }}>
                         <div style={{ width: "60vw" }}>
                             {currentUser ? (
                                 ""

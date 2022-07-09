@@ -337,9 +337,12 @@ body {
 #selectuser {
     display: none;
 }
-
+.tweets:last-child {
+    padding-bottom: 100px;
+}
 @media screen and (max-width: 500px) {
-    #mainpage {
+    #mainpage,
+    .profile > div {
         overflow-x: hidden;
     }
 

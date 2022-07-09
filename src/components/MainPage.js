@@ -17,15 +17,20 @@ const MainPage = () => {
             <div
                 className="cont home main"
                 id="mainpage"
-                style={{ display: "flex", flexDirection: "row", gap: "30px", width: "600px" }}
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: "30px",
+                    width: "600px",
+                }}
             >
                 <GenerateNav />
                 <div>
                     <div
                         style={{
                             position: "absolute",
-                            top: 0,
-                            right: 5,
+                            top: "10%",
+                            right: "20px",
                             fontSize: "20px",
                             color: local,
                             opacity: "0.4",

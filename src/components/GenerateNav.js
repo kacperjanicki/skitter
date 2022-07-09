@@ -118,8 +118,8 @@ const GenerateNav = () => {
                     <VscEdit color="white" />
                 </button>
             )}
-            {!currentUser ? (
-                <ul style={{ position: "absolute", right: "5%", zIndex: 5 }}>
+            {!currentUser && location.pathname == "/home" ? (
+                <ul style={{ position: "absolute", right: "20px", zIndex: 5 }}>
                     <li className="navitem" style={{ marginBottom: "5px" }}>
                         <Button
                             variant="contained"

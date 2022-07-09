@@ -164,7 +164,10 @@ const ProfilePage = () => {
                 >
                     {window.innerWidth < 930 ? (
                         (() => {
-                            document.querySelector(".github").style.display = "none";
+                            if (document.querySelector(".github")) {
+                                document.querySelector(".github").style.display = "none";
+                            }
+
                             return (
                                 <button
                                     style={{
